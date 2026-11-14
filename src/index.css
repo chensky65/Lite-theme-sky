@@ -474,13 +474,22 @@ html.dark .lite-server-card {
    same tone thresholds as the numeric delay (green <= 80ms, amber <= 180ms,
    coral above). All dots share one size so severity reads from color only;
    missing samples render as a muted dot. */
-.lite-latency-bars {
+.lite-probe-row__bars {
   display: flex;
   min-width: 0;
   flex: 0 0 94px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+}
+
+.lite-latency-bars {
+  display: flex;
+  min-width: 0;
+  flex: none;
   align-items: center;
   gap: 2px;
-  height: 14px;
+  height: 6px;
 }
 
 .lite-latency-bars__bar {
@@ -774,8 +783,11 @@ html.dark .lite-server-card__footer-extra {
     flex-basis: 76px;
   }
 
-  .lite-latency-bars {
+  .lite-probe-row__bars {
     flex-basis: 82px;
+  }
+
+  .lite-latency-bars {
     gap: 2px;
   }
 

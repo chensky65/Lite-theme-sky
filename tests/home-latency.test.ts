@@ -17,6 +17,7 @@ import {
   homeProbeShouldStack,
   hourPacketFillPercent,
   latencyBarTone,
+  lossBarTone,
   mapPingStatsToHomeLatency,
   readHomeLatencyCache,
   summarizeHomeLatencySamples,
@@ -146,6 +147,25 @@ test("colors 0-80ms green, 80-180ms amber, and 180ms+ coral", () => {
   assert.equal(latencyBarTone(179.9), "amber")
   assert.equal(latencyBarTone(180), "coral")
   assert.equal(latencyBarTone(200), "coral")
+})
+
+test("colors packet loss green at 0%, amber below 5%, and coral at 5%+", () => {
+  assert.equal(lossBarTone(null), "empty")
+  assert.equal(lossBarTone(-1), "empty")
+  assert.equal(lossBarTone(0), "green")
+  assert.equal(lossBarTone(0.1), "amber")
+  assert.equal(lossBarTone(4.9), "amber")
+  assert.equal(lossBarTone(5), "coral")
+  assert.equal(lossBarTone(51.7), "coral")
+})
+
+test("homepage probe rows render latency and packet-loss history strips", () => {
+  const summary = readFileSync(new URL("../src/components/ServerLatencySummary.tsx", import.meta.url), "utf8")
+  assert.match(summary, /LatencyHistoryBars/)
+  assert.match(summary, /PacketLossHistoryBars/)
+  assert.match(summary, /packetLossHistory/)
+  const bars = readFileSync(new URL("../src/components/PacketLossHistoryBars.tsx", import.meta.url), "utf8")
+  assert.match(bars, /lossBarTone/)
 })
 
 test("maps ping metric stats onto per-task home summaries", () => {

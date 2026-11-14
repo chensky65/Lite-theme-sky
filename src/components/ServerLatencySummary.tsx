@@ -1,4 +1,5 @@
 import LatencyHistoryBars from "@/components/LatencyHistoryBars"
+import PacketLossHistoryBars from "@/components/PacketLossHistoryBars"
 import {
   HOME_LATENCY_CARD_LIMIT,
   type HomeLatencyTaskSummary,
@@ -72,10 +73,18 @@ function TaskProbeRow({
           <span className="lite-probe-row__return" title={returnLabel}>{returnLabel}</span>
         ) : null}
       </span>
-      <LatencyHistoryBars
-        values={summary.latencyHistory}
-        label={`${summary.taskName} ${t("serverCard.latency")} ${latencyLabel}`}
-      />
+      <span className="lite-probe-row__bars">
+        <LatencyHistoryBars
+          values={summary.latencyHistory}
+          label={`${summary.taskName} ${t("serverCard.latency")} ${latencyLabel}`}
+        />
+        {showPacketLoss ? (
+          <PacketLossHistoryBars
+            values={summary.packetLossHistory}
+            label={`${summary.taskName} ${lossLabel} ${packetLoss}`}
+          />
+        ) : null}
+      </span>
       <span className="lite-probe-row__delay">
         <b className="tabular-nums" data-tone={delayTone}>{latency.value}</b>
         {latency.unit ? <small>{latency.unit}</small> : null}

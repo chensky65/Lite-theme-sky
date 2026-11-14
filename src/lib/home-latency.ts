@@ -112,6 +112,15 @@ export function latencyBarTone(latency: number | null): LatencyBarTone {
   return "green"
 }
 
+export type LossBarTone = "green" | "amber" | "coral" | "empty"
+
+export function lossBarTone(loss: number | null): LossBarTone {
+  if (loss === null || !Number.isFinite(loss) || loss < 0) return "empty"
+  if (loss >= 5) return "coral"
+  if (loss > 0) return "amber"
+  return "green"
+}
+
 export const PROBE_MISSING_VALUE = "—"
 
 export function formatProbePacketLoss(packetLoss: number | null): string {
