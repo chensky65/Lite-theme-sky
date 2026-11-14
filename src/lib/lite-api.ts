@@ -2,7 +2,7 @@ import { SharedClient } from "@/hooks/use-rpc2"
 import { MonitorResponse, ServerGroupResponse, SettingResponse } from "@/types/lite-api"
 
 import { historyMaxPoints, probeHistoryMaxPoints } from "./history-range"
-import { HomeLatencyByServer, mapPingStatsToHomeLatency } from "./home-latency"
+import { HomeLatencyByServer, HomeLatencySample, mapPingStatsToHomeLatency, summarizeHomeLatencySamples } from "./home-latency"
 import { mapPublicReturnRoutes, type PublicReturnRouteByServer } from "./home-return-route"
 import { mergeAssignedPingMonitors, seedAssignedHomeLatency, unionPingTasksForClient } from "./ping-display"
 import { orderMonitorsByPingTasks } from "./ping-task-order"
@@ -378,11 +378,44 @@ interface PublicPingMetricStatsResponse {
   stats?: PublicPingMetricStat[]
 }
 
+/** Turn ping latency/loss metric series into per-sample records for the home history buckets. */
+function homeLatencySamplesFromMetricSeries(seriesList: LiteMetricSeries[], tasks: LitePingTask[]): HomeLatencySample[] {
+  const taskNames = new Map(tasks.map((task) => [String(task.id), task.name || `Task ${task.id}`]))
+  const lossLookup = buildPingLossLookup(seriesList)
+  const samples: HomeLatencySample[] = []
+
+  for (const series of seriesList) {
+    if (series.metric_key !== PING_LATENCY_METRIC) continue
+    const taskId = metricTaskId(series)
+    const entityId = series.entity_id || ""
+    if (!taskId || !entityId) continue
+    const lossPoints = lossLookup.get(metricSeriesKey(series))
+    for (const point of series.points || []) {
+      const time = metricPointTime(point)
+      if (time === null) continue
+      const count = metricPointCount(point)
+      const loss = lossPoints?.get(time)
+      const latency = latencyWithoutLoss(point.value, count, loss)
+      samples.push({
+        entityId,
+        taskId,
+        taskName: taskNames.get(taskId) || `Task ${taskId}`,
+        timestamp: time,
+        latency,
+        lossRatio: loss?.ratio ?? 0,
+        count,
+      })
+    }
+  }
+
+  return samples
+}
+
 export async function fetchHomeLatency(entityIds: string[]): Promise<HomeLatencyByServer> {
   const uniqueEntityIds = [...new Set(entityIds.filter(Boolean))]
   if (uniqueEntityIds.length === 0) return {}
 
-  const [statsResult, tasks] = await Promise.all([
+  const [statsResult, tasks, metricData] = await Promise.all([
     SharedClient().call<Record<string, unknown>, PublicPingMetricStatsResponse>(
       "public:getPingMetricStats",
       {
@@ -393,9 +426,36 @@ export async function fetchHomeLatency(entityIds: string[]): Promise<HomeLatency
       { timeout: 15000 },
     ),
     fetchPublicPingTasks(),
+    fetchPingMetricSeries({ entity_ids: uniqueEntityIds, hours: 1 }, 12).catch(() => null),
   ])
 
-  return seedAssignedHomeLatency(mapPingStatsToHomeLatency(statsResult?.stats || [], tasks), tasks, uniqueEntityIds)
+  const statsBased = mapPingStatsToHomeLatency(statsResult?.stats || [], tasks)
+  // Prefer the real 1-hour series for the history dots; fall back to the
+  // stats-based (padded) history for tasks the series does not cover.
+  let result = statsBased
+  if (metricData && metricData.series.length > 0) {
+    const samples = homeLatencySamplesFromMetricSeries(metricData.series, metricData.tasks)
+    const seriesBased = summarizeHomeLatencySamples(samples, 12)
+    if (Object.keys(seriesBased).length > 0) {
+      result = { ...statsBased }
+      for (const [entityId, summaries] of Object.entries(seriesBased)) {
+        const current = new Map((result[entityId] || []).map((item) => [item.taskId, item]))
+        for (const summary of summaries) {
+          const existing = current.get(summary.taskId)
+          // Only replace when the series actually has data points; a task
+          // whose history is all empty keeps the stats-based fallback.
+          if (existing && summary.latencyHistory.some((value) => value !== null)) {
+            current.set(summary.taskId, { ...existing, latencyHistory: summary.latencyHistory, packetLossHistory: summary.packetLossHistory, latency: summary.latency ?? existing.latency, packetLoss: summary.packetLoss ?? existing.packetLoss, updatedAt: summary.updatedAt ?? existing.updatedAt })
+          } else if (!existing) {
+            current.set(summary.taskId, summary)
+          }
+        }
+        result[entityId] = [...current.values()]
+      }
+    }
+  }
+
+  return seedAssignedHomeLatency(result, tasks, uniqueEntityIds)
 }
 
 export async function fetchPublicReturnRoutes(): Promise<PublicReturnRouteByServer> {
