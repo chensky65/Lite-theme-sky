@@ -807,7 +807,7 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-probe-row__viz {
-    flex-basis: 164px;
+    flex-basis: 170px;
     gap: 2px;
   }
 
@@ -825,7 +825,7 @@ html.dark .lite-server-card__footer-extra {
 
   .lite-latency-bars {
     gap: 2px;
-    flex-basis: 79px;
+    flex-basis: 82px;
   }
 
   .lite-latency-bars__bar {
@@ -834,7 +834,7 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-probe-row__viz-delay {
-    flex-basis: 79px;
+    flex-basis: 82px;
   }
 
   .lite-probe-row__viz-delay b {
@@ -842,7 +842,7 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-probe-row__viz-loss {
-    flex-basis: 79px;
+    flex-basis: 82px;
   }
 }
 

@@ -243,6 +243,13 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   assert.match(css, /\.lite-latency-bars__bar\[data-tone="coral"\] \{[\s\S]*?background:\s*var\(--card-danger\)/)
   assert.match(css, /\.lite-probe-row__viz-delay b\[data-tone="green"\] \{[\s\S]*?color:\s*var\(--card-green\)/)
   assert.match(css, /\.lite-probe-row__viz-delay b\[data-tone="coral"\] \{[\s\S]*?color:\s*var\(--card-danger\)/)
+  // Narrow cards (299px): each strip is 12 x 5px bars + 11 x 2px gaps = 82px,
+  // so the two strips plus the 6px gap make the viz block 170px; the numbers
+  // use the same 82px so their right edges stay aligned with the strips.
+  assert.match(css, /@container server-card \(max-width: 299px\) \{[\s\S]*?\.lite-probe-row__viz \{[\s\S]*?flex-basis:\s*170px/)
+  assert.match(css, /@container server-card \(max-width: 299px\) \{[\s\S]*?\.lite-latency-bars \{[\s\S]*?flex-basis:\s*82px/)
+  assert.match(css, /@container server-card \(max-width: 299px\) \{[\s\S]*?\.lite-probe-row__viz-delay \{[\s\S]*?flex-basis:\s*82px/)
+  assert.match(css, /@container server-card \(max-width: 299px\) \{[\s\S]*?\.lite-probe-row__viz-loss \{[\s\S]*?flex-basis:\s*82px/)
   assert.match(css, /\.lite-server-card__quota \{[\s\S]*?border-top:\s*1px solid var\(--card-line\)/)
   assert.match(css, /\.lite-server-card__quality \{[\s\S]*flex:\s*1 1 auto/)
   assert.match(card, /h-full/)
