@@ -256,7 +256,7 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   // is the card itself (no padding); the body adds 21px each side and the row
   // 2px, so the row content is container - 46px. Tiers: >=404px 7px bars /
   // 290px viz, 378-403px 6px bars / 264px viz, 354-377px 5px bars / 244px viz
-  // (row gap 4px), 326-353px 7px bars / 214px viz, 24px strip gap, <=325px 5px bars / 177px
+  // (row gap 4px), 326-340px 7px bars / 197px viz, 7px strip gap; 341-353px 8px bars / 222px viz, 8px strip gap, <=325px 5px bars / 177px
   // viz. Numbers use the same basis as their strips. Bars use 5px gaps on
   // the 354px+ tiers.
   assert.match(css, /@container server-card \(min-width: 404px\) \{[\s\S]*?\.lite-probe-row__viz \{[\s\S]*?flex-basis:\s*290px/)
@@ -267,10 +267,14 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   assert.match(css, /@container server-card \(min-width: 354px\) and \(max-width: 377px\) \{[\s\S]*?\.lite-latency-bars \{[\s\S]*?flex-basis:\s*115px/)
   assert.match(css, /@container server-card \(min-width: 354px\) and \(max-width: 377px\) \{[\s\S]*?\.lite-probe-row__viz-delay \{[\s\S]*?flex-basis:\s*115px/)
   assert.match(css, /@container server-card \(min-width: 354px\) and \(max-width: 377px\) \{[\s\S]*?\.lite-probe-row__viz-loss \{[\s\S]*?flex-basis:\s*115px/)
-  assert.match(css, /@container server-card \(min-width: 326px\) and \(max-width: 353px\) \{[\s\S]*?\.lite-probe-row__viz \{[\s\S]*?flex-basis:\s*214px/)
-  assert.match(css, /@container server-card \(min-width: 326px\) and \(max-width: 353px\) \{[\s\S]*?\.lite-latency-bars \{[\s\S]*?flex-basis:\s*95px/)
-  assert.match(css, /@container server-card \(min-width: 326px\) and \(max-width: 353px\) \{[\s\S]*?\.lite-probe-row__viz-delay \{[\s\S]*?flex-basis:\s*95px/)
-  assert.match(css, /@container server-card \(min-width: 326px\) and \(max-width: 353px\) \{[\s\S]*?\.lite-probe-row__viz-loss \{[\s\S]*?flex-basis:\s*95px/)
+  assert.match(css, /@container server-card \(min-width: 326px\) and \(max-width: 340px\) \{[\s\S]*?\.lite-probe-row__viz \{[\s\S]*?flex-basis:\s*197px/)
+  assert.match(css, /@container server-card \(min-width: 326px\) and \(max-width: 340px\) \{[\s\S]*?\.lite-latency-bars \{[\s\S]*?flex-basis:\s*95px/)
+  assert.match(css, /@container server-card \(min-width: 326px\) and \(max-width: 340px\) \{[\s\S]*?\.lite-probe-row__viz-delay \{[\s\S]*?flex-basis:\s*95px/)
+  assert.match(css, /@container server-card \(min-width: 326px\) and \(max-width: 340px\) \{[\s\S]*?\.lite-probe-row__viz-loss \{[\s\S]*?flex-basis:\s*95px/)
+  assert.match(css, /@container server-card \(min-width: 341px\) and \(max-width: 353px\) \{[\s\S]*?\.lite-probe-row__viz \{[\s\S]*?flex-basis:\s*222px/)
+  assert.match(css, /@container server-card \(min-width: 341px\) and \(max-width: 353px\) \{[\s\S]*?\.lite-latency-bars \{[\s\S]*?flex-basis:\s*107px/)
+  assert.match(css, /@container server-card \(min-width: 341px\) and \(max-width: 353px\) \{[\s\S]*?\.lite-probe-row__viz-delay \{[\s\S]*?flex-basis:\s*107px/)
+  assert.match(css, /@container server-card \(min-width: 341px\) and \(max-width: 353px\) \{[\s\S]*?\.lite-probe-row__viz-loss \{[\s\S]*?flex-basis:\s*107px/)
   // Narrow cards (<=325px container): each strip is 12 x 5px bars + 11 x 2px gaps = 82px,
   // so the two strips plus the 13px gap make the viz block 177px; the numbers
   // use the same 82px so their right edges stay aligned with the strips.

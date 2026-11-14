@@ -808,7 +808,7 @@ html.dark .lite-server-card__footer-extra {
    the operator name (52px) and the return label. Tiers (container width):
    <=325px: 5px bars, 177px viz; 326-353px: 7px bars, 202px viz; 354-377px:
    5px bars, 244px viz (row gap 4px); 378-403px: 6px bars, 264px viz;
-   >=404px: 7px bars, 290px viz; 326-353px: 7px bars, 214px viz, 24px strip gap (latency forward, loss right). */
+   >=404px: 7px bars, 290px viz; 326-340px: 7px bars, 197px viz, 7px strip gap (one bar); 341-353px: 8px bars, 222px viz, 8px strip gap (one bar). */
 @container server-card (min-width: 404px) {
   .lite-probe-row__viz {
     flex-basis: 290px;
@@ -889,13 +889,13 @@ html.dark .lite-server-card__footer-extra {
   }
 }
 
-@container server-card (min-width: 326px) and (max-width: 353px) {
+@container server-card (min-width: 326px) and (max-width: 340px) {
   .lite-probe-row {
     gap: 6px;
   }
 
   .lite-probe-row__viz {
-    flex-basis: 214px;
+    flex-basis: 197px;
     gap: 2px;
   }
 
@@ -904,11 +904,11 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-probe-row__viz-bars {
-    gap: 24px;
+    gap: 7px;
   }
 
   .lite-probe-row__viz-nums {
-    gap: 24px;
+    gap: 7px;
   }
 
   .lite-latency-bars {
@@ -927,6 +927,47 @@ html.dark .lite-server-card__footer-extra {
 
   .lite-probe-row__viz-loss {
     flex-basis: 95px;
+  }
+}
+
+@container server-card (min-width: 341px) and (max-width: 353px) {
+  .lite-probe-row {
+    gap: 6px;
+  }
+
+  .lite-probe-row__viz {
+    flex-basis: 222px;
+    gap: 2px;
+  }
+
+  .lite-probe-row[data-loss="false"] .lite-probe-row__viz {
+    flex-basis: 107px;
+  }
+
+  .lite-probe-row__viz-bars {
+    gap: 8px;
+  }
+
+  .lite-probe-row__viz-nums {
+    gap: 8px;
+  }
+
+  .lite-latency-bars {
+    gap: 1px;
+    flex-basis: 107px;
+  }
+
+  .lite-latency-bars__bar {
+    width: 8px;
+    height: 8px;
+  }
+
+  .lite-probe-row__viz-delay {
+    flex-basis: 107px;
+  }
+
+  .lite-probe-row__viz-loss {
+    flex-basis: 107px;
   }
 }
 
