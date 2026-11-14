@@ -166,6 +166,17 @@ test("maps ping metric stats onto per-task home summaries", () => {
   assert.equal(result["node-a"][1].taskName, "Tokyo")
 })
 
+test("pads ping-stat histories to the full 12-dot window with the latest sample last", () => {
+  const result = mapPingStatsToHomeLatency([{ entity_id: "node-a", task_id: "1", name: "Shanghai", latest: 42, loss: 2 }])
+  const summary = result["node-a"][0]
+  assert.equal(summary.latencyHistory.length, 12)
+  assert.deepEqual(summary.latencyHistory.slice(0, 11), Array(11).fill(null))
+  assert.equal(summary.latencyHistory[11], 42)
+  assert.equal(summary.packetLossHistory.length, 12)
+  assert.deepEqual(summary.packetLossHistory.slice(0, 11), Array(11).fill(null))
+  assert.equal(summary.packetLossHistory[11], 2)
+})
+
 test("treats zero-sample ping stats as empty instead of a full green bar", () => {
   const result = mapPingStatsToHomeLatency([{ entity_id: "node-a", task_id: "1", name: "Fujian", latest: null, loss: 0, total: 0, valid: 0 }])
   assert.equal(result["node-a"][0].latency, null)

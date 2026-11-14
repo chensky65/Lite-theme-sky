@@ -228,10 +228,15 @@ export interface PingStatForHome {
   interval?: number | null
 }
 
-export function mapPingStatsToHomeLatency(stats: PingStatForHome[], tasks: Array<{ id?: number | string; name?: string }> = []): HomeLatencyByServer {
+export function mapPingStatsToHomeLatency(
+  stats: PingStatForHome[],
+  tasks: Array<{ id?: number | string; name?: string }> = [],
+  historyLimit = 12,
+): HomeLatencyByServer {
   const taskNames = new Map(tasks.map((task) => [String(task.id), task.name || `Task ${task.id}`]))
   const taskOrder = new Map(tasks.map((task, index) => [String(task.id), index]))
   const result: HomeLatencyByServer = {}
+  const windowSize = Math.max(1, Math.floor(historyLimit))
 
   for (const stat of stats) {
     const entityId = String(stat.entity_id || "").trim()
@@ -244,13 +249,18 @@ export function mapPingStatsToHomeLatency(stats: PingStatForHome[], tasks: Array
     const hasSamples = total !== null ? total > 0 : valid !== null ? valid > 0 : latencyRaw !== null
     const latency = hasSamples ? latencyRaw : null
     const packetLoss = hasSamples ? finiteOrNull(stat.loss) : null
+    // Ping stats only carry the latest value, so pad the history to the full
+    // window: the current sample sits in the newest (last) bucket and the
+    // older buckets stay empty, keeping the 12-dot strip aligned.
+    const latencyHistory = [...Array<null>(Math.max(0, windowSize - 1)).fill(null), latency]
+    const packetLossHistory = [...Array<null>(Math.max(0, windowSize - 1)).fill(null), packetLoss]
     const summary: HomeLatencyTaskSummary = {
       taskId,
       taskName: stat.name || taskNames.get(taskId) || `Task ${taskId}`,
       latency,
       packetLoss,
-      latencyHistory: [latency],
-      packetLossHistory: [packetLoss],
+      latencyHistory,
+      packetLossHistory,
       updatedAt: hasSamples ? Date.now() : null,
       total,
       valid,
