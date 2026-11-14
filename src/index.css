@@ -796,7 +796,37 @@ html.dark .lite-server-card__footer-extra {
   }
 }
 
-@container server-card (max-width: 299px) {
+/* Mid-width cards (350-373px): 7px bars so the return route (75px) still
+   fits. Each strip is 12 x 7px bars + 11 x 2px gaps = 106px; the two
+   strips plus the 8px gap make the viz block 220px. */
+@container server-card (min-width: 308px) and (max-width: 331px) {
+  .lite-probe-row__viz {
+    flex-basis: 220px;
+  }
+
+  .lite-probe-row[data-loss="false"] .lite-probe-row__viz {
+    flex-basis: 106px;
+  }
+
+  .lite-latency-bars {
+    flex-basis: 106px;
+  }
+
+  .lite-latency-bars__bar {
+    width: 7px;
+    height: 7px;
+  }
+
+  .lite-probe-row__viz-delay {
+    flex-basis: 106px;
+  }
+
+  .lite-probe-row__viz-loss {
+    flex-basis: 106px;
+  }
+}
+
+@container server-card (max-width: 307px) {
   .lite-probe-row {
     gap: 6px;
     padding: 6px 0;
@@ -807,12 +837,12 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-probe-row__viz {
-    flex-basis: 194px;
+    flex-basis: 170px;
     gap: 2px;
   }
 
   .lite-probe-row[data-loss="false"] .lite-probe-row__viz {
-    flex-basis: 94px;
+    flex-basis: 82px;
   }
 
   .lite-probe-row__viz-bars {
@@ -825,16 +855,16 @@ html.dark .lite-server-card__footer-extra {
 
   .lite-latency-bars {
     gap: 2px;
-    flex-basis: 94px;
+    flex-basis: 82px;
   }
 
   .lite-latency-bars__bar {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
 
   .lite-probe-row__viz-delay {
-    flex-basis: 94px;
+    flex-basis: 82px;
   }
 
   .lite-probe-row__viz-delay b {
@@ -842,7 +872,7 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-probe-row__viz-loss {
-    flex-basis: 94px;
+    flex-basis: 82px;
   }
 }
 
