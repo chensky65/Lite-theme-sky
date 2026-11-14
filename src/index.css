@@ -799,33 +799,44 @@ html.dark .lite-server-card__footer-extra {
 /* Probe bars scale with the card (container) width so the return-route
    label (75px) always fits. The container is .lite-server-card itself
    (no padding); the body adds 21px each side and the row 2px, so the
-   row content is container - 46px. Tiers (container width):
-   <=325px: 5px bars, 170px viz; 326-353px: 6px bars, 194px viz;
-   354-377px: 7px bars, 220px viz; >=378px: 8px bars, 244px viz. */
+   row content is container - 46px. To keep 8px bars on mid cards
+   without dropping any words, the bar gap is 1px there (strip 107px,
+   viz 224px) instead of 2px. Tiers (container width): <=325px: 5px
+   bars, 170px viz; 326-353px: 7px bars, 196px viz; 354-377px: 8px bars,
+   224px viz; >=378px: 8px bars, 244px viz. */
 @container server-card (min-width: 354px) and (max-width: 377px) {
   .lite-probe-row__viz {
     flex-basis: 220px;
   }
 
   .lite-probe-row[data-loss="false"] .lite-probe-row__viz {
-    flex-basis: 106px;
+    flex-basis: 107px;
+  }
+
+  .lite-probe-row__viz-bars {
+    gap: 6px;
+  }
+
+  .lite-probe-row__viz-nums {
+    gap: 6px;
   }
 
   .lite-latency-bars {
-    flex-basis: 106px;
+    gap: 1px;
+    flex-basis: 107px;
   }
 
   .lite-latency-bars__bar {
-    width: 7px;
-    height: 7px;
+    width: 8px;
+    height: 8px;
   }
 
   .lite-probe-row__viz-delay {
-    flex-basis: 106px;
+    flex-basis: 107px;
   }
 
   .lite-probe-row__viz-loss {
-    flex-basis: 106px;
+    flex-basis: 107px;
   }
 }
 
@@ -840,33 +851,33 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-probe-row[data-loss="false"] .lite-probe-row__viz {
-    flex-basis: 94px;
+    flex-basis: 95px;
   }
 
   .lite-probe-row__viz-bars {
-    gap: 6px;
+    gap: 4px;
   }
 
   .lite-probe-row__viz-nums {
-    gap: 6px;
+    gap: 4px;
   }
 
   .lite-latency-bars {
-    gap: 2px;
-    flex-basis: 94px;
+    gap: 1px;
+    flex-basis: 95px;
   }
 
   .lite-latency-bars__bar {
-    width: 6px;
-    height: 6px;
+    width: 7px;
+    height: 7px;
   }
 
   .lite-probe-row__viz-delay {
-    flex-basis: 94px;
+    flex-basis: 95px;
   }
 
   .lite-probe-row__viz-loss {
-    flex-basis: 94px;
+    flex-basis: 95px;
   }
 }
 
