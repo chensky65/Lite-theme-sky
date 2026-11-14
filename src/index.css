@@ -499,7 +499,7 @@ html.dark .lite-server-card {
   display: flex;
   align-items: baseline;
   gap: 8px;
-  height: 16px;
+  height: 14px;
 }
 
 .lite-latency-bars {
@@ -550,7 +550,7 @@ html.dark .lite-server-card {
 }
 
 .lite-probe-row__viz-delay b {
-  font-size: 13px;
+  font-size: 11px;
   font-weight: 650;
   line-height: 1;
   letter-spacing: -0.2px;
@@ -570,7 +570,7 @@ html.dark .lite-server-card {
 }
 
 .lite-probe-row__viz-delay small {
-  font-size: 10px;
+  font-size: 9px;
   font-weight: 400;
   line-height: 1;
   color: var(--card-muted);
@@ -581,9 +581,9 @@ html.dark .lite-server-card {
   flex: 0 0 94px;
   align-items: baseline;
   justify-content: flex-end;
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 550;
-  line-height: 16px;
+  line-height: 14px;
   color: var(--card-secondary);
   white-space: nowrap;
 }
@@ -782,7 +782,7 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-probe-row__viz-delay b {
-    font-size: 13px;
+    font-size: 11px;
   }
 
   .lite-probe-row__main {
@@ -838,7 +838,7 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-probe-row__viz-delay b {
-    font-size: 12px;
+    font-size: 10px;
   }
 
   .lite-probe-row__viz-loss {
