@@ -479,7 +479,7 @@ html.dark .lite-server-card {
   min-width: 0;
   flex: 1 1 auto;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   height: 14px;
 }
 
@@ -504,8 +504,8 @@ html.dark .lite-server-card {
 }
 
 .lite-latency-bars__bar[data-tone="empty"] {
-  background: var(--card-line);
-  opacity: 0.7;
+  background: var(--card-muted);
+  opacity: 0.55;
 }
 
 .lite-probe-row__delay {
