@@ -510,8 +510,9 @@ html.dark .lite-server-card {
 
 .lite-probe-row__delay {
   display: inline-flex;
-  flex: none;
+  flex: 0 0 70px;
   align-items: baseline;
+  justify-content: flex-end;
   gap: 3px;
   white-space: nowrap;
 }
@@ -545,10 +546,9 @@ html.dark .lite-server-card {
 
 .lite-probe-row__loss {
   display: inline-flex;
-  flex: none;
+  flex: 0 0 44px;
   align-items: baseline;
   justify-content: flex-end;
-  min-width: 44px;
   font-size: 12px;
   font-weight: 550;
   line-height: 18px;
@@ -782,6 +782,18 @@ html.dark .lite-server-card__footer-extra {
   .lite-latency-bars__bar {
     width: 5px;
     height: 5px;
+  }
+
+  .lite-probe-row__delay {
+    flex-basis: 60px;
+  }
+
+  .lite-probe-row__delay b {
+    font-size: 13px;
+  }
+
+  .lite-probe-row__loss {
+    flex-basis: 38px;
   }
 }
 
