@@ -473,9 +473,10 @@ html.dark .lite-server-card {
 /* Probe viz: latency squares and packet-loss circles sit side by side on one
    line, with each numeric value right-aligned directly above its own strip
    (delay above latency, loss percent above the loss circles). The base tier
-   uses 9px bars: one strip is 130px (12 x 9px bars + 2px gaps); the two
-   strips plus a 4px gap make the viz block 264px wide, so the name column
-   hugs the longest return label ("回CN2 GIA", 56px) with room to spare. */
+   uses 6px bars with 5px gaps: one strip is 127px (12 x 6px bars + 5px
+   gaps); the two strips plus a 10px gap make the viz block 264px wide, so
+   the name column hugs the longest return label ("回CN2 GIA", 56px) with
+   room to spare. */
 .lite-probe-row__viz {
   display: flex;
   min-width: 0;
@@ -486,20 +487,20 @@ html.dark .lite-server-card {
 }
 
 .lite-probe-row[data-loss="false"] .lite-probe-row__viz {
-  flex-basis: 130px;
+  flex-basis: 127px;
 }
 
 .lite-probe-row__viz-bars {
   display: flex;
   align-items: center;
-  gap: 4px;
-  height: 9px;
+  gap: 10px;
+  height: 6px;
 }
 
 .lite-probe-row__viz-nums {
   display: flex;
   align-items: baseline;
-  gap: 4px;
+  gap: 10px;
   height: 14px;
 }
 
@@ -508,14 +509,14 @@ html.dark .lite-server-card {
   min-width: 0;
   flex: none;
   align-items: center;
-  gap: 2px;
-  height: 9px;
+  gap: 5px;
+  height: 6px;
 }
 
 .lite-latency-bars__bar {
   flex: none;
-  width: 9px;
-  height: 9px;
+  width: 6px;
+  height: 6px;
   border-radius: 2px;
   background: var(--card-line);
 }
@@ -543,7 +544,7 @@ html.dark .lite-server-card {
 
 .lite-probe-row__viz-delay {
   display: inline-flex;
-  flex: 0 0 130px;
+  flex: 0 0 127px;
   align-items: baseline;
   justify-content: flex-end;
   gap: 3px;
@@ -579,7 +580,7 @@ html.dark .lite-server-card {
 
 .lite-probe-row__viz-loss {
   display: inline-flex;
-  flex: 0 0 130px;
+  flex: 0 0 127px;
   align-items: baseline;
   justify-content: flex-end;
   font-size: 10px;
@@ -806,43 +807,43 @@ html.dark .lite-server-card__footer-extra {
    the name column hugs the label: the viz starts right after the longer of
    the operator name (52px) and the return label. Tiers (container width):
    <=325px: 5px bars, 177px viz; 326-353px: 7px bars, 202px viz; 354-377px:
-   8px bars, 240px viz (row gap 4px); 378-403px: 9px bars, 264px viz;
-   >=404px: 10px bars, 290px viz. */
+   5px bars, 244px viz (row gap 4px); 378-403px: 6px bars, 264px viz;
+   >=404px: 7px bars, 290px viz. */
 @container server-card (min-width: 404px) {
   .lite-probe-row__viz {
     flex-basis: 290px;
   }
 
   .lite-probe-row[data-loss="false"] .lite-probe-row__viz {
-    flex-basis: 142px;
+    flex-basis: 139px;
   }
 
   .lite-probe-row__viz-bars {
-    gap: 6px;
-    height: 10px;
+    gap: 12px;
+    height: 7px;
   }
 
   .lite-probe-row__viz-nums {
-    gap: 6px;
+    gap: 12px;
   }
 
   .lite-latency-bars {
-    gap: 2px;
-    flex-basis: 142px;
-    height: 10px;
+    gap: 5px;
+    flex-basis: 139px;
+    height: 7px;
   }
 
   .lite-latency-bars__bar {
-    width: 10px;
-    height: 10px;
+    width: 7px;
+    height: 7px;
   }
 
   .lite-probe-row__viz-delay {
-    flex-basis: 142px;
+    flex-basis: 139px;
   }
 
   .lite-probe-row__viz-loss {
-    flex-basis: 142px;
+    flex-basis: 139px;
   }
 }
 
@@ -852,39 +853,39 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-probe-row__viz {
-    flex-basis: 240px;
+    flex-basis: 244px;
   }
 
   .lite-probe-row[data-loss="false"] .lite-probe-row__viz {
-    flex-basis: 118px;
+    flex-basis: 115px;
   }
 
   .lite-probe-row__viz-bars {
-    gap: 4px;
-    height: 8px;
+    gap: 14px;
+    height: 5px;
   }
 
   .lite-probe-row__viz-nums {
-    gap: 4px;
+    gap: 14px;
   }
 
   .lite-latency-bars {
-    gap: 2px;
-    flex-basis: 118px;
-    height: 8px;
+    gap: 5px;
+    flex-basis: 115px;
+    height: 5px;
   }
 
   .lite-latency-bars__bar {
-    width: 8px;
-    height: 8px;
+    width: 5px;
+    height: 5px;
   }
 
   .lite-probe-row__viz-delay {
-    flex-basis: 118px;
+    flex-basis: 115px;
   }
 
   .lite-probe-row__viz-loss {
-    flex-basis: 118px;
+    flex-basis: 115px;
   }
 }
 
