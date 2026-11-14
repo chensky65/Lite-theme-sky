@@ -808,7 +808,7 @@ html.dark .lite-server-card__footer-extra {
    the operator name (52px) and the return label. Tiers (container width):
    <=325px: 5px bars, 177px viz; 326-353px: 7px bars, 202px viz; 354-377px:
    5px bars, 244px viz (row gap 4px); 378-403px: 6px bars, 264px viz;
-   >=404px: 7px bars, 290px viz. */
+   >=404px: 7px bars, 290px viz; 326-353px: 4px bars, 214px viz. */
 @container server-card (min-width: 404px) {
   .lite-probe-row__viz {
     flex-basis: 290px;
@@ -895,38 +895,38 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-probe-row__viz {
-    flex-basis: 202px;
+    flex-basis: 214px;
     gap: 2px;
   }
 
   .lite-probe-row[data-loss="false"] .lite-probe-row__viz {
-    flex-basis: 95px;
+    flex-basis: 103px;
   }
 
   .lite-probe-row__viz-bars {
-    gap: 12px;
+    gap: 8px;
   }
 
   .lite-probe-row__viz-nums {
-    gap: 12px;
+    gap: 8px;
   }
 
   .lite-latency-bars {
-    gap: 1px;
-    flex-basis: 95px;
+    gap: 5px;
+    flex-basis: 103px;
   }
 
   .lite-latency-bars__bar {
-    width: 7px;
-    height: 7px;
+    width: 4px;
+    height: 4px;
   }
 
   .lite-probe-row__viz-delay {
-    flex-basis: 95px;
+    flex-basis: 103px;
   }
 
   .lite-probe-row__viz-loss {
-    flex-basis: 95px;
+    flex-basis: 103px;
   }
 }
 
