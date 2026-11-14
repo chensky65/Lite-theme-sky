@@ -473,12 +473,13 @@ html.dark .lite-server-card {
 /* Probe viz: latency squares and packet-loss circles sit side by side on one
    line, with each numeric value right-aligned directly above its own strip
    (delay above latency, loss percent above the loss circles). One strip is
-   118px (12 x 8px bars + 2px gaps); the two strips plus an 8px gap make the
-   viz block 244px wide. */
+   118px (12 x 8px bars + 2px gaps); the two strips plus a 20px gap make the
+   viz block 252px wide, so the name column hugs the longest return label
+   ("回 · CN2 GIA", 64px, up to 70px on wider fonts) with room to spare. */
 .lite-probe-row__viz {
   display: flex;
   min-width: 0;
-  flex: 0 0 244px;
+  flex: 0 0 252px;
   flex-direction: column;
   justify-content: center;
   gap: 2px;
@@ -491,14 +492,14 @@ html.dark .lite-server-card {
 .lite-probe-row__viz-bars {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 16px;
   height: 8px;
 }
 
 .lite-probe-row__viz-nums {
   display: flex;
   align-items: baseline;
-  gap: 8px;
+  gap: 16px;
   height: 14px;
 }
 
@@ -797,16 +798,22 @@ html.dark .lite-server-card__footer-extra {
 }
 
 /* Probe bars scale with the card (container) width so the return-route
-   label (75px) always fits. The container is .lite-server-card itself
-   (no padding); the body adds 21px each side and the row 2px, so the
-   row content is container - 46px. To keep 8px bars on mid cards
-   without dropping any words, the bar gap is 1px there (strip 107px,
-   viz 224px) instead of 2px. Tiers (container width): <=325px: 5px
-   bars, 170px viz; 326-353px: 7px bars, 196px viz; 354-377px: 8px bars,
-   224px viz; >=378px: 8px bars, 244px viz. */
+   label ("回 · CN2 GIA", 64px, 70px on wider fonts) always fits. The container
+   is .lite-server-card itself (no padding); the body adds 21px each side and
+   the row 2px, so the row content is container - 46px. To keep 8px bars on
+   mid cards without dropping any words, the bar gap is 1px there (strip
+   107px, viz 232px) instead of 2px. The viz is widened by the strip gap so
+   the name column hugs the label: the viz starts right after the longer of
+   the operator name (52px) and the return label. Tiers (container width):
+   <=325px: 5px bars, 177px viz; 326-353px: 7px bars, 202px viz; 354-377px:
+   8px bars, 236px viz (row gap 4px); >=378px: 8px bars, 252px viz. */
 @container server-card (min-width: 354px) and (max-width: 377px) {
+  .lite-probe-row {
+    gap: 4px;
+  }
+
   .lite-probe-row__viz {
-    flex-basis: 220px;
+    flex-basis: 236px;
   }
 
   .lite-probe-row[data-loss="false"] .lite-probe-row__viz {
@@ -814,11 +821,11 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-probe-row__viz-bars {
-    gap: 6px;
+    gap: 22px;
   }
 
   .lite-probe-row__viz-nums {
-    gap: 6px;
+    gap: 22px;
   }
 
   .lite-latency-bars {
@@ -846,7 +853,7 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-probe-row__viz {
-    flex-basis: 194px;
+    flex-basis: 202px;
     gap: 2px;
   }
 
@@ -855,11 +862,11 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-probe-row__viz-bars {
-    gap: 4px;
+    gap: 12px;
   }
 
   .lite-probe-row__viz-nums {
-    gap: 4px;
+    gap: 12px;
   }
 
   .lite-latency-bars {
@@ -892,7 +899,7 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-probe-row__viz {
-    flex-basis: 170px;
+    flex-basis: 177px;
     gap: 2px;
   }
 
@@ -901,11 +908,11 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-probe-row__viz-bars {
-    gap: 6px;
+    gap: 13px;
   }
 
   .lite-probe-row__viz-nums {
-    gap: 6px;
+    gap: 13px;
   }
 
   .lite-latency-bars {
