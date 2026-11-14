@@ -14,7 +14,7 @@ export default function PacketLossHistoryBars({
   label?: string
 }) {
   return (
-    <span className="lite-latency-bars" role="img" aria-label={label}>
+    <span className="lite-latency-bars lite-latency-bars--loss" role="img" aria-label={label}>
       {values.map((value, index) => {
         const tone = lossBarTone(value)
         const title =

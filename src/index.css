@@ -500,6 +500,10 @@ html.dark .lite-server-card {
   background: var(--card-line);
 }
 
+.lite-latency-bars--loss .lite-latency-bars__bar {
+  border-radius: 50%;
+}
+
 .lite-latency-bars__bar[data-tone="green"] {
   background: var(--card-green);
 }
