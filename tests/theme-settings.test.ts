@@ -95,16 +95,16 @@ test("hides the six homepage overview cards on phones unless the theme switch is
   assert.match(String(setting?.help || ""), /始终显示/)
 })
 
-test("shows homepage packet loss in each probe mini-card only when the theme switch is on", () => {
+test("shows homepage packet loss in each probe row when the theme switch is on", () => {
   const setting = settings.find((item) => item.key === "ShowHomePacketLoss")
   const latency = readFileSync(new URL("../src/components/ServerLatencySummary.tsx", import.meta.url), "utf8")
   assert.equal(setting?.type, "switch")
-  assert.equal(setting?.default, false)
+  assert.equal(setting?.default, true)
   assert.match(latency, /readShowHomePacketLoss/)
   assert.match(latency, /showPacketLoss/)
   assert.match(latency, /serverCard.packetLoss/)
   assert.match(latency, /formatProbePacketLoss/)
-  assert.match(latency, /lite-probe-chip__loss/)
+  assert.match(latency, /lite-probe-row__loss/)
   assert.match(latency, /data-loss=\{showPacketLoss \? "true" : "false"\}/)
 })
 
@@ -137,20 +137,20 @@ test("hides empty homepage probe windows only when the theme switch is on", () =
   assert.equal(settings.findIndex((item) => item.key === "ShowHomeReturnRoute"), settings.findIndex((item) => item.name === "探测任务") - 1)
 })
 
-test("shows return-route names on probe mini-cards only when the theme switch is on", () => {
+test("shows return-route names on probe rows when the theme switch is on", () => {
   const setting = settings.find((item) => item.key === "ShowHomeReturnRoute")
   const latency = readFileSync(new URL("../src/components/ServerLatencySummary.tsx", import.meta.url), "utf8")
   const config = readFileSync(new URL("../src/lib/theme-config.ts", import.meta.url), "utf8")
   assert.equal(setting?.type, "switch")
-  assert.equal(setting?.default, false)
+  assert.equal(setting?.default, true)
   assert.match(String(setting?.help || ""), /回程线路监测/)
   assert.match(String(setting?.help || ""), /参与疑似被墙判定/)
   assert.match(String(setting?.help || ""), /辅助延迟监测任务/)
   assert.match(config, /readShowHomeReturnRoute/)
   assert.match(latency, /readShowHomeReturnRoute/)
   assert.match(latency, /returnLineForPingTask/)
-  assert.match(latency, /lite-probe-chip__tag/)
-  assert.doesNotMatch(latency, /serverCard.returnRouteTag/)
+  assert.match(latency, /lite-probe-row__return/)
+  assert.match(latency, /serverCard.returnRouteTag/)
 })
 
 test("lets admins pick homepage probe tasks per server", () => {

@@ -43,19 +43,17 @@ test("maps public return routes without private probe fields", () => {
   assert.equal(hasPublicReturnRoute(returnRouteForServer(mapped, "node-b")), false)
 })
 
-test("homepage cards load public return routes onto matching ping-task chips", () => {
+test("homepage cards load public return routes onto matching ping-task rows", () => {
   assert.match(api, /public:getPublicReturnRoutes/)
   assert.match(page, /fetchPublicReturnRoutes/)
   assert.match(page, /returnRouteForServer/)
   assert.match(card, /returnRoute=\{returnRoute\}/)
   assert.match(latency, /returnLineForPingTask/)
-  assert.match(latency, /lite-probe-chip__tag/)
+  assert.match(latency, /lite-probe-row__return/)
   assert.doesNotMatch(latency, /reserveReturnSlot/)
-  assert.match(latency, /keepReturnRow=\{hasAnyReturn && displayed.length < 4\}/)
-  assert.match(latency, /lite-probe-chip__slot/)
   assert.match(latency, /data-return=\{hasAnyReturn \? "true" : "false"\}/)
   assert.match(latency, /probeAccentIndex\(summary.taskId, accentIds\)/)
-  assert.doesNotMatch(latency, /serverCard.returnRouteTag/)
+  assert.match(latency, /serverCard.returnRouteTag/)
   assert.doesNotMatch(card, /lite-server-card__routes/)
   assert.doesNotMatch(card, /expected_line|ip_version|route_path|asn_path/)
   assert.doesNotMatch(page, /expected_line|ip_version/)
