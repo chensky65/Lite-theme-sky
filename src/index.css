@@ -445,7 +445,7 @@ html.dark .lite-server-card {
 .lite-probe-row__main {
   display: flex;
   min-width: 0;
-  flex: 0 1 110px;
+  flex: 1 1 110px;
   flex-direction: column;
   gap: 1px;
 }
