@@ -64,7 +64,7 @@
         "key": "ShowHomePacketLoss",
         "name": "显示丢包率",
         "type": "switch",
-        "default": false,
+        "default": true,
         "help": "打开后在首页卡片的网络质量里显示每条探测的丢包率。"
       },
       {
@@ -99,7 +99,7 @@
         "key": "ShowHomeReturnRoute",
         "name": "回程线路展示",
         "type": "switch",
-        "default": false,
+        "default": true,
         "help": "打开后在首页卡片的探测任务上显示回程线路名称。需搭配 Lite 2.3.10 同版本第四次更新及以后版本。还需要在回程线路监测中开启「参与疑似被墙判定」并绑定辅助延迟监测任务，否则不会有数据。"
       },
       { "name": "探测任务", "type": "title" },

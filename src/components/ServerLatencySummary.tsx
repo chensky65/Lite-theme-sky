@@ -1,3 +1,4 @@
+import LatencyHistoryBars from "@/components/LatencyHistoryBars"
 import {
   HOME_LATENCY_CARD_LIMIT,
   type HomeLatencyTaskSummary,
@@ -12,12 +13,11 @@ import { readShowHomePacketLoss, readShowHomeReturnRoute } from "@/lib/theme-con
 import { useEffect, useRef } from "react"
 import { useTranslation } from "react-i18next"
 
-function TaskProbe({
+function TaskProbeRow({
   summary,
   returnLine,
   accentIds,
   showPacketLoss,
-  keepReturnRow,
   onSelect,
   onPress,
 }: {
@@ -25,7 +25,6 @@ function TaskProbe({
   returnLine: string
   accentIds: readonly string[]
   showPacketLoss: boolean
-  keepReturnRow: boolean
   onSelect?: (taskId: string) => void
   onPress?: () => void
 }) {
@@ -36,9 +35,10 @@ function TaskProbe({
   const percent = hourPacketFillPercent(summary)
   const lossLabel = t("serverCard.packetLoss")
   const latencyLabel = latency.unit ? `${latency.value} ${latency.unit}` : latency.value
+  const returnLabel = returnLine ? t("serverCard.returnRouteTag", { line: returnLine }) : ""
   const title = [
     summary.taskName,
-    returnLine,
+    returnLabel,
     latencyLabel,
     showPacketLoss ? `${lossLabel} ${packetLoss}` : "",
     t("serverCard.sampleFill", { percent: percent.toFixed(0) }),
@@ -64,23 +64,24 @@ function TaskProbe({
         event.stopPropagation()
         onSelect(summary.taskId)
       }}
-      className="lite-probe-chip"
+      className="lite-probe-row"
     >
-      <span className="lite-probe-chip__name" title={summary.taskName}>{summary.taskName}</span>
-      {returnLine ? (
-        <span className="lite-probe-chip__tag">{returnLine}</span>
-      ) : keepReturnRow ? (
-        <span className="lite-probe-chip__slot" aria-hidden="true" />
-      ) : null}
-      <span className="lite-probe-chip__delay">
-        <span className="lite-probe-chip__delay-value tabular-nums" data-tone={delayTone}>
-          <b>{latency.value}</b>
-          {latency.unit ? <small>{latency.unit}</small> : null}
-        </span>
+      <span className="lite-probe-row__main">
+        <span className="lite-probe-row__name" title={summary.taskName}>{summary.taskName}</span>
+        {returnLine ? (
+          <span className="lite-probe-row__return" title={returnLabel}>{returnLabel}</span>
+        ) : null}
+      </span>
+      <LatencyHistoryBars
+        values={summary.latencyHistory}
+        label={`${summary.taskName} ${t("serverCard.latency")} ${latencyLabel}`}
+      />
+      <span className="lite-probe-row__delay">
+        <b className="tabular-nums" data-tone={delayTone}>{latency.value}</b>
+        {latency.unit ? <small>{latency.unit}</small> : null}
       </span>
       {showPacketLoss ? (
-        <span className="lite-probe-chip__loss">
-          <span>{lossLabel}</span>
+        <span className="lite-probe-row__loss" title={`${lossLabel} ${packetLoss}`}>
           <b className="tabular-nums">{packetLoss}</b>
         </span>
       ) : null}
@@ -154,13 +155,12 @@ export default function ServerLatencySummary({
           data-return={hasAnyReturn ? "true" : "false"}
         >
           {displayed.map((item, index) => (
-            <TaskProbe
+            <TaskProbeRow
               key={item.taskId}
               summary={item}
               returnLine={returnLines[index] || ""}
               accentIds={accentIds}
               showPacketLoss={showPacketLoss}
-              keepReturnRow={hasAnyReturn && displayed.length < 4}
               onSelect={onSelectTask}
               onPress={() => onPrefetch?.(true)}
             />

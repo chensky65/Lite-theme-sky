@@ -387,116 +387,71 @@ html.dark .lite-server-card {
   color: var(--card-muted);
 }
 
+/* Probes: Komari-style vertical list. Each row shows the probe name (plus
+   the return-route line when available), a latency history strip, the
+   current delay and the packet loss, matching the Komari SAO row layout. */
 .lite-server-card__probes {
-  --probe-rows: 2;
-  display: grid;
+  display: flex;
   min-width: 0;
-  min-height: 0;
   flex: 1 1 auto;
-  align-items: stretch;
-  column-gap: 0;
-  padding-bottom: 4px;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: 6px;
 }
 
-.lite-server-card__probes[data-return="true"] {
-  --probe-rows: 3;
-}
-
-.lite-server-card__probes[data-loss="true"] {
-  --probe-rows: 3;
-}
-
-.lite-server-card__probes[data-loss="false"] {
-  padding-bottom: 14px;
-}
-
-.lite-server-card__probes[data-return="true"][data-loss="true"] {
-  --probe-rows: 4;
-}
-
-.lite-server-card__probes[data-count="1"] {
-  grid-template-columns: minmax(0, 1fr);
-}
-
-.lite-server-card__probes[data-count="2"] {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-}
-
-.lite-server-card__probes[data-count="3"] {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-}
-
-.lite-server-card__probes[data-count="4"] {
-  align-items: stretch;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0;
-  padding-bottom: 0;
-}
-
-.lite-server-card__probes[data-count="4"][data-loss="false"] {
-  padding-bottom: 10px;
-}
-
-.lite-probe-chip {
+.lite-probe-row {
   --probe-accent: #159C82;
   --probe-chip: #EAF7F3;
   display: flex;
   width: 100%;
   min-width: 0;
-  flex-shrink: 0;
-  flex-direction: column;
   align-items: center;
-  padding: 0;
+  gap: 10px;
+  padding: 7px 2px;
   border: 0;
+  border-bottom: 1px solid var(--card-line);
   background: transparent;
   color: inherit;
   font: inherit;
-  text-align: center;
+  text-align: left;
   cursor: pointer;
 }
 
-.lite-server-card__probes[data-count="1"] .lite-probe-chip,
-.lite-server-card__probes[data-count="2"] .lite-probe-chip,
-.lite-server-card__probes[data-count="3"] .lite-probe-chip {
-  display: grid;
-  height: 100%;
-  grid-template-rows: subgrid;
-  grid-row: span var(--probe-rows);
-  justify-items: center;
-  align-items: start;
+.lite-probe-row:last-child {
+  border-bottom: 0;
 }
 
-.lite-server-card__probes[data-count="1"] .lite-probe-chip__delay,
-.lite-server-card__probes[data-count="2"] .lite-probe-chip__delay,
-.lite-server-card__probes[data-count="3"] .lite-probe-chip__delay {
-  justify-self: stretch;
-}
-
-.lite-probe-chip[data-accent="1"] {
+.lite-probe-row[data-accent="1"] {
   --probe-accent: #347DDF;
   --probe-chip: #EDF4FF;
 }
 
-.lite-probe-chip[data-accent="2"] {
+.lite-probe-row[data-accent="2"] {
   --probe-accent: #8264D5;
   --probe-chip: #F2EEFC;
 }
 
-.lite-probe-chip[data-accent="3"] {
+.lite-probe-row[data-accent="3"] {
   --probe-accent: #D45C87;
   --probe-chip: #FCEFF5;
 }
 
-.lite-probe-chip:focus-visible {
+.lite-probe-row:focus-visible {
   outline: 2px solid var(--probe-accent);
-  outline-offset: 4px;
-  border-radius: 10px;
+  outline-offset: 2px;
+  border-radius: 8px;
 }
 
-.lite-probe-chip__name {
+.lite-probe-row__main {
+  display: flex;
+  min-width: 0;
+  flex: 0 1 122px;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.lite-probe-row__name {
   overflow: hidden;
-  max-width: 100%;
-  padding-inline: 10px;
   font-size: 13px;
   font-weight: 550;
   line-height: 18px;
@@ -505,258 +460,105 @@ html.dark .lite-server-card {
   white-space: nowrap;
 }
 
-.lite-probe-chip__tag {
-  display: inline-flex;
-  align-self: center;
-  max-width: calc(100% - 16px);
-  min-height: 20px;
-  margin-top: 8px;
+.lite-probe-row__return {
   overflow: hidden;
-  padding: 1px 8px;
-  border-radius: 999px;
-  background: var(--probe-chip);
-  color: var(--probe-accent);
+  max-width: 100%;
   font-size: 11px;
-  font-weight: 600;
-  line-height: 18px;
+  line-height: 15px;
+  color: var(--probe-accent);
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.lite-probe-chip__tag.is-empty,
-.lite-probe-chip__slot {
-  display: block;
-  width: 100%;
-  min-height: 0;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background: transparent;
-  color: transparent;
-  pointer-events: none;
-}
-
-.lite-probe-chip__delay {
+/* Latency history strip: one bar per 5-minute bucket, color by the same
+   tone thresholds as the numeric delay (green <= 80ms, amber <= 180ms,
+   coral above). Valid samples share one height so severity reads from
+   color; missing samples render as a short muted bar. */
+.lite-latency-bars {
   display: flex;
-  width: 100%;
   min-width: 0;
-  flex: none;
-  align-items: center;
-  justify-content: center;
-  margin-top: 12px;
-  padding-top: 14px;
-  overflow: visible;
-  border-top: 1px solid var(--card-line);
+  flex: 1 1 auto;
+  align-items: flex-end;
+  gap: 2px;
+  height: 14px;
 }
 
-.lite-probe-chip__delay-value {
+.lite-latency-bars__bar {
+  flex: 1 1 0;
+  min-width: 2px;
+  height: 12px;
+  border-radius: 2px;
+  background: var(--card-line);
+}
+
+.lite-latency-bars__bar[data-tone="green"] {
+  background: var(--card-green);
+}
+
+.lite-latency-bars__bar[data-tone="amber"] {
+  background: var(--card-amber);
+}
+
+.lite-latency-bars__bar[data-tone="coral"] {
+  background: var(--card-danger);
+}
+
+.lite-latency-bars__bar[data-tone="empty"] {
+  height: 4px;
+  background: var(--card-line);
+  opacity: 0.7;
+}
+
+.lite-probe-row__delay {
   display: inline-flex;
-  max-width: 100%;
-  min-width: 0;
-  align-items: baseline;
-  justify-content: center;
-  gap: 4px;
-  overflow: visible;
-  white-space: nowrap;
-}
-
-.lite-probe-chip__delay-value b,
-.lite-probe-chip__delay-value small {
   flex: none;
+  align-items: baseline;
+  gap: 3px;
   white-space: nowrap;
 }
 
-.lite-probe-chip__delay-value b {
-  font-size: 24px;
+.lite-probe-row__delay b {
+  font-size: 15px;
   font-weight: 650;
   line-height: 1;
-  letter-spacing: -0.4px;
+  letter-spacing: -0.2px;
   color: var(--card-amber);
 }
 
-.lite-probe-chip__delay-value[data-tone="green"] b {
+.lite-probe-row__delay b[data-tone="green"] {
   color: var(--card-green);
 }
 
-.lite-probe-chip__delay-value[data-tone="coral"] b {
+.lite-probe-row__delay b[data-tone="coral"] {
   color: var(--card-danger);
 }
 
-.lite-probe-chip__delay-value[data-tone="empty"] b,
-.lite-probe-chip__delay-value:not(:has(small)) b {
+.lite-probe-row__delay b[data-tone="empty"] {
   color: var(--card-muted);
 }
 
-.lite-probe-chip__delay-value small {
+.lite-probe-row__delay small {
   font-size: 11px;
   font-weight: 400;
   line-height: 1;
   color: var(--card-muted);
 }
 
-.lite-probe-chip__loss {
-  display: flex;
-  min-width: 0;
-  align-items: baseline;
-  justify-content: center;
-  gap: 6px;
-  margin-top: 12px;
-  overflow: hidden;
-  padding-inline: 6px;
-  min-height: 20px;
-  font-size: 12px;
-  line-height: 18px;
-  color: var(--card-muted);
-  white-space: nowrap;
-}
-
-.lite-probe-chip__loss > span {
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.lite-probe-chip__loss b {
+.lite-probe-row__loss {
+  display: inline-flex;
   flex: none;
-  overflow: hidden;
-  font-weight: 550;
-  color: var(--card-secondary);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.lite-server-card__probes[data-count="3"] .lite-probe-chip__name {
-  padding-inline: 6px;
-  font-size: 12px;
-  line-height: 16px;
-}
-
-.lite-server-card__probes[data-count="3"] .lite-probe-chip__tag {
-  min-height: 16px;
-  margin-top: 6px;
-  padding: 0 6px;
-  font-size: 10px;
-  line-height: 16px;
-}
-
-.lite-server-card__probes[data-count="3"] .lite-probe-chip__delay-value b {
-  font-size: 20px;
-  letter-spacing: -0.3px;
-}
-
-.lite-server-card__probes[data-count="3"] .lite-probe-chip__delay-value small {
-  font-size: 10px;
-}
-
-.lite-server-card__probes[data-count="3"] .lite-probe-chip__loss {
-  margin-top: 10px;
-  min-height: 20px;
-  font-size: 11px;
-  line-height: 18px;
-}
-
-.lite-server-card__probes[data-count="4"] .lite-probe-chip {
-  display: grid;
-  min-height: 100%;
-  grid-template-columns: minmax(0, 1fr) auto;
-  grid-template-areas:
-    "name tag"
-    "delay loss";
-  align-items: last baseline;
-  align-content: space-between;
-  column-gap: 6px;
-  row-gap: 8px;
-  padding: 12px 12px;
-  text-align: left;
-}
-
-.lite-server-card__probes[data-count="4"] .lite-probe-chip:nth-child(odd) {
-  border-right: 1px solid var(--card-line);
-}
-
-.lite-server-card__probes[data-count="4"] .lite-probe-chip:nth-child(-n+2) {
-  border-bottom: 1px solid var(--card-line);
-}
-
-.lite-server-card__probes[data-count="4"] .lite-probe-chip[data-return="false"] {
-  grid-template-areas:
-    "name name"
-    "delay loss";
-}
-
-.lite-server-card__probes[data-count="4"] .lite-probe-chip[data-loss="false"] {
-  grid-template-areas:
-    "name tag"
-    "delay delay";
-}
-
-.lite-server-card__probes[data-count="4"] .lite-probe-chip[data-return="false"][data-loss="false"] {
-  grid-template-areas:
-    "name name"
-    "delay delay";
-}
-
-.lite-server-card__probes[data-count="4"] .lite-probe-chip__name {
-  grid-area: name;
-  padding-inline: 0;
-}
-
-.lite-server-card__probes[data-count="4"] .lite-probe-chip__tag {
-  grid-area: tag;
-  align-self: center;
-  max-width: 100%;
-  margin-top: 0;
-}
-
-.lite-server-card__probes[data-count="4"] .lite-probe-chip__delay {
-  grid-area: delay;
-  align-self: end;
-  min-width: 0;
   align-items: baseline;
-  justify-content: flex-start;
-  margin-top: 0;
-  padding-top: 0;
-  border-top: 0;
-}
-
-.lite-server-card__probes[data-count="4"] .lite-probe-chip__delay-value {
-  min-width: 0;
-  justify-content: flex-start;
-}
-
-.lite-server-card__probes[data-count="4"] .lite-probe-chip__delay-value b {
-  font-size: 20px;
-  letter-spacing: -0.3px;
-}
-
-.lite-server-card__probes[data-count="4"] .lite-probe-chip__delay-value small {
-  font-size: 10px;
-}
-
-.lite-server-card__probes[data-count="4"] .lite-probe-chip__loss {
-  grid-area: loss;
-  align-self: end;
-  flex: none;
-  flex-direction: column;
-  align-items: flex-end;
   justify-content: flex-end;
-  gap: 1px;
-  margin-top: 0;
-  padding-inline: 0;
-  font-size: 10px;
-  line-height: 13px;
-  text-align: right;
+  min-width: 44px;
+  font-size: 12px;
+  font-weight: 550;
+  line-height: 18px;
+  color: var(--card-secondary);
+  white-space: nowrap;
 }
 
-html.dark .lite-probe-chip__tag {
-  background: color-mix(in srgb, var(--probe-accent) 22%, #1b2634);
-}
-
-html.dark .lite-probe-chip__tag.is-empty,
-html.dark .lite-probe-chip__slot {
-  background: transparent;
-  color: transparent;
+html.dark .lite-probe-row__return {
+  color: var(--probe-accent);
 }
 
 .lite-server-card__tone--traffic { color: var(--card-traffic); }
@@ -948,13 +750,12 @@ html.dark .lite-server-card__footer-extra {
     column-gap: 14px;
   }
 
-  .lite-server-card__probes[data-count="3"] .lite-probe-chip__delay-value b {
-    font-size: 18px;
+  .lite-probe-row__delay b {
+    font-size: 14px;
   }
 
-  .lite-server-card__probes[data-count="1"] .lite-probe-chip__delay-value b,
-  .lite-server-card__probes[data-count="2"] .lite-probe-chip__delay-value b {
-    font-size: 22px;
+  .lite-probe-row__main {
+    flex-basis: 96px;
   }
 
   .lite-server-card__quota,
@@ -965,8 +766,13 @@ html.dark .lite-server-card__footer-extra {
 }
 
 @container server-card (max-width: 299px) {
-  .lite-server-card__probes[data-count="4"] .lite-probe-chip {
-    padding: 10px 10px;
+  .lite-probe-row {
+    gap: 8px;
+    padding: 6px 0;
+  }
+
+  .lite-probe-row__main {
+    flex-basis: 76px;
   }
 }
 

@@ -18,11 +18,11 @@ export function readShowServerBandwidth(): boolean {
 }
 
 export function readShowHomePacketLoss(): boolean {
-  return readThemeBoolean("ShowHomePacketLoss", false)
+  return readThemeBoolean("ShowHomePacketLoss", true)
 }
 
 export function readShowHomeReturnRoute(): boolean {
-  return readThemeBoolean("ShowHomeReturnRoute", false)
+  return readThemeBoolean("ShowHomeReturnRoute", true)
 }
 
 export function readShowServerRemainingValue(): boolean {
