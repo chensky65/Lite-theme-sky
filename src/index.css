@@ -406,7 +406,7 @@ html.dark .lite-server-card {
   width: 100%;
   min-width: 0;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   padding: 7px 2px;
   border: 0;
   border-bottom: 1px solid var(--card-line);
@@ -445,7 +445,7 @@ html.dark .lite-server-card {
 .lite-probe-row__main {
   display: flex;
   min-width: 0;
-  flex: 0 0 122px;
+  flex: 0 1 110px;
   flex-direction: column;
   gap: 1px;
 }
@@ -477,7 +477,7 @@ html.dark .lite-server-card {
 .lite-latency-bars {
   display: flex;
   min-width: 0;
-  flex: 0 0 106px;
+  flex: 0 0 94px;
   align-items: center;
   gap: 2px;
   height: 14px;
@@ -485,8 +485,8 @@ html.dark .lite-server-card {
 
 .lite-latency-bars__bar {
   flex: none;
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 2px;
   background: var(--card-line);
 }
@@ -766,7 +766,7 @@ html.dark .lite-server-card__footer-extra {
 
 @container server-card (max-width: 299px) {
   .lite-probe-row {
-    gap: 8px;
+    gap: 6px;
     padding: 6px 0;
   }
 
@@ -775,13 +775,13 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-latency-bars {
-    flex-basis: 94px;
+    flex-basis: 82px;
     gap: 2px;
   }
 
   .lite-latency-bars__bar {
-    width: 6px;
-    height: 6px;
+    width: 5px;
+    height: 5px;
   }
 }
 
