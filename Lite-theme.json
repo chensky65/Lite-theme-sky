@@ -3,7 +3,7 @@
   "short": "lite-theme",
   "description": "基于 Lite 官方主题，首页探针改为 Komari 风格延迟行（小方点）并默认显示回程与丢包率。",
   "version": "1.3.0",
-  "author": "chensky65",
+  "author": "sky",
   "url": "https://github.com/chensky65/Lite-theme-sky",
   "preview": "preview.png",
   "navigation": {

@@ -470,17 +470,36 @@ html.dark .lite-server-card {
   white-space: nowrap;
 }
 
-/* Latency history dots: one small square per 5-minute bucket, color by the
-   same tone thresholds as the numeric delay (green <= 80ms, amber <= 180ms,
-   coral above). All dots share one size so severity reads from color only;
-   missing samples render as a muted dot. */
-.lite-probe-row__bars {
+/* Probe viz: latency squares and packet-loss circles sit side by side on one
+   line, with each numeric value right-aligned directly under its own strip
+   (delay under latency, loss percent under the loss circles). One strip is
+   94px (12 x 6px bars + 2px gaps); the two strips plus an 8px gap make the
+   viz block 196px wide. */
+.lite-probe-row__viz {
   display: flex;
   min-width: 0;
-  flex: 0 0 94px;
+  flex: 0 0 196px;
   flex-direction: column;
   justify-content: center;
   gap: 2px;
+}
+
+.lite-probe-row[data-loss="false"] .lite-probe-row__viz {
+  flex-basis: 94px;
+}
+
+.lite-probe-row__viz-bars {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 6px;
+}
+
+.lite-probe-row__viz-nums {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  height: 18px;
 }
 
 .lite-latency-bars {
@@ -521,16 +540,16 @@ html.dark .lite-server-card {
   opacity: 0.55;
 }
 
-.lite-probe-row__delay {
+.lite-probe-row__viz-delay {
   display: inline-flex;
-  flex: 0 0 70px;
+  flex: 0 0 94px;
   align-items: baseline;
   justify-content: flex-end;
   gap: 3px;
   white-space: nowrap;
 }
 
-.lite-probe-row__delay b {
+.lite-probe-row__viz-delay b {
   font-size: 15px;
   font-weight: 650;
   line-height: 1;
@@ -538,28 +557,28 @@ html.dark .lite-server-card {
   color: var(--card-amber);
 }
 
-.lite-probe-row__delay b[data-tone="green"] {
+.lite-probe-row__viz-delay b[data-tone="green"] {
   color: var(--card-green);
 }
 
-.lite-probe-row__delay b[data-tone="coral"] {
+.lite-probe-row__viz-delay b[data-tone="coral"] {
   color: var(--card-danger);
 }
 
-.lite-probe-row__delay b[data-tone="empty"] {
+.lite-probe-row__viz-delay b[data-tone="empty"] {
   color: var(--card-muted);
 }
 
-.lite-probe-row__delay small {
+.lite-probe-row__viz-delay small {
   font-size: 11px;
   font-weight: 400;
   line-height: 1;
   color: var(--card-muted);
 }
 
-.lite-probe-row__loss {
+.lite-probe-row__viz-loss {
   display: inline-flex;
-  flex: 0 0 44px;
+  flex: 0 0 94px;
   align-items: baseline;
   justify-content: flex-end;
   font-size: 12px;
@@ -762,7 +781,7 @@ html.dark .lite-server-card__footer-extra {
     column-gap: 14px;
   }
 
-  .lite-probe-row__delay b {
+  .lite-probe-row__viz-delay b {
     font-size: 14px;
   }
 
@@ -787,12 +806,26 @@ html.dark .lite-server-card__footer-extra {
     flex-basis: 76px;
   }
 
-  .lite-probe-row__bars {
+  .lite-probe-row__viz {
+    flex-basis: 164px;
+    gap: 2px;
+  }
+
+  .lite-probe-row[data-loss="false"] .lite-probe-row__viz {
     flex-basis: 82px;
+  }
+
+  .lite-probe-row__viz-bars {
+    gap: 6px;
+  }
+
+  .lite-probe-row__viz-nums {
+    gap: 6px;
   }
 
   .lite-latency-bars {
     gap: 2px;
+    flex-basis: 79px;
   }
 
   .lite-latency-bars__bar {
@@ -800,16 +833,16 @@ html.dark .lite-server-card__footer-extra {
     height: 5px;
   }
 
-  .lite-probe-row__delay {
-    flex-basis: 60px;
+  .lite-probe-row__viz-delay {
+    flex-basis: 79px;
   }
 
-  .lite-probe-row__delay b {
+  .lite-probe-row__viz-delay b {
     font-size: 13px;
   }
 
-  .lite-probe-row__loss {
-    flex-basis: 38px;
+  .lite-probe-row__viz-loss {
+    flex-basis: 79px;
   }
 }
 

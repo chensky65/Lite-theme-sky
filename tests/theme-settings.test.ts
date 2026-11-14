@@ -21,7 +21,7 @@ test("publishes the independent Lite-Theme identity", () => {
   assert.equal(manifest.name, "Lite-Theme-Sky")
   assert.equal(manifest.short, "lite-theme")
   assert.equal(manifest.version, "1.3.0")
-  assert.equal(manifest.author, "chensky65")
+  assert.equal(manifest.author, "sky")
   assert.equal(manifest.url, "https://github.com/chensky65/Lite-theme-sky")
   assert.equal(manifest.preview, "preview.png")
   assert.equal(manifest.upstream, undefined)
@@ -104,7 +104,7 @@ test("shows homepage packet loss in each probe row when the theme switch is on",
   assert.match(latency, /showPacketLoss/)
   assert.match(latency, /serverCard.packetLoss/)
   assert.match(latency, /formatProbePacketLoss/)
-  assert.match(latency, /lite-probe-row__loss/)
+  assert.match(latency, /lite-probe-row__viz-loss/)
   assert.match(latency, /data-loss=\{showPacketLoss \? "true" : "false"\}/)
 })
 

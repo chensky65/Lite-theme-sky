@@ -73,27 +73,31 @@ function TaskProbeRow({
           <span className="lite-probe-row__return" title={returnLabel}>{returnLabel}</span>
         ) : null}
       </span>
-      <span className="lite-probe-row__bars">
-        <LatencyHistoryBars
-          values={summary.latencyHistory}
-          label={`${summary.taskName} ${t("serverCard.latency")} ${latencyLabel}`}
-        />
-        {showPacketLoss ? (
-          <PacketLossHistoryBars
-            values={summary.packetLossHistory}
-            label={`${summary.taskName} ${lossLabel} ${packetLoss}`}
+      <span className="lite-probe-row__viz">
+        <span className="lite-probe-row__viz-bars">
+          <LatencyHistoryBars
+            values={summary.latencyHistory}
+            label={`${summary.taskName} ${t("serverCard.latency")} ${latencyLabel}`}
           />
-        ) : null}
-      </span>
-      <span className="lite-probe-row__delay">
-        <b className="tabular-nums" data-tone={delayTone}>{latency.value}</b>
-        {latency.unit ? <small>{latency.unit}</small> : null}
-      </span>
-      {showPacketLoss ? (
-        <span className="lite-probe-row__loss" title={`${lossLabel} ${packetLoss}`}>
-          <b className="tabular-nums">{packetLoss}</b>
+          {showPacketLoss ? (
+            <PacketLossHistoryBars
+              values={summary.packetLossHistory}
+              label={`${summary.taskName} ${lossLabel} ${packetLoss}`}
+            />
+          ) : null}
         </span>
-      ) : null}
+        <span className="lite-probe-row__viz-nums">
+          <span className="lite-probe-row__viz-delay">
+            <b className="tabular-nums" data-tone={delayTone}>{latency.value}</b>
+            {latency.unit ? <small>{latency.unit}</small> : null}
+          </span>
+          {showPacketLoss ? (
+            <span className="lite-probe-row__viz-loss" title={`${lossLabel} ${packetLoss}`}>
+              <b className="tabular-nums">{packetLoss}</b>
+            </span>
+          ) : null}
+        </span>
+      </span>
     </button>
   )
 }
