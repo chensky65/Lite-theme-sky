@@ -470,23 +470,23 @@ html.dark .lite-server-card {
   white-space: nowrap;
 }
 
-/* Latency history strip: one bar per 5-minute bucket, color by the same
-   tone thresholds as the numeric delay (green <= 80ms, amber <= 180ms,
-   coral above). Valid samples share one height so severity reads from
-   color; missing samples render as a short muted bar. */
+/* Latency history dots: one small square per 5-minute bucket, color by the
+   same tone thresholds as the numeric delay (green <= 80ms, amber <= 180ms,
+   coral above). All dots share one size so severity reads from color only;
+   missing samples render as a muted dot. */
 .lite-latency-bars {
   display: flex;
   min-width: 0;
   flex: 1 1 auto;
-  align-items: flex-end;
-  gap: 2px;
+  align-items: center;
+  gap: 3px;
   height: 14px;
 }
 
 .lite-latency-bars__bar {
-  flex: 1 1 0;
-  min-width: 2px;
-  height: 12px;
+  flex: none;
+  width: 7px;
+  height: 7px;
   border-radius: 2px;
   background: var(--card-line);
 }
@@ -504,7 +504,6 @@ html.dark .lite-server-card {
 }
 
 .lite-latency-bars__bar[data-tone="empty"] {
-  height: 4px;
   background: var(--card-line);
   opacity: 0.7;
 }
