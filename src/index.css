@@ -471,8 +471,8 @@ html.dark .lite-server-card {
 }
 
 /* Probe viz: latency squares and packet-loss circles sit side by side on one
-   line, with each numeric value right-aligned directly under its own strip
-   (delay under latency, loss percent under the loss circles). One strip is
+   line, with each numeric value right-aligned directly above its own strip
+   (delay above latency, loss percent above the loss circles). One strip is
    94px (12 x 6px bars + 2px gaps); the two strips plus an 8px gap make the
    viz block 196px wide. */
 .lite-probe-row__viz {
@@ -499,7 +499,7 @@ html.dark .lite-server-card {
   display: flex;
   align-items: baseline;
   gap: 8px;
-  height: 18px;
+  height: 16px;
 }
 
 .lite-latency-bars {
@@ -550,7 +550,7 @@ html.dark .lite-server-card {
 }
 
 .lite-probe-row__viz-delay b {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 650;
   line-height: 1;
   letter-spacing: -0.2px;
@@ -570,7 +570,7 @@ html.dark .lite-server-card {
 }
 
 .lite-probe-row__viz-delay small {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 400;
   line-height: 1;
   color: var(--card-muted);
@@ -581,9 +581,9 @@ html.dark .lite-server-card {
   flex: 0 0 94px;
   align-items: baseline;
   justify-content: flex-end;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 550;
-  line-height: 18px;
+  line-height: 16px;
   color: var(--card-secondary);
   white-space: nowrap;
 }
@@ -782,7 +782,7 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-probe-row__viz-delay b {
-    font-size: 14px;
+    font-size: 13px;
   }
 
   .lite-probe-row__main {
@@ -838,7 +838,7 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-probe-row__viz-delay b {
-    font-size: 13px;
+    font-size: 12px;
   }
 
   .lite-probe-row__viz-loss {

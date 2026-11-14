@@ -74,6 +74,17 @@ function TaskProbeRow({
         ) : null}
       </span>
       <span className="lite-probe-row__viz">
+        <span className="lite-probe-row__viz-nums">
+          <span className="lite-probe-row__viz-delay">
+            <b className="tabular-nums" data-tone={delayTone}>{latency.value}</b>
+            {latency.unit ? <small>{latency.unit}</small> : null}
+          </span>
+          {showPacketLoss ? (
+            <span className="lite-probe-row__viz-loss" title={`${lossLabel} ${packetLoss}`}>
+              <b className="tabular-nums">{packetLoss}</b>
+            </span>
+          ) : null}
+        </span>
         <span className="lite-probe-row__viz-bars">
           <LatencyHistoryBars
             values={summary.latencyHistory}
@@ -84,17 +95,6 @@ function TaskProbeRow({
               values={summary.packetLossHistory}
               label={`${summary.taskName} ${lossLabel} ${packetLoss}`}
             />
-          ) : null}
-        </span>
-        <span className="lite-probe-row__viz-nums">
-          <span className="lite-probe-row__viz-delay">
-            <b className="tabular-nums" data-tone={delayTone}>{latency.value}</b>
-            {latency.unit ? <small>{latency.unit}</small> : null}
-          </span>
-          {showPacketLoss ? (
-            <span className="lite-probe-row__viz-loss" title={`${lossLabel} ${packetLoss}`}>
-              <b className="tabular-nums">{packetLoss}</b>
-            </span>
           ) : null}
         </span>
       </span>
