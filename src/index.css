@@ -169,42 +169,73 @@ html {
   --card-bg: #ffffff;
   --card-text: #1c252e;
   --card-secondary: #637381;
-  --card-muted: #919eab;
-  --card-line: #eaf0f5;
-  --card-border: #e2eaf1;
-  --card-track: #edf2f6;
+  --card-muted: #58707f;
+  --card-line: #d5dfe8;
+  --card-border: #d5dfe8;
+  --card-inset: #f1f5f8;
+  --card-inset-border: #d5dfe8;
+  --card-track: #e2eaf0;
   --card-accent: #078dee;
-  --card-traffic: #078dee;
+  --card-traffic: #0d7cc2;
   --card-amber: #f0a632;
   --card-danger: #ff5630;
-  --card-tint: #eff6fd;
+  --card-tint: #f1f5f8;
   --card-green: #22c55e;
+  --card-cpu: #2f7fe0;
+  --card-mem: #7c5cd6;
+  --card-disk: #cf7d08;
+  --card-load: #64798e;
+  --card-up: #0d7cc2;
+  --card-down: #0b9a6a;
+  --card-faint: #61768a;
+  --card-nodata: #c3ced7;
+  --card-route: #0f766e;
+  --card-chip-bg: #fdeef1;
+  --card-chip-border: #f3c3cd;
+  --card-chip-text: #c23354;
+  --card-shadow: 0 16px 38px rgba(31, 52, 71, 0.16);
   position: relative;
   z-index: 0;
   overflow: visible;
   border: 1px solid var(--card-border);
-  border-radius: 22px;
+  border-radius: 14px;
   background: var(--card-bg);
   color: var(--card-text);
+  box-shadow: var(--card-shadow);
   container-type: inline-size;
   container-name: server-card;
   transition: border-color 280ms ease-out, box-shadow 320ms ease-out;
 }
 
 html.dark .lite-server-card {
-  --card-bg: #1b2634;
+  --card-bg: #121a24;
   --card-text: #ffffff;
   --card-secondary: #c4cdd5;
-  --card-muted: #919eab;
-  --card-line: #2b394a;
-  --card-border: #2a394b;
-  --card-track: #2c3a4a;
-  --card-accent: #078dee;
-  --card-traffic: #078dee;
+  --card-muted: #8ea2b5;
+  --card-line: #1d2a3a;
+  --card-border: #243447;
+  --card-inset: #0b1119;
+  --card-inset-border: #1d2a3a;
+  --card-track: #1c2938;
+  --card-accent: #58b7f5;
+  --card-traffic: #58b7f5;
   --card-amber: #f0a632;
   --card-danger: #ff5630;
-  --card-tint: #203247;
+  --card-tint: #0b1119;
   --card-green: #22c55e;
+  --card-cpu: #5ea8ff;
+  --card-mem: #a78bfa;
+  --card-disk: #f5a524;
+  --card-load: #7d8ea3;
+  --card-up: #45b7f0;
+  --card-down: #34d399;
+  --card-faint: #61768a;
+  --card-nodata: #39485a;
+  --card-route: #57b8a6;
+  --card-chip-bg: rgba(242, 112, 138, 0.12);
+  --card-chip-border: rgba(242, 112, 138, 0.28);
+  --card-chip-text: #f2708a;
+  --card-shadow: 0 18px 44px rgba(0, 0, 0, 0.42);
 }
 
 .lite-server-card__frame {
@@ -218,13 +249,13 @@ html.dark .lite-server-card {
 }
 
 .lite-server-card__hero {
-  padding: 18px 21px 14px;
-  background: linear-gradient(180deg, var(--card-tint), var(--card-bg));
+  padding: 18px 18px 0;
+  background: var(--card-bg);
 }
 
 .lite-server-card__name {
-  font-size: 18px;
-  font-weight: 650;
+  font-size: 16.5px;
+  font-weight: 700;
   line-height: 22px;
   letter-spacing: -0.32px;
 }
@@ -235,23 +266,36 @@ html.dark .lite-server-card {
 }
 
 .lite-server-card__subtitle {
-  margin-top: 4px;
+  margin-top: 2px;
+  font-size: 11.5px;
   color: var(--card-muted);
 }
 
 .lite-server-card__status--online {
+  font-size: 12.5px;
+  font-weight: 700;
   color: var(--card-green);
 }
 
 .lite-server-card__status--offline {
+  font-size: 12.5px;
+  font-weight: 700;
   color: var(--card-danger);
 }
 
 .lite-server-card__rates {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
-  margin-top: 19px;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.lite-server-card__rates > div {
+  min-width: 0;
+  padding: 10px 12px 11px;
+  border: 1px solid var(--card-inset-border);
+  border-radius: 10px;
+  background: var(--card-inset);
 }
 
 .lite-server-card__rate-label {
@@ -259,32 +303,34 @@ html.dark .lite-server-card {
   align-items: center;
   gap: 5px;
   font-size: 12px;
+  font-weight: 700;
   line-height: 16px;
   color: var(--card-secondary);
 }
 
 .lite-server-card__rate-label--up {
-  color: #078dee;
+  color: var(--card-up);
 }
 
 .lite-server-card__rate-label--down {
-  color: #118d57;
+  color: var(--card-down);
 }
 
 .lite-server-card__speed {
   display: flex;
   align-items: baseline;
   gap: 5px;
-  margin-top: 14px;
-  font-size: 30px;
-  font-weight: 600;
-  line-height: 1.05;
+  margin-top: 3px;
+  font-size: 28px;
+  font-weight: 800;
+  line-height: 1.15;
   letter-spacing: -0.75px;
 }
 
 .lite-server-card__speed small {
+  margin-left: 4px;
   font-size: 12px;
-  font-weight: 400;
+  font-weight: 600;
   line-height: 16px;
   letter-spacing: 0;
   color: var(--card-muted);
@@ -295,8 +341,8 @@ html.dark .lite-server-card {
 }
 
 .lite-server-card__rate-total {
-  margin-top: 13px;
-  font-size: 12px;
+  margin-top: 2px;
+  font-size: 11.5px;
   line-height: 16px;
   color: var(--card-muted);
 }
@@ -306,16 +352,16 @@ html.dark .lite-server-card {
   min-width: 0;
   flex: 1;
   flex-direction: column;
-  padding: 0 21px;
+  padding: 0 18px;
 }
 
 .lite-server-card__resources {
   display: grid;
   flex: none;
   grid-template-columns: 1fr 1fr;
-  column-gap: 24px;
-  row-gap: 15px;
-  padding: 8px 0 23px;
+  column-gap: 16px;
+  row-gap: 11px;
+  padding: 16px 0 0;
 }
 
 .lite-server-card__metric-label {
@@ -323,29 +369,30 @@ html.dark .lite-server-card {
   align-items: baseline;
   justify-content: space-between;
   gap: 8px;
-  font-size: 13px;
+  font-size: 12.5px;
+  font-weight: 700;
   line-height: 18px;
   color: var(--card-secondary);
 }
 
 .lite-server-card__metric-label b {
-  font-size: 15px;
-  font-weight: 550;
+  font-size: 14px;
+  font-weight: 800;
   color: var(--card-text);
 }
 
 .lite-server-card__metric-label small {
   margin-left: 2px;
-  font-size: 12px;
+  font-size: 10.5px;
   font-weight: 400;
   color: var(--card-muted);
 }
 
 .lite-server-card__meter {
-  height: 4px;
+  height: 6px;
   margin-top: 6px;
   overflow: hidden;
-  border-radius: 5px;
+  border-radius: 999px;
   background: var(--card-track);
 }
 
@@ -367,6 +414,7 @@ html.dark .lite-server-card {
   min-height: 0;
   flex: 1 1 auto;
   flex-direction: column;
+  margin-top: 18px;
   padding-bottom: 4px;
 }
 
@@ -376,13 +424,13 @@ html.dark .lite-server-card {
   align-items: center;
   justify-content: space-between;
   margin-bottom: 14px;
-  font-size: 14px;
-  font-weight: 600;
+  font-size: 13.5px;
+  font-weight: 700;
   line-height: 20px;
 }
 
 .lite-server-card__quality-title span {
-  font-size: 11px;
+  font-size: 11.5px;
   font-weight: 400;
   color: var(--card-muted);
 }
@@ -444,10 +492,18 @@ html.dark .lite-server-card {
 
 .lite-probe-row__main {
   display: flex;
-  min-width: 0;
-  flex: 1 1 110px;
+  min-width: 60px;
+  flex: 0 1 auto;
   flex-direction: column;
+  justify-content: center;
+  min-height: 34px;
   gap: 1px;
+}
+
+/* Single strip (no packet loss): the name column takes the leftover width
+   and the viz stays one strip wide. */
+.lite-probe-row[data-loss="false"] .lite-probe-row__main {
+  flex: 1 1 auto;
 }
 
 .lite-probe-row__name {
@@ -470,53 +526,62 @@ html.dark .lite-server-card {
   white-space: nowrap;
 }
 
+/* Bold return-route tag in Chinese only (en/ja keep regular weight). The
+   name column sizes to content, so it grows to fit the wider bold label. */
+html[lang="zh-CN"] .lite-probe-row__return,
+html[lang="zh-TW"] .lite-probe-row__return {
+  font-weight: 700;
+}
+
 /* Probe viz: latency squares and packet-loss circles sit side by side on one
    line, with each numeric value right-aligned directly above its own strip
-   (delay above latency, loss percent above the loss circles). The base tier
-   uses 6px bars with 5px gaps: one strip is 127px (12 x 6px bars + 5px
-   gaps); the two strips plus a 10px gap make the viz block 264px wide, so
-   the name column hugs the longest return label ("回CN2 GIA", 56px) with
-   room to spare. */
+   (delay above latency, loss percent above the loss circles). The viz fills
+   whatever width is left after the name column; each strip takes half, and
+   the 12 dots in a strip share the strip width (3px min, 8px max, square via
+   aspect-ratio), so dots grow on wide cards and shrink on narrow ones
+   without squeezing the name or truncating the return label. */
 .lite-probe-row__viz {
   display: flex;
-  min-width: 0;
-  flex: 0 0 264px;
+  min-width: 124px;
+  flex: 1 1 0;
   flex-direction: column;
   justify-content: center;
   gap: 2px;
 }
 
 .lite-probe-row[data-loss="false"] .lite-probe-row__viz {
-  flex-basis: 127px;
+  flex: 0 1 118px;
+  min-width: 58px;
 }
 
 .lite-probe-row__viz-bars {
   display: flex;
   align-items: center;
-  gap: 10px;
-  height: 6px;
+  gap: 8px;
 }
 
 .lite-probe-row__viz-nums {
   display: flex;
   align-items: baseline;
-  gap: 10px;
+  gap: 8px;
   height: 14px;
 }
 
 .lite-latency-bars {
   display: flex;
   min-width: 0;
-  flex: none;
+  flex: 1 1 0;
   align-items: center;
-  gap: 5px;
-  height: 6px;
+  gap: 2px;
+  justify-content: space-between;
 }
 
 .lite-latency-bars__bar {
-  flex: none;
-  width: 6px;
-  height: 6px;
+  flex: 1 1 0;
+  min-width: 3px;
+  max-width: 8px;
+  aspect-ratio: 1;
+  height: auto;
   border-radius: 2px;
   background: var(--card-line);
 }
@@ -544,7 +609,8 @@ html.dark .lite-server-card {
 
 .lite-probe-row__viz-delay {
   display: inline-flex;
-  flex: 0 0 127px;
+  flex: 1 1 0;
+  min-width: 0;
   align-items: baseline;
   justify-content: flex-end;
   gap: 3px;
@@ -580,7 +646,8 @@ html.dark .lite-server-card {
 
 .lite-probe-row__viz-loss {
   display: inline-flex;
-  flex: 0 0 127px;
+  flex: 1 1 0;
+  min-width: 0;
   align-items: baseline;
   justify-content: flex-end;
   font-size: 10px;
@@ -601,7 +668,8 @@ html.dark .lite-probe-row__return {
 .lite-server-card__tone--danger { color: var(--card-danger); }
 
 .lite-server-card__quota {
-  padding: 11px 21px;
+  margin-top: 16px;
+  padding: 13px 18px 0;
   border-top: 1px solid var(--card-line);
 }
 
@@ -613,18 +681,20 @@ html.dark .lite-probe-row__return {
 }
 
 .lite-server-card__quota-line b {
-  font-size: 14px;
-  font-weight: 550;
+  font-size: 15px;
+  font-weight: 800;
 }
 
 .lite-server-card__quota-line span {
-  font-size: 12px;
-  color: var(--card-muted);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--card-faint);
 }
 
 .lite-server-card__quota-percent {
   margin-left: auto;
-  font-weight: 600;
+  font-size: 14px;
+  font-weight: 800;
 }
 
 .lite-server-card__quota-line .lite-server-card__quota-percent { color: var(--card-traffic); }
@@ -632,10 +702,10 @@ html.dark .lite-probe-row__return {
 .lite-server-card__quota-percent.lite-server-card__tone--danger { color: var(--card-danger); }
 
 .lite-server-card__quota-meter {
-  height: 4px;
-  margin: 11px 0;
+  height: 7px;
+  margin: 8px 0 0;
   overflow: hidden;
-  border-radius: 8px;
+  border-radius: 999px;
   background: var(--card-track);
 }
 
@@ -644,7 +714,8 @@ html.dark .lite-probe-row__return {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  font-size: 11px;
+  margin-top: 7px;
+  font-size: 11.5px;
   line-height: 13px;
   color: var(--card-muted);
 }
@@ -653,10 +724,11 @@ html.dark .lite-probe-row__return {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  column-gap: 11px;
+  column-gap: 13px;
   row-gap: 6px;
   min-height: 44px;
-  padding: 10px 21px;
+  margin-top: 15px;
+  padding: 13px 18px;
   border-top: 1px solid var(--card-line);
   line-height: 20px;
 }
@@ -675,23 +747,19 @@ html.dark .lite-probe-row__return {
 .lite-server-card__footer-price {
   display: inline-flex;
   align-items: baseline;
-  color: #557790;
-  font-size: 16px;
-  font-weight: 550;
+  color: var(--card-text);
+  font-size: 21px;
+  font-weight: 800;
   line-height: 20px;
   letter-spacing: -0.2px;
   white-space: nowrap;
 }
 
-html.dark .lite-server-card__footer-price {
-  color: #d5e4ef;
-}
-
 .lite-server-card__footer-price small {
-  margin-left: 1px;
-  color: #9bb0bf;
+  margin-left: 2px;
+  color: var(--card-muted);
   font-size: 11px;
-  font-weight: 400;
+  font-weight: 600;
   line-height: 1;
 }
 
@@ -751,19 +819,24 @@ html.dark .lite-server-card__footer-extra {
   gap: 4px;
   margin-left: auto;
   max-width: 100%;
+  padding: 5px 10px;
+  border: 1px solid var(--card-chip-border);
+  border-radius: 7px;
+  background: var(--card-chip-bg);
   font-size: 12px;
-  color: var(--card-secondary);
+  font-weight: 700;
+  color: var(--card-chip-text);
 }
 
 .lite-server-card__bandwidth svg {
   width: 12px;
   height: 12px;
-  color: var(--card-muted);
+  color: var(--card-chip-text);
 }
 
 @container server-card (max-width: 399px) {
   .lite-server-card__hero {
-    padding: 16px 16px 12px;
+    padding: 16px 16px 0;
   }
 
   .lite-server-card__body {
@@ -772,252 +845,21 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-server-card__rates {
-    gap: 14px;
+    gap: 10px;
   }
 
   .lite-server-card__speed {
-    font-size: clamp(26px, 9cqi, 30px);
+    font-size: clamp(24px, 8cqi, 28px);
   }
 
   .lite-server-card__resources {
     column-gap: 14px;
   }
 
-  .lite-probe-row__viz-delay b {
-    font-size: 11px;
-  }
-
-  .lite-probe-row__main {
-    flex-basis: 96px;
-  }
-
   .lite-server-card__quota,
   .lite-server-card__footer {
     padding-right: 16px;
     padding-left: 16px;
-  }
-}
-
-/* Probe bars scale with the card (container) width so the return-route
-   label ("回CN2 GIA", 56px, 62px on wider fonts) always fits. The container
-   is .lite-server-card itself (no padding); the body adds 21px each side and
-   the row 2px, so the row content is container - 46px. To keep 8px bars on
-   mid cards without dropping any words, the bar gap is 1px there (strip
-   107px, viz 232px) instead of 2px. The viz is widened by the strip gap so
-   the name column hugs the label: the viz starts right after the longer of
-   the operator name (52px) and the return label. Tiers (container width):
-   <=325px: 5px bars, 177px viz; 326-353px: 7px bars, 202px viz; 354-377px:
-   5px bars, 244px viz (row gap 4px); 378-403px: 6px bars, 264px viz;
-   >=404px: 7px bars, 290px viz; 326-340px: 7px bars, 197px viz, 7px strip gap (one bar); 341-353px: 8px bars, 222px viz, 8px strip gap (one bar). */
-@container server-card (min-width: 404px) {
-  .lite-probe-row__viz {
-    flex-basis: 290px;
-  }
-
-  .lite-probe-row[data-loss="false"] .lite-probe-row__viz {
-    flex-basis: 139px;
-  }
-
-  .lite-probe-row__viz-bars {
-    gap: 12px;
-    height: 7px;
-  }
-
-  .lite-probe-row__viz-nums {
-    gap: 12px;
-  }
-
-  .lite-latency-bars {
-    gap: 5px;
-    flex-basis: 139px;
-    height: 7px;
-  }
-
-  .lite-latency-bars__bar {
-    width: 7px;
-    height: 7px;
-  }
-
-  .lite-probe-row__viz-delay {
-    flex-basis: 139px;
-  }
-
-  .lite-probe-row__viz-loss {
-    flex-basis: 139px;
-  }
-}
-
-@container server-card (min-width: 354px) and (max-width: 377px) {
-  .lite-probe-row {
-    gap: 4px;
-  }
-
-  .lite-probe-row__viz {
-    flex-basis: 244px;
-  }
-
-  .lite-probe-row[data-loss="false"] .lite-probe-row__viz {
-    flex-basis: 115px;
-  }
-
-  .lite-probe-row__viz-bars {
-    gap: 14px;
-    height: 5px;
-  }
-
-  .lite-probe-row__viz-nums {
-    gap: 14px;
-  }
-
-  .lite-latency-bars {
-    gap: 5px;
-    flex-basis: 115px;
-    height: 5px;
-  }
-
-  .lite-latency-bars__bar {
-    width: 5px;
-    height: 5px;
-  }
-
-  .lite-probe-row__viz-delay {
-    flex-basis: 115px;
-  }
-
-  .lite-probe-row__viz-loss {
-    flex-basis: 115px;
-  }
-}
-
-@container server-card (min-width: 326px) and (max-width: 340px) {
-  .lite-probe-row {
-    gap: 6px;
-  }
-
-  .lite-probe-row__viz {
-    flex-basis: 197px;
-    gap: 2px;
-  }
-
-  .lite-probe-row[data-loss="false"] .lite-probe-row__viz {
-    flex-basis: 95px;
-  }
-
-  .lite-probe-row__viz-bars {
-    gap: 7px;
-  }
-
-  .lite-probe-row__viz-nums {
-    gap: 7px;
-  }
-
-  .lite-latency-bars {
-    gap: 1px;
-    flex-basis: 95px;
-  }
-
-  .lite-latency-bars__bar {
-    width: 7px;
-    height: 7px;
-  }
-
-  .lite-probe-row__viz-delay {
-    flex-basis: 95px;
-  }
-
-  .lite-probe-row__viz-loss {
-    flex-basis: 95px;
-  }
-}
-
-@container server-card (min-width: 341px) and (max-width: 353px) {
-  .lite-probe-row {
-    gap: 6px;
-  }
-
-  .lite-probe-row__viz {
-    flex-basis: 222px;
-    gap: 2px;
-  }
-
-  .lite-probe-row[data-loss="false"] .lite-probe-row__viz {
-    flex-basis: 107px;
-  }
-
-  .lite-probe-row__viz-bars {
-    gap: 8px;
-  }
-
-  .lite-probe-row__viz-nums {
-    gap: 8px;
-  }
-
-  .lite-latency-bars {
-    gap: 1px;
-    flex-basis: 107px;
-  }
-
-  .lite-latency-bars__bar {
-    width: 8px;
-    height: 8px;
-  }
-
-  .lite-probe-row__viz-delay {
-    flex-basis: 107px;
-  }
-
-  .lite-probe-row__viz-loss {
-    flex-basis: 107px;
-  }
-}
-
-@container server-card (max-width: 325px) {
-  .lite-probe-row {
-    gap: 6px;
-    padding: 6px 0;
-  }
-
-  .lite-probe-row__main {
-    flex-basis: 76px;
-  }
-
-  .lite-probe-row__viz {
-    flex-basis: 177px;
-    gap: 2px;
-  }
-
-  .lite-probe-row[data-loss="false"] .lite-probe-row__viz {
-    flex-basis: 82px;
-  }
-
-  .lite-probe-row__viz-bars {
-    gap: 13px;
-  }
-
-  .lite-probe-row__viz-nums {
-    gap: 13px;
-  }
-
-  .lite-latency-bars {
-    gap: 2px;
-    flex-basis: 82px;
-  }
-
-  .lite-latency-bars__bar {
-    width: 5px;
-    height: 5px;
-  }
-
-  .lite-probe-row__viz-delay {
-    flex-basis: 82px;
-  }
-
-  .lite-probe-row__viz-delay b {
-    font-size: 10px;
-  }
-
-  .lite-probe-row__viz-loss {
-    flex-basis: 82px;
   }
 }
 

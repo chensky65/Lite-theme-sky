@@ -29,8 +29,8 @@ function resourceFill(percent: number, swatch: string) {
   return swatch
 }
 
-function ResourceMetric({ label, value, unit, percent, swatch }: { label: string; value: string; unit?: string; percent: number; swatch: string }) {
-  const width = Math.min(100, Math.max(0, percent))
+function ResourceMetric({ label, value, unit, percent, swatch, minWidth = 0 }: { label: string; value: string; unit?: string; percent: number; swatch: string; minWidth?: number }) {
+  const width = Math.max(minWidth, Math.min(100, Math.max(0, percent)))
   return (
     <div>
       <div className="lite-server-card__metric-label">
@@ -139,7 +139,7 @@ export default function ServerCard({
             <ResourceMetric label="CPU" value={info.cpu.toFixed(1)} unit="%" percent={info.cpu} swatch={RESOURCE_SWATCH.cpu} />
             <ResourceMetric label={t("serverCard.mem")} value={info.mem.toFixed(1)} unit="%" percent={info.mem} swatch={RESOURCE_SWATCH.memory} />
             <ResourceMetric label={t("serverCard.stg")} value={info.stg.toFixed(1)} unit="%" percent={info.stg} swatch={RESOURCE_SWATCH.storage} />
-            <ResourceMetric label={t("serverCard.load")} value={String(info.load_1)} percent={loadUsagePercent(info.load_1, info.cpu_cores)} swatch={RESOURCE_SWATCH.load} />
+            <ResourceMetric label={t("serverCard.load")} value={String(info.load_1)} percent={loadUsagePercent(info.load_1, info.cpu_cores)} swatch={RESOURCE_SWATCH.load} minWidth={3} />
           </section>
 
           {showProbeWindow ? (

@@ -64,11 +64,11 @@ export const RESOURCE_COLORS = {
 } as const
 
 export const RESOURCE_SWATCH = {
-  cpu: "#078DEE",
-  memory: "#9A70E8",
+  cpu: "#5ea8ff",
+  memory: "#a78bfa",
   swap: "#6D7CFF",
-  storage: "#E69A43",
-  load: "#E56BA3",
+  storage: "#f5a524",
+  load: "#7d8ea3",
   tcp: "#078DEE",
   udp: "#21B96B",
 } as const
