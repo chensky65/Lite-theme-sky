@@ -524,22 +524,20 @@ html.dark .lite-server-card {
   white-space: nowrap;
 }
 
-/* Return-route water-drop tag: pill shape, translucent accent gradient,
-   glossy top highlight like a water droplet. The name column is a fixed
-   84px, wide enough for the longest route tag, so the tag is fully visible
-   and never truncated; name and tag are both centered in the column, so
-   the tag's center line always matches the name above it. */
+/* Return-route tag: pill shape, semi-transparent milky-white background
+   (15%, lets the dark card show through), text keeps the row's accent
+   color. The name column is a fixed 84px, wide enough for the longest
+   route tag, so the tag is fully visible and never truncated; name and tag
+   are both centered in the column, so the tag's center line always matches
+   the name above it. */
 .lite-probe-row__return {
   overflow: hidden;
   max-width: 100%;
   min-width: 0;
   padding: 1px 7px;
-  border: 1px solid color-mix(in srgb, var(--probe-accent) 45%, transparent);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 999px;
-  background:
-    radial-gradient(120% 90% at 30% 0%, rgba(255, 255, 255, 0.35), transparent 55%),
-    linear-gradient(180deg, color-mix(in srgb, var(--probe-accent) 22%, transparent), color-mix(in srgb, var(--probe-accent) 7%, transparent));
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 1px 3px rgba(0, 0, 0, 0.18);
+  background: rgba(253, 252, 250, 0.15);
   font-size: 11px;
   line-height: 15px;
   color: var(--probe-accent);
