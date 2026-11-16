@@ -278,13 +278,13 @@ html.dark .lite-server-card {
 .lite-server-card__os-badge::before {
   content: "";
   position: absolute;
-  inset: -6px;
+  inset: 0px;
   border-radius: 50%;
-  background: radial-gradient(circle, rgba(34, 197, 94, 0.25) 0%, rgba(34, 197, 94, 0.1) 45%, transparent 70%);
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.45) 0%, rgba(34, 197, 94, 0.2) 45%, transparent 70%);
 }
 
 .lite-server-card__os-badge--offline::before {
-  background: radial-gradient(circle, rgba(255, 86, 48, 0.25) 0%, rgba(255, 86, 48, 0.1) 45%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 86, 48, 0.45) 0%, rgba(255, 86, 48, 0.2) 45%, transparent 70%);
 }
 
 .lite-server-card__rates {
