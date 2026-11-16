@@ -501,13 +501,6 @@ html.dark .lite-server-card {
   gap: 1px;
 }
 
-/* No return-route line: the single name aligns to the top, same as the
-   carrier name in two-line rows, so the text rhythm stays uniform instead
-   of sitting 8px lower and looking like a taller row. */
-.lite-probe-row[data-return="false"] .lite-probe-row__main {
-  justify-content: flex-start;
-}
-
 /* Single strip (no packet loss): the name column takes the leftover width
    and the viz stays one strip wide. */
 .lite-probe-row[data-loss="false"] .lite-probe-row__main {
