@@ -243,17 +243,18 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   assert.match(css, /\.lite-latency-bars__bar\[data-tone="coral"\] \{[\s\S]*?background:\s*var\(--card-danger\)/)
   assert.match(css, /\.lite-probe-row__viz-delay b\[data-tone="green"\] \{[\s\S]*?color:\s*var\(--card-green\)/)
   assert.match(css, /\.lite-probe-row__viz-delay b\[data-tone="coral"\] \{[\s\S]*?color:\s*var\(--card-danger\)/)
-  // Probe rows are adaptive, not tiered: the name column sizes to its
-  // content (the wider of the operator name and the return label, min 60px)
-  // and the viz fills the rest. Each strip takes half the viz and its 12
-  // dots share the strip width (3px min, 8px max, square via aspect-ratio),
-  // so dots grow on wide cards and shrink on narrow ones without squeezing
-  // the name or truncating the return label. Numbers use the same flex as
-  // their strips so their right edges stay aligned with the strips.
-  // A single-line name (no return label) is vertically centered in the
-  // 34px two-line name column (18px name + 1px gap + 15px return label).
-  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?flex:\s*0 1 auto/)
-  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?min-width:\s*60px/)
+  // Probe rows use a fixed-width name column: 84px, wide enough for the
+  // longest return-route tag, so the tag is fully visible and never
+  // truncated. Name and tag are both centered in the column, so the tag's
+  // center line always matches the name above it; the viz fills the rest.
+  // Each strip takes half the viz and its 12 dots share the strip width
+  // (3px min, 8px max, square via aspect-ratio), so dots grow on wide
+  // cards and shrink on narrow ones without squeezing the name. Numbers
+  // use the same flex as their strips so their right edges stay aligned
+  // with the strips.
+  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?flex:\s*0 0 84px/)
+  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?width:\s*84px/)
+  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?align-items:\s*center/)
   assert.match(css, /\.lite-probe-row__main \{[\s\S]*?min-height:\s*34px/)
   assert.match(css, /\.lite-probe-row__main \{[\s\S]*?justify-content:\s*center/)
   assert.match(css, /\.lite-probe-row__viz \{[\s\S]*?flex:\s*1 1 0/)

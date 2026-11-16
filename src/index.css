@@ -260,27 +260,31 @@ html.dark .lite-server-card {
   letter-spacing: -0.32px;
 }
 
-.lite-server-card__subtitle,
-.lite-server-card__status {
-  font-size: 12px;
+/* OS logo with a soft glow: the logo itself emits a gentle light
+   (green = online, red = offline). No ring, no circle border, no
+   animation, no status text — just a radial-gradient halo fading out
+   from the logo. */
+.lite-server-card__os-badge {
+  position: relative;
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  align-self: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
 }
 
-.lite-server-card__subtitle {
-  margin-top: 2px;
-  font-size: 11.5px;
-  color: var(--card-muted);
+.lite-server-card__os-badge::before {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(34, 197, 94, 0.25) 0%, rgba(34, 197, 94, 0.1) 45%, transparent 70%);
 }
 
-.lite-server-card__status--online {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--card-green);
-}
-
-.lite-server-card__status--offline {
-  font-size: 12.5px;
-  font-weight: 700;
-  color: var(--card-danger);
+.lite-server-card__os-badge--offline::before {
+  background: radial-gradient(circle, rgba(255, 86, 48, 0.25) 0%, rgba(255, 86, 48, 0.1) 45%, transparent 70%);
 }
 
 .lite-server-card__rates {
@@ -493,22 +497,25 @@ html.dark .lite-server-card {
 
 .lite-probe-row__main {
   display: flex;
-  min-width: 60px;
-  flex: 0 1 auto;
+  width: 84px;
+  flex: 0 0 84px;
   flex-direction: column;
+  align-items: center;
   justify-content: center;
   min-height: 34px;
   gap: 1px;
 }
 
-/* Single strip (no packet loss): the name column takes the leftover width
-   and the viz stays one strip wide. */
+/* Single strip (no packet loss): the name column stays a fixed 84px and
+   the viz stays one strip wide. */
 .lite-probe-row[data-loss="false"] .lite-probe-row__main {
-  flex: 1 1 auto;
+  flex: 0 0 84px;
 }
 
 .lite-probe-row__name {
   overflow: hidden;
+  max-width: 100%;
+  min-width: 0;
   font-size: 13px;
   font-weight: 550;
   line-height: 18px;
@@ -517,9 +524,22 @@ html.dark .lite-server-card {
   white-space: nowrap;
 }
 
+/* Return-route water-drop tag: pill shape, translucent accent gradient,
+   glossy top highlight like a water droplet. The name column is a fixed
+   84px, wide enough for the longest route tag, so the tag is fully visible
+   and never truncated; name and tag are both centered in the column, so
+   the tag's center line always matches the name above it. */
 .lite-probe-row__return {
   overflow: hidden;
   max-width: 100%;
+  min-width: 0;
+  padding: 1px 7px;
+  border: 1px solid color-mix(in srgb, var(--probe-accent) 45%, transparent);
+  border-radius: 999px;
+  background:
+    radial-gradient(120% 90% at 30% 0%, rgba(255, 255, 255, 0.35), transparent 55%),
+    linear-gradient(180deg, color-mix(in srgb, var(--probe-accent) 22%, transparent), color-mix(in srgb, var(--probe-accent) 7%, transparent));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.35), 0 1px 3px rgba(0, 0, 0, 0.18);
   font-size: 11px;
   line-height: 15px;
   color: var(--probe-accent);
@@ -527,8 +547,7 @@ html.dark .lite-server-card {
   white-space: nowrap;
 }
 
-/* Bold return-route tag in Chinese only (en/ja keep regular weight). The
-   name column sizes to content, so it grows to fit the wider bold label. */
+/* Bold return-route tag in Chinese only (en/ja keep regular weight). */
 html[lang="zh-CN"] .lite-probe-row__return,
 html[lang="zh-TW"] .lite-probe-row__return {
   font-weight: 700;

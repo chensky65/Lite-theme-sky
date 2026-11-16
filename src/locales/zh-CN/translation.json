@@ -120,7 +120,7 @@
     "packetLoss": "丢包率",
     "recentHour": "最近 1 小时",
     "returnRoute": "回",
-    "returnRouteTag": "回·{{line}}",
+    "returnRouteTag": "{{line}}",
     "route": "线路",
     "sampleFill": "最近 1 小时有效采样率 {{percent}}%",
     "stg": "存储",

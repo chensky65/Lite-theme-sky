@@ -120,7 +120,7 @@
     "packetLoss": "Packet loss",
     "recentHour": "Last hour",
     "returnRoute": "Return",
-    "returnRouteTag": "Return · {{line}}",
+    "returnRouteTag": "{{line}}",
     "route": "Route",
     "sampleFill": "Last-hour valid sample rate {{percent}}%",
     "stg": "STG",
