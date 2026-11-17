@@ -113,7 +113,13 @@ export default function ServerCard({
             <span className="min-w-0 flex-1">
               <strong className="lite-server-card__name block truncate" title={info.name}>{info.name}</strong>
             </span>
-            <span className={cn("lite-server-card__os-badge", !info.online && "lite-server-card__os-badge--offline")} title={info.online ? t("online") : t("offline")}>
+            <span className={cn("lite-server-card__signal", !info.online && "lite-server-card__signal--offline")} title={info.online ? t("online") : t("offline")}>
+              <span />
+              <span />
+              <span />
+              <span />
+            </span>
+            <span className="lite-server-card__os-badge">
               <OsLogo osName={systemName} className="size-[20px]" />
             </span>
           </div>

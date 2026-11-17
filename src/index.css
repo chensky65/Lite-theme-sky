@@ -249,7 +249,7 @@ html.dark .lite-server-card {
 }
 
 .lite-server-card__hero {
-  padding: 18px 18px 0;
+  padding: 14px 18px 0;
   background: var(--card-bg);
 }
 
@@ -260,10 +260,9 @@ html.dark .lite-server-card {
   letter-spacing: -0.32px;
 }
 
-/* OS logo with a soft glow: the logo itself emits a gentle light
-   (green = online, red = offline). No ring, no circle border, no
-   animation, no status text — just a radial-gradient halo fading out
-   from the logo. */
+/* OS logo badge: the logo sits right after the country flag, clean with no
+   status decoration. Status is shown by the signal bars at the card's
+   top-right corner instead. */
 .lite-server-card__os-badge {
   position: relative;
   display: inline-flex;
@@ -275,28 +274,42 @@ html.dark .lite-server-card {
   height: 28px;
 }
 
-.lite-server-card__os-badge::before {
-  content: "";
-  position: absolute;
-  inset: 0px;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(34, 197, 94, 0.45) 0%, rgba(34, 197, 94, 0.2) 45%, transparent 70%);
+/* Online status as phone signal bars: four ascending bars at the card's
+   top-right corner (green = online, red = offline). */
+.lite-server-card__signal {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: flex-end;
+  align-self: center;
+  gap: 2px;
+  height: 14px;
 }
 
-.lite-server-card__os-badge--offline::before {
-  background: radial-gradient(circle, rgba(255, 86, 48, 0.45) 0%, rgba(255, 86, 48, 0.2) 45%, transparent 70%);
+.lite-server-card__signal > span {
+  width: 3px;
+  border-radius: 1px;
+  background: #22c55e;
+}
+
+.lite-server-card__signal > span:nth-child(1) { height: 5px; }
+.lite-server-card__signal > span:nth-child(2) { height: 8px; }
+.lite-server-card__signal > span:nth-child(3) { height: 11px; }
+.lite-server-card__signal > span:nth-child(4) { height: 14px; }
+
+.lite-server-card__signal--offline > span {
+  background: #ff5630;
 }
 
 .lite-server-card__rates {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 10px;
-  margin-top: 16px;
+  margin-top: 12px;
 }
 
 .lite-server-card__rates > div {
   min-width: 0;
-  padding: 10px 12px 11px;
+  padding: 8px 12px;
   border: 1px solid var(--card-inset-border);
   border-radius: 10px;
   background: var(--card-inset);
@@ -364,8 +377,8 @@ html.dark .lite-server-card {
   flex: none;
   grid-template-columns: 1fr 1fr;
   column-gap: 16px;
-  row-gap: 11px;
-  padding: 16px 0 0;
+  row-gap: 8px;
+  padding: 12px 0 0;
 }
 
 .lite-server-card__metric-label {
@@ -394,7 +407,7 @@ html.dark .lite-server-card {
 
 .lite-server-card__meter {
   height: 6px;
-  margin-top: 6px;
+  margin-top: 5px;
   overflow: hidden;
   border-radius: 999px;
   background: var(--card-track);
@@ -418,7 +431,7 @@ html.dark .lite-server-card {
   min-height: 0;
   flex: 1 1 auto;
   flex-direction: column;
-  margin-top: 18px;
+  margin-top: 14px;
   padding-bottom: 0;
 }
 
@@ -427,7 +440,7 @@ html.dark .lite-server-card {
   flex: none;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 14px;
+  margin-bottom: 10px;
   font-size: 13.5px;
   font-weight: 700;
   line-height: 20px;
@@ -447,7 +460,7 @@ html.dark .lite-server-card {
   min-width: 0;
   flex: 0 0 auto;
   flex-direction: column;
-  gap: 2px;
+  gap: 0;
   margin-top: auto;
   padding-bottom: 0;
 }
@@ -460,7 +473,7 @@ html.dark .lite-server-card {
   min-width: 0;
   align-items: center;
   gap: 8px;
-  padding: 7px 2px;
+  padding: 5px 2px;
   border: 0;
   border-bottom: 1px solid var(--card-line);
   background: transparent;
@@ -524,12 +537,11 @@ html.dark .lite-server-card {
   white-space: nowrap;
 }
 
-/* Return-route tag: pill shape, semi-transparent milky-white background
-   (15%, lets the dark card show through), text keeps the row's accent
-   color. The name column is a fixed 84px, wide enough for the longest
-   route tag, so the tag is fully visible and never truncated; name and tag
-   are both centered in the column, so the tag's center line always matches
-   the name above it. */
+/* Return-route tag: pill shape, background matches the card so only the
+   gray border outlines it, text keeps the row's accent color. The name
+   column is a fixed 84px, wide enough for the longest route tag, so the
+   tag is fully visible and never truncated; name and tag are both centered
+   in the column, so the tag's center line always matches the name above it. */
 .lite-probe-row__return {
   overflow: hidden;
   max-width: 100%;
@@ -537,7 +549,7 @@ html.dark .lite-server-card {
   padding: 1px 7px;
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 999px;
-  background: rgba(253, 252, 250, 0.15);
+  background: var(--card-bg);
   font-size: 11px;
   line-height: 15px;
   color: var(--probe-accent);
@@ -686,8 +698,8 @@ html.dark .lite-probe-row__return {
 .lite-server-card__tone--danger { color: var(--card-danger); }
 
 .lite-server-card__quota {
-  margin-top: 16px;
-  padding: 13px 18px 0;
+  margin-top: 12px;
+  padding: 10px 18px 0;
   border-top: 1px solid var(--card-line);
 }
 
@@ -721,7 +733,7 @@ html.dark .lite-probe-row__return {
 
 .lite-server-card__quota-meter {
   height: 7px;
-  margin: 8px 0 0;
+  margin: 6px 0 0;
   overflow: hidden;
   border-radius: 999px;
   background: var(--card-track);
@@ -732,7 +744,7 @@ html.dark .lite-probe-row__return {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-top: 7px;
+  margin-top: 5px;
   font-size: 11.5px;
   line-height: 13px;
   color: var(--card-muted);
@@ -745,8 +757,8 @@ html.dark .lite-probe-row__return {
   column-gap: 13px;
   row-gap: 6px;
   min-height: 44px;
-  margin-top: 15px;
-  padding: 13px 18px;
+  margin-top: 12px;
+  padding: 10px 18px;
   border-top: 1px solid var(--card-line);
   line-height: 20px;
 }
