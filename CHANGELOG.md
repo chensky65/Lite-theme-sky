@@ -13,6 +13,7 @@
 
 - a5b0643（2026-11-17）：信号条 4 格 → 3 格（8/11/14px，去最矮的 5px 格）；问候语 sky 改 18px 彩虹渐变，4 秒一圈一直流动。面板 dist：index.if6w9s50.js / index.RYCpbI3P.css。
 - 7504e89（2026-11-17）：探针行对齐：名字与胶囊包成一组贴左，名字列由 84px 收到 64px，名字与胶囊都定死 64px 宽、字居中，到方块间距每行统一 8px；信号条改回 4 格 iPhone 格式（4/6/9/12px，总高 12px）；标志外框由 28px 缩到 20px。面板 dist：index.8DeawPV2.js / index.I5CW4xeE.css。
+- 185e6b7（2026-11-17）：流量条收窄：由 7px 收到 5px，上下间距各 8px（之前上面 6px、下面 5px，文字贴着条）。面板 dist：index.CFCz47Ja.js / index.Kny95giI.css。
 
 ### 安装及更新
 
