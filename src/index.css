@@ -749,9 +749,11 @@ html.dark .lite-probe-row__return {
 .lite-server-card__quota-percent.lite-server-card__tone--amber { color: var(--card-amber); }
 .lite-server-card__quota-percent.lite-server-card__tone--danger { color: var(--card-danger); }
 
+/* Traffic bar: 5px tall, 8px clear space above and below so the usage
+   line and the meta line never crowd the bar. */
 .lite-server-card__quota-meter {
-  height: 7px;
-  margin: 6px 0 0;
+  height: 5px;
+  margin: 8px 0 0;
   overflow: hidden;
   border-radius: 999px;
   background: var(--card-track);
@@ -762,7 +764,7 @@ html.dark .lite-probe-row__return {
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  margin-top: 5px;
+  margin-top: 8px;
   font-size: 11.5px;
   line-height: 13px;
   color: var(--card-muted);
