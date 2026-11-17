@@ -270,19 +270,20 @@ html.dark .lite-server-card {
   align-items: center;
   align-self: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 20px;
+  height: 20px;
 }
 
-/* Online status as phone signal bars: four ascending bars at the card's
-   top-right corner (green = online, red = offline). */
+/* Online status as iPhone-style signal bars: four ascending bars at the
+   card's top-right corner (green = online, red = offline). iPhone format:
+   3px wide, 2px gap, heights 4/6/9/12px, total height 12px. */
 .lite-server-card__signal {
   display: inline-flex;
   flex-shrink: 0;
   align-items: flex-end;
   align-self: center;
   gap: 2px;
-  height: 14px;
+  height: 12px;
 }
 
 .lite-server-card__signal > span {
@@ -291,9 +292,10 @@ html.dark .lite-server-card {
   background: #22c55e;
 }
 
-.lite-server-card__signal > span:nth-child(1) { height: 8px; }
-.lite-server-card__signal > span:nth-child(2) { height: 11px; }
-.lite-server-card__signal > span:nth-child(3) { height: 14px; }
+.lite-server-card__signal > span:nth-child(1) { height: 4px; }
+.lite-server-card__signal > span:nth-child(2) { height: 6px; }
+.lite-server-card__signal > span:nth-child(3) { height: 9px; }
+.lite-server-card__signal > span:nth-child(4) { height: 12px; }
 
 .lite-server-card__signal--offline > span {
   background: #ff5630;
@@ -509,40 +511,56 @@ html.dark .lite-server-card {
 
 .lite-probe-row__main {
   display: flex;
-  width: 84px;
-  flex: 0 0 84px;
+  width: 64px;
+  flex: 0 0 64px;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   min-height: 34px;
   gap: 1px;
 }
 
-/* Single strip (no packet loss): the name column stays a fixed 84px and
+/* Name + return tag form one group: name and tag are both fixed 64px wide
+   (the same as the column), text centered in each, so the group is exactly
+   the column width, its left edge sits the same distance from the card
+   border as the viz sits from the right edge, and the gap to the viz is a
+   uniform 8px on every row. */
+.lite-probe-row__main-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+}
+
+/* Single strip (no packet loss): the name column stays a fixed 64px and
    the viz stays one strip wide. */
 .lite-probe-row[data-loss="false"] .lite-probe-row__main {
-  flex: 0 0 84px;
+  flex: 0 0 64px;
 }
 
 .lite-probe-row__name {
   overflow: hidden;
+  width: 64px;
   max-width: 100%;
   min-width: 0;
   font-size: 13px;
   font-weight: 550;
   line-height: 18px;
   color: var(--card-text);
+  text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 /* Return-route tag: pill shape, background matches the card so only the
-   gray border outlines it, text keeps the row's accent color. The name
-   column is a fixed 84px, wide enough for the longest route tag, so the
-   tag is fully visible and never truncated; name and tag are both centered
-   in the column, so the tag's center line always matches the name above it. */
+   gray border outlines it, text keeps the row's accent color. The tag is a
+   fixed 64px wide (same as the name above it), text centered, so the tag
+   is fully visible and never truncated; name and tag sit in one group
+   with the name centered over the tag, so the tag's center line always
+   matches the name above it. */
 .lite-probe-row__return {
   overflow: hidden;
+  width: 64px;
   max-width: 100%;
   min-width: 0;
   padding: 1px 7px;
@@ -552,6 +570,7 @@ html.dark .lite-server-card {
   font-size: 11px;
   line-height: 15px;
   color: var(--probe-accent);
+  text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
 }

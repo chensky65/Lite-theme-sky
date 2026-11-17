@@ -68,10 +68,12 @@ function TaskProbeRow({
       className="lite-probe-row"
     >
       <span className="lite-probe-row__main">
-        <span className="lite-probe-row__name" title={summary.taskName}>{summary.taskName}</span>
-        {returnLine ? (
-          <span className="lite-probe-row__return" title={returnLabel}>{returnLabel}</span>
-        ) : null}
+        <span className="lite-probe-row__main-group">
+          <span className="lite-probe-row__name" title={summary.taskName}>{summary.taskName}</span>
+          {returnLine ? (
+            <span className="lite-probe-row__return" title={returnLabel}>{returnLabel}</span>
+          ) : null}
+        </span>
       </span>
       <span className="lite-probe-row__viz">
         <span className="lite-probe-row__viz-nums">
