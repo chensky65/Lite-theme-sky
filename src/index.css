@@ -291,10 +291,9 @@ html.dark .lite-server-card {
   background: #22c55e;
 }
 
-.lite-server-card__signal > span:nth-child(1) { height: 5px; }
-.lite-server-card__signal > span:nth-child(2) { height: 8px; }
-.lite-server-card__signal > span:nth-child(3) { height: 11px; }
-.lite-server-card__signal > span:nth-child(4) { height: 14px; }
+.lite-server-card__signal > span:nth-child(1) { height: 8px; }
+.lite-server-card__signal > span:nth-child(2) { height: 11px; }
+.lite-server-card__signal > span:nth-child(3) { height: 14px; }
 
 .lite-server-card__signal--offline > span {
   background: #ff5630;
@@ -943,13 +942,23 @@ html.dark .lite-home-overview {
 .lite-home-greeting-name {
   min-width: 0;
   overflow: hidden;
+  font-size: 18px;
   font-weight: 650;
+  line-height: 26px;
   color: transparent;
   text-overflow: ellipsis;
   white-space: nowrap;
-  background: linear-gradient(90deg, #5b8cff 0%, #8b6cff 52%, #c45cff 100%);
+  background: linear-gradient(90deg, #f43f5e, #fb923c, #eab308, #22c55e, #3b82f6, #a855f7, #f43f5e, #fb923c, #eab308, #22c55e, #3b82f6, #a855f7, #f43f5e);
+  background-size: 200% 100%;
   background-clip: text;
   -webkit-background-clip: text;
+  animation: lite-home-greeting-flow 4s linear infinite;
+}
+
+@keyframes lite-home-greeting-flow {
+  to {
+    background-position: 100% center;
+  }
 }
 
 .lite-home-measure {

@@ -117,7 +117,6 @@ export default function ServerCard({
               <span />
               <span />
               <span />
-              <span />
             </span>
             <span className="lite-server-card__os-badge">
               <OsLogo osName={systemName} className="size-[20px]" />
