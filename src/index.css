@@ -456,7 +456,8 @@ html.dark .lite-server-card {
 /* Probes: Komari-style vertical list. Each row shows the probe name (plus
    the return-route line when available), a latency history strip, the
    current delay and the packet loss, matching the Komari SAO row layout.
-   The rows sit inside a dashed box with equal 8px gaps (and 8px padding),
+   The rows sit inside a dashed box with equal 8px gaps (8px vertical and
+   4px horizontal padding, so the text sits close to the dashed border),
    and each row keeps its separator line below it except the last one. */
 .lite-server-card__probes {
   display: flex;
@@ -465,8 +466,8 @@ html.dark .lite-server-card {
   flex-direction: column;
   gap: 8px;
   margin-top: auto;
-  padding: 8px 10px;
-  border: 1px dashed rgba(255, 255, 255, 0.3);
+  padding: 8px 4px;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
   border-radius: 10px;
 }
 
