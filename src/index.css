@@ -757,11 +757,13 @@ html.dark .lite-probe-row__return {
 .lite-server-card__quota-percent.lite-server-card__tone--amber { color: var(--card-amber); }
 .lite-server-card__quota-percent.lite-server-card__tone--danger { color: var(--card-danger); }
 
-/* Traffic bar: 5px tall, 8px clear space above and below so the usage
-   line and the meta line never crowd the bar. */
+/* Traffic bar: 5px tall. The usage line above has a 16px line-height but
+   its glyphs are only ~12px, leaving ~3px of blank space below the text,
+   so the bar uses a 5px top margin to make the visible gap above the bar
+   match the 8px below it (the meta line's margin-top). */
 .lite-server-card__quota-meter {
   height: 5px;
-  margin: 8px 0 0;
+  margin: 5px 0 0;
   overflow: hidden;
   border-radius: 999px;
   background: var(--card-track);
