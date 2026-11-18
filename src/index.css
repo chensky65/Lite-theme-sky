@@ -474,7 +474,7 @@ html.dark .lite-server-card {
   min-width: 0;
   align-items: center;
   gap: 8px;
-  padding: 4px 2px;
+  padding: 5px 2px;
   border: 0;
   border-bottom: 1px solid var(--card-line);
   background: transparent;
@@ -516,7 +516,7 @@ html.dark .lite-server-card {
   flex-direction: column;
   align-items: flex-start;
   justify-content: center;
-  min-height: 32px;
+  min-height: 34px;
   gap: 1px;
 }
 
@@ -543,9 +543,9 @@ html.dark .lite-server-card {
   width: 64px;
   max-width: 100%;
   min-width: 0;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 550;
-  line-height: 16px;
+  line-height: 18px;
   color: var(--card-text);
   text-align: center;
   text-overflow: ellipsis;
@@ -570,8 +570,8 @@ html.dark .lite-server-card {
   border: 1px solid rgba(255, 255, 255, 0.25);
   border-radius: 999px;
   background: var(--card-bg);
-  font-size: 10.5px;
-  line-height: 14px;
+  font-size: 11px;
+  line-height: 15px;
   color: var(--probe-accent);
   text-align: center;
   text-overflow: ellipsis;
@@ -615,7 +615,7 @@ html[lang="zh-TW"] .lite-probe-row__return {
   display: flex;
   align-items: baseline;
   gap: 8px;
-  height: 13px;
+  height: 14px;
 }
 
 .lite-latency-bars {
@@ -670,7 +670,7 @@ html[lang="zh-TW"] .lite-probe-row__return {
 }
 
 .lite-probe-row__viz-delay b {
-  font-size: 10.5px;
+  font-size: 11px;
   font-weight: 650;
   line-height: 1;
   letter-spacing: -0.2px;
@@ -690,7 +690,7 @@ html[lang="zh-TW"] .lite-probe-row__return {
 }
 
 .lite-probe-row__viz-delay small {
-  font-size: 8.5px;
+  font-size: 9px;
   font-weight: 400;
   line-height: 1;
   color: var(--card-muted);
@@ -702,9 +702,9 @@ html[lang="zh-TW"] .lite-probe-row__return {
   min-width: 0;
   align-items: baseline;
   justify-content: flex-end;
-  font-size: 9.5px;
+  font-size: 10px;
   font-weight: 550;
-  line-height: 13px;
+  line-height: 14px;
   color: var(--card-secondary);
   white-space: nowrap;
 }

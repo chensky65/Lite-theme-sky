@@ -265,7 +265,7 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   assert.match(css, /\.lite-probe-row__return \{[\s\S]*?width:\s*56px/)
   assert.match(css, /\.lite-probe-row__return \{[\s\S]*?padding:\s*1px 3px/)
   assert.match(css, /\.lite-probe-row__return \{[\s\S]*?text-align:\s*center/)
-  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?min-height:\s*32px/)
+  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?min-height:\s*34px/)
   assert.match(css, /\.lite-probe-row__main \{[\s\S]*?justify-content:\s*center/)
   assert.match(css, /\.lite-probe-row__viz \{[\s\S]*?flex:\s*1 1 0/)
   assert.match(css, /\.lite-probe-row__viz \{[\s\S]*?min-width:\s*124px/)
