@@ -123,7 +123,7 @@
     "packetLoss": "丟包率",
     "recentHour": "最近 1 小時",
     "returnRoute": "回程",
-    "returnRouteTag": "回程 · {{line}}",
+    "returnRouteTag": "{{line}}",
     "route": "線路",
     "sampleFill": "最近 1 小時有效取樣率 {{percent}}%",
     "stg": "儲存",
