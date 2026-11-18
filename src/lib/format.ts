@@ -47,3 +47,14 @@ export function formatDelayAxisTick(value: number, compact = false): string {
   }
   return `${n.toFixed(2)}ms`
 }
+
+/** Format a duration in seconds as days + hours + minutes. */
+export function formatStatusDuration(totalSeconds: number): string {
+  const seconds = Math.max(0, Math.floor(totalSeconds))
+  const days = Math.floor(seconds / 86400)
+  const hours = Math.floor((seconds % 86400) / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  if (days > 0) return `${days}天${hours}小时${minutes}分钟`
+  if (hours > 0) return `${hours}小时${minutes}分钟`
+  return `${minutes}分钟`
+}

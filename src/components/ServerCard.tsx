@@ -2,7 +2,7 @@ import ServerFlag from "@/components/ServerFlag"
 import OsLogo from "@/components/OsLogo"
 import ServerLatencySummary from "@/components/ServerLatencySummary"
 import TrafficBar from "@/components/TrafficBar"
-import { formatBytes, formatSpeed, splitFormattedMeasure } from "@/lib/format"
+import { formatBytes, formatSpeed, formatStatusDuration, splitFormattedMeasure } from "@/lib/format"
 import type { HomeLatencyTaskSummary } from "@/lib/home-latency"
 import type { PublicReturnRoute } from "@/lib/home-return-route"
 import { saveHomeScroll } from "@/lib/home-scroll"
@@ -113,11 +113,8 @@ export default function ServerCard({
             <span className="min-w-0 flex-1">
               <strong className="lite-server-card__name block truncate" title={info.name}>{info.name}</strong>
             </span>
-            <span className={cn("lite-server-card__signal", !info.online && "lite-server-card__signal--offline")} title={info.online ? t("online") : t("offline")}>
-              <span />
-              <span />
-              <span />
-              <span />
+            <span className={cn("lite-server-card__duration", !info.online && "lite-server-card__duration--offline")} title={info.online ? t("online") : t("offline")}>
+              {formatStatusDuration(info.statusDurationSeconds)}
             </span>
             <span className="lite-server-card__os-badge">
               <OsLogo osName={systemName} className="size-[20px]" />

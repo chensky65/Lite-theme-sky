@@ -261,7 +261,7 @@ html.dark .lite-server-card {
 }
 
 /* OS logo badge: the logo sits right after the country flag, clean with no
-   status decoration. Status is shown by the signal bars at the card's
+   status decoration. Status is shown by the duration badge at the card's
    top-right corner instead. */
 .lite-server-card__os-badge {
   position: relative;
@@ -274,31 +274,26 @@ html.dark .lite-server-card {
   height: 20px;
 }
 
-/* Online status as iPhone-style signal bars: four ascending bars at the
-   card's top-right corner (green = online, red = offline). iPhone format:
-   3px wide, 2px gap, heights 4/6/9/12px, total height 12px. */
-.lite-server-card__signal {
-  display: inline-flex;
+/* Online status as an always-on duration badge: how long the server has been
+   in its current state, e.g. "12天5小时30分钟". Green = online, red = offline. */
+.lite-server-card__duration {
   flex-shrink: 0;
-  align-items: flex-end;
   align-self: center;
-  gap: 2px;
-  height: 12px;
+  padding: 1px 7px;
+  border: 1px solid rgba(34, 197, 94, 0.55);
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.10);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 15px;
+  color: #22c55e;
+  white-space: nowrap;
 }
 
-.lite-server-card__signal > span {
-  width: 3px;
-  border-radius: 1px;
-  background: #22c55e;
-}
-
-.lite-server-card__signal > span:nth-child(1) { height: 4px; }
-.lite-server-card__signal > span:nth-child(2) { height: 6px; }
-.lite-server-card__signal > span:nth-child(3) { height: 9px; }
-.lite-server-card__signal > span:nth-child(4) { height: 12px; }
-
-.lite-server-card__signal--offline > span {
-  background: #ff5630;
+.lite-server-card__duration--offline {
+  border-color: rgba(255, 86, 48, 0.55);
+  background: rgba(255, 86, 48, 0.10);
+  color: #ff5630;
 }
 
 .lite-server-card__rates {
@@ -466,7 +461,7 @@ html.dark .lite-server-card {
   flex-direction: column;
   gap: 8px;
   margin-top: auto;
-  padding: 8px 4px;
+  padding: 4px;
   border: 1px dashed rgba(255, 255, 255, 0.18);
   border-radius: 10px;
 }
@@ -477,6 +472,8 @@ html.dark .lite-server-card {
   display: flex;
   width: 100%;
   min-width: 0;
+  height: 39px;
+  box-sizing: border-box;
   align-items: center;
   gap: 8px;
   padding: 0 2px;

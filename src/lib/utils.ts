@@ -26,6 +26,13 @@ export function formatLiteInfo(now: number, serverInfo: LiteServer) {
     typeof serverInfo.online === "boolean"
       ? serverInfo.online
       : Number.isFinite(lastActiveTime) && lastActiveTime > 0 && now - lastActiveTime <= 30000
+  // Duration of the current status in seconds: system uptime while online,
+  // time since last report while offline.
+  const statusDurationSeconds = onlineFlag
+    ? serverInfo.state.uptime || 0
+    : lastActiveTime > 0
+      ? Math.max(0, (now - lastActiveTime) / 1000)
+      : 0
   return {
     ...serverInfo,
     cpu: serverInfo.state.cpu || 0,
@@ -35,6 +42,7 @@ export function formatLiteInfo(now: number, serverInfo: LiteServer) {
     last_active_time_string: lastActiveTime ? dayjs(lastActiveTime).format("YYYY-MM-DD HH:mm:ss") : "",
     online: onlineFlag,
     uptime: serverInfo.state.uptime || 0,
+    statusDurationSeconds,
     version: serverInfo.host.version || null,
     tcp: serverInfo.state.tcp_conn_count || 0,
     udp: serverInfo.state.udp_conn_count || 0,
