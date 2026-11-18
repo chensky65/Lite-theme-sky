@@ -13,7 +13,7 @@ import { readHomeLatencyCache } from "@/lib/home-latency"
 import { retainFocusedTasks, toggleFocusedTask, visibleProbeTasks } from "@/lib/fit-chips"
 import { clampPage, compactPageList, filterTasksByName, pageCount, paginateItems, unionTaskNames } from "@/lib/probe-task-picker"
 import { selectedTaskSampleCount } from "@/lib/probe-samples"
-import { pickBestProbeTask } from "@/lib/probe-route"
+import { evaluateProbeRouteStatus, pickBestProbeTask } from "@/lib/probe-route"
 import { monitorNameForId, nextActiveCharts } from "@/lib/probe-chart-selection"
 import { MONITOR_STALE_TIME_MS, monitorQueryKey } from "@/lib/prefetch-monitor"
 import { monitorsFromHomeLatency } from "@/lib/ping-display"
@@ -442,6 +442,7 @@ export const NetworkChartClient = React.memo(function NetworkChart({
     )
     const packetLoss = sampleWeight > 0 ? weightedLoss / sampleWeight : null
     const bestTask = pickBestProbeTask(selectedTaskSummaries)
+    const routeStatus = evaluateProbeRouteStatus(bestTask, selectedTaskSummaries)
     const lastUpdated = selectedTaskSummaries.reduce<number | null>(
       (latest, summary) => summary.lastUpdated !== null && (latest === null || summary.lastUpdated > latest) ? summary.lastUpdated : latest,
       null,
@@ -454,6 +455,7 @@ export const NetworkChartClient = React.memo(function NetworkChart({
       availability: packetLoss === null ? null : Math.max(0, 100 - packetLoss),
       sampleCount,
       bestTask,
+      routeStatus,
       lastUpdated,
     }
   }, [selectedTaskSummaries])
@@ -1024,7 +1026,17 @@ export const NetworkChartClient = React.memo(function NetworkChart({
               </span>
               <span><SplitText value={summary.currentDelay} digits={2} unit="ms" /></span>
               <span><SplitText value={summary.averageDelay} digits={2} unit="ms" /></span>
-              <span className={summary.packetLoss && summary.packetLoss > 0 ? "is-loss-alert" : undefined}><SplitText value={summary.packetLoss} digits={1} unit="%" /></span>
+              <span
+                className={
+                  summary.packetLoss && summary.packetLoss > 5
+                    ? "is-loss-danger"
+                    : summary.packetLoss && summary.packetLoss > 0
+                      ? "is-loss-alert"
+                      : undefined
+                }
+              >
+                <SplitText value={summary.packetLoss} digits={1} unit="%" />
+              </span>
               <span><SplitText value={completenessPercent(completenessByTask[summary.name])} digits={0} unit="%" /></span>
               <span className="lite-task-table__updated">{summary.lastUpdated === null ? "--" : formatCompactTime(summary.lastUpdated)}</span>
             </div>
@@ -1099,9 +1111,39 @@ export const NetworkChartClient = React.memo(function NetworkChart({
           </div>
           <div>
             <span>{t("monitor.routeStatus")}</span>
-            <strong className={overviewMetrics.bestTask?.healthy ? "is-stable" : undefined}>
-              <i className="lite-task-dot" style={{ background: overviewMetrics.bestTask?.healthy ? "var(--lite-online)" : "var(--lite-offline)" }} />
-              {overviewMetrics.bestTask?.healthy ? t("monitor.stable") : t("monitor.noStatus")}
+            <strong
+              className={
+                overviewMetrics.routeStatus.tone === "green"
+                  ? "is-stable"
+                  : overviewMetrics.routeStatus.tone === "amber"
+                    ? "is-jitter"
+                    : overviewMetrics.routeStatus.tone === "coral"
+                      ? "is-degraded"
+                      : "is-muted"
+              }
+            >
+              <i
+                className="lite-task-dot"
+                style={{
+                  background:
+                    overviewMetrics.routeStatus.tone === "green"
+                      ? "var(--lite-online)"
+                      : overviewMetrics.routeStatus.tone === "amber"
+                        ? "#ea9215"
+                        : overviewMetrics.routeStatus.tone === "coral"
+                          ? "var(--lite-offline)"
+                          : "var(--home-muted, var(--lite-muted))",
+                }}
+              />
+              {overviewMetrics.routeStatus.status === "stable"
+                ? t("monitor.stable")
+                : overviewMetrics.routeStatus.status === "jitter"
+                  ? t("monitor.jitter")
+                  : overviewMetrics.routeStatus.status === "degraded"
+                    ? t("monitor.degraded")
+                    : overviewMetrics.routeStatus.status === "outage"
+                      ? t("monitor.outage")
+                      : t("monitor.noStatus")}
             </strong>
           </div>
         </div>

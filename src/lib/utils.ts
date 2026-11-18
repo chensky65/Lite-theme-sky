@@ -1,6 +1,7 @@
 import { SharedClient } from "@/hooks/use-rpc2"
 import { detectCanadianDollarCurrency, detectHongKongDollarCurrency, getStaticCurrencyLabel } from "@/lib/currency-label"
 import { formatBytes } from "@/lib/format"
+import { liveTrafficView, recordServerTraffic } from "@/lib/live-traffic"
 import { leftoverStatusUuids, listLiteNodes, resolveLiteServerEntries } from "@/lib/lite-node-list"
 import { uuidToNumber } from "@/lib/server-route"
 import { mergeThemeBillingDataMod, remainingExpiryDaysCeil, resolveThemeBillingStartDate } from "@/lib/theme-billing"
@@ -59,6 +60,9 @@ export function formatLiteInfo(now: number, serverInfo: LiteServer) {
     traffic_limit: serverInfo.traffic_limit || 0,
     traffic_limit_type: serverInfo.traffic_limit_type || "sum",
     traffic_reset_day: serverInfo.traffic_reset_day || 0,
+    traffic_reset_time: serverInfo.traffic_reset_time || "",
+    traffic_reset_timezone: serverInfo.traffic_reset_timezone || "",
+    traffic_reset_at: serverInfo.traffic_reset_at || "",
     expired_at: serverInfo.expired_at || "",
     expiry_timezone: serverInfo.expiry_timezone || "",
   }
@@ -543,10 +547,20 @@ export const normalizeLiteServerStatus = (data: any, nodes: Record<string, any>)
     })
   }
 
+  const now = Date.now()
+  let hasExpiredResetAt = false
+
   const servers: any[] = entries.map((entry) => {
     const { uuid, node: server, status } = entry
     const countryCode = server?.region ? countryFlagToCode(String(server.region)) : ""
     const trafficResetDay = resolveTrafficResetDay(server)
+    const trafficResetAt = typeof server?.traffic_reset_at === "string" ? server.traffic_reset_at.trim() : ""
+    if (trafficResetAt) {
+      const parsedResetAt = Date.parse(trafficResetAt)
+      if (Number.isFinite(parsedResetAt) && parsedResetAt <= now) {
+        hasExpiredResetAt = true
+      }
+    }
 
     const bootTime = status ? new Date(status.time).getTime() / 1000 - (status.uptime || 0) : 0
 
@@ -604,9 +618,14 @@ export const normalizeLiteServerStatus = (data: any, nodes: Record<string, any>)
           gpu: [],
         }
 
+    const id = uuidToNumber(uuid)
+    const online = status ? status.online === true : false
+    const liveView = liveTrafficView(online, state.net_out_speed / 1024 / 1024, state.net_in_speed / 1024 / 1024)
+    recordServerTraffic(id, liveView.up, liveView.down, now)
+
     return {
       uuid,
-      id: uuidToNumber(uuid),
+      id,
       name: server.name,
       public_note: buildPublicNoteFromNode(server, server.public_remark || ""),
       last_active: status && status.time ? status.time : "0000-00-00T00:00:00Z",
@@ -617,19 +636,28 @@ export const normalizeLiteServerStatus = (data: any, nodes: Record<string, any>)
       traffic_limit: server.traffic_limit || 0,
       traffic_limit_type: server.traffic_limit_type || "sum",
       traffic_reset_day: trafficResetDay || 0,
+      traffic_reset_time: typeof server.traffic_reset_time === "string" ? server.traffic_reset_time : "",
+      traffic_reset_timezone: typeof server.traffic_reset_timezone === "string" ? server.traffic_reset_timezone : "",
+      traffic_reset_at: trafficResetAt,
       expired_at: server.expired_at || "",
       expiry_timezone: typeof server.expiry_timezone === "string" ? server.expiry_timezone : "",
       remaining_value: typeof server.remaining_value === "string" ? server.remaining_value : "",
       remaining_value_currency: typeof server.remaining_value_currency === "string" ? server.remaining_value_currency : "",
-      online: status ? status.online === true : false,
+      online,
       tags: typeof server.tags === "string" ? server.tags : "",
       bandwidth: typeof server.bandwidth === "string" ? server.bandwidth.trim() : "",
       currency: typeof server.currency === "string" ? server.currency : "",
     }
   })
 
+  if (hasExpiredResetAt && leftover.length === 0) {
+    getLiteNodes(true).catch(() => {
+      // 下一轮轮询继续尝试刷新节点表
+    })
+  }
+
   return {
-    now: Date.now(),
+    now,
     servers,
   }
 }

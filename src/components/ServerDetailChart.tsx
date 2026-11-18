@@ -6,7 +6,7 @@ import { formatBytes, formatClockTime, formatSpeed, splitFormattedMeasure } from
 import { historyRefetchMs } from "@/lib/history-range"
 import { fetchResourceHistory, type ResourceHistoryPoint } from "@/lib/lite-api"
 import { clampPercent } from "@/lib/resource-history"
-import { liveTrafficView, recordHomeTraffic, type TrafficSample } from "@/lib/live-traffic"
+import { liveTrafficView, recordServerTraffic, type TrafficSample } from "@/lib/live-traffic"
 import { dualSeriesDomain, seriesPath } from "@/lib/sparkline"
 import { trafficHoverIndex } from "@/lib/traffic-hover"
 import { METER_TONE_COLOR, resourceUsageTone } from "@/lib/meter-tone"
@@ -299,7 +299,7 @@ export default function ServerDetailChart({ server_id, show = true }: { server_i
   const trafficSamples = useMemo(() => {
     if (!server || !websocketData) return []
     const view = liveTrafficView(formatLiteInfo(websocketData.now, server).online, server.state.net_out_speed / 1024 / 1024, server.state.net_in_speed / 1024 / 1024)
-    return recordHomeTraffic(view.up, view.down, websocketData.now)
+    return recordServerTraffic(server.id, view.up, view.down, websocketData.now)
   }, [server, websocketData])
 
   if ((!connected && !lastMessage) || !websocketData || !server) return <ServerDetailChartLoading />
@@ -349,7 +349,7 @@ export default function ServerDetailChart({ server_id, show = true }: { server_i
             </div>
           </div>
           <div className="lite-traffic-plot">
-            <TrafficChart samples={trafficSamples} />
+            <TrafficChart key={server_id} samples={trafficSamples} />
           </div>
           <div className="lite-quota" aria-label={t("serverDetail.trafficUsage")}>
             <div className="lite-quota__label">

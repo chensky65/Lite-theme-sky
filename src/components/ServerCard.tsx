@@ -1,5 +1,4 @@
 import ServerFlag from "@/components/ServerFlag"
-import OsLogo from "@/components/OsLogo"
 import ServerLatencySummary from "@/components/ServerLatencySummary"
 import TrafficBar from "@/components/TrafficBar"
 import { formatBytes, formatSpeed, splitFormattedMeasure } from "@/lib/format"
@@ -30,8 +29,8 @@ function resourceFill(percent: number, swatch: string) {
   return swatch
 }
 
-function ResourceMetric({ label, value, unit, percent, swatch, minWidth = 0 }: { label: string; value: string; unit?: string; percent: number; swatch: string; minWidth?: number }) {
-  const width = Math.max(minWidth, Math.min(100, Math.max(0, percent)))
+function ResourceMetric({ label, value, unit, percent, swatch }: { label: string; value: string; unit?: string; percent: number; swatch: string }) {
+  const width = Math.min(100, Math.max(0, percent))
   return (
     <div>
       <div className="lite-server-card__metric-label">
@@ -112,15 +111,13 @@ export default function ServerCard({
             <ServerFlag country_code={info.country_code} className="h-[18px] w-[26px] rounded-[3px]" />
             <span className="min-w-0 flex-1">
               <strong className="lite-server-card__name block truncate" title={info.name}>{info.name}</strong>
+              <span className="lite-server-card__subtitle block truncate">
+                {systemName} · {info.arch || "--"}
+              </span>
             </span>
-            <span className={cn("lite-server-card__signal", !info.online && "lite-server-card__signal--offline")} title={info.online ? t("online") : t("offline")}>
-              <span />
-              <span />
-              <span />
-              <span />
-            </span>
-            <span className="lite-server-card__os-badge">
-              <OsLogo osName={systemName} className="size-[20px]" />
+            <span className={cn("lite-server-card__status inline-flex shrink-0 items-center gap-1.5 self-start", info.online ? "lite-server-card__status--online" : "lite-server-card__status--offline")}>
+              <i className={cn("size-[5px] rounded-full", info.online ? "bg-[var(--card-green)]" : "bg-[var(--card-danger)]")} />
+              {info.online ? t("online") : t("offline")}
             </span>
           </div>
           <div className="lite-server-card__rates">
@@ -142,7 +139,7 @@ export default function ServerCard({
             <ResourceMetric label="CPU" value={info.cpu.toFixed(1)} unit="%" percent={info.cpu} swatch={RESOURCE_SWATCH.cpu} />
             <ResourceMetric label={t("serverCard.mem")} value={info.mem.toFixed(1)} unit="%" percent={info.mem} swatch={RESOURCE_SWATCH.memory} />
             <ResourceMetric label={t("serverCard.stg")} value={info.stg.toFixed(1)} unit="%" percent={info.stg} swatch={RESOURCE_SWATCH.storage} />
-            <ResourceMetric label={t("serverCard.load")} value={String(info.load_1)} percent={loadUsagePercent(info.load_1, info.cpu_cores)} swatch={RESOURCE_SWATCH.load} minWidth={3} />
+            <ResourceMetric label={t("serverCard.load")} value={String(info.load_1)} percent={loadUsagePercent(info.load_1, info.cpu_cores)} swatch={RESOURCE_SWATCH.load} />
           </section>
 
           {showProbeWindow ? (
@@ -162,7 +159,16 @@ export default function ServerCard({
         {showTraffic || showFooter ? (
           <div className="lite-server-card__bottom">
             {showTraffic ? (
-              <TrafficBar used={trafficUsed} limit={info.traffic_limit} resetDay={info.traffic_reset_day} limitType={info.traffic_limit_type} />
+              <TrafficBar
+                used={trafficUsed}
+                limit={info.traffic_limit}
+                resetDay={info.traffic_reset_day}
+                resetTime={info.traffic_reset_time}
+                resetTimezone={info.traffic_reset_timezone}
+                resetAt={info.traffic_reset_at}
+                now={now}
+                limitType={info.traffic_limit_type}
+              />
             ) : null}
             {showFooter ? (
               <footer className="lite-server-card__footer">

@@ -1,7 +1,14 @@
 import assert from "node:assert/strict"
+import { readFileSync } from "node:fs"
 import test from "node:test"
 
-import { liveTrafficView, recordHomeTraffic, resetHomeTraffic } from "../src/lib/live-traffic.ts"
+import {
+  liveTrafficView,
+  recordHomeTraffic,
+  recordServerTraffic,
+  resetHomeTraffic,
+  resetServerTraffic,
+} from "../src/lib/live-traffic.ts"
 import { seriesPath } from "../src/lib/sparkline.ts"
 
 test("records a visible live-traffic line on the first sample", () => {
@@ -38,4 +45,24 @@ test("keeps live speeds and the live label while the node is online", () => {
 
 test("zeroes the speeds and drops the live label once the node is offline", () => {
   assert.deepEqual(liveTrafficView(false, 1.5, 2.5), { live: false, up: 0, down: 0 })
+})
+
+test("isolates server detail live-traffic curves from global homepage traffic and other servers", () => {
+  resetHomeTraffic()
+  resetServerTraffic()
+
+  recordHomeTraffic(50, 80, 10_000)
+  recordHomeTraffic(60, 90, 15_000)
+
+  const serverA = recordServerTraffic("node-a", 0.15, 0.95, 15_000)
+  const serverB = recordServerTraffic("node-b", 4.2, 8.4, 15_000)
+
+  assert.equal(serverA.length, 2)
+  assert.equal(serverA[0].up, 0.15)
+  assert.equal(serverA[1].down, 0.95)
+  assert.equal(serverB[1].up, 4.2)
+
+  const detailChart = readFileSync(new URL("../src/components/ServerDetailChart.tsx", import.meta.url), "utf8")
+  assert.match(detailChart, /recordServerTraffic\(/)
+  assert.doesNotMatch(detailChart, /recordHomeTraffic/)
 })

@@ -16,6 +16,9 @@ export interface LiteServer {
   traffic_limit?: number
   traffic_limit_type?: string
   traffic_reset_day?: number
+  traffic_reset_time?: string
+  traffic_reset_timezone?: string
+  traffic_reset_at?: string
   expired_at?: string
   expiry_timezone?: string
   // Lite 节点接口剩余价值和原币种；长期/未配置时省略。

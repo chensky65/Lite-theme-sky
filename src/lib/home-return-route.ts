@@ -88,3 +88,29 @@ export function hasPublicReturnRoute(route?: PublicReturnRoute | null): boolean 
   if (!route) return false
   return route.lines.length > 0 || route.tasks.length > 0 || route.suspectedBlocked
 }
+
+export type PublicReturnBlockBadge = "high" | "suspected" | null
+
+export function returnBlockBadgeForRoute(route?: PublicReturnRoute | null): PublicReturnBlockBadge {
+  if (!route?.suspectedBlocked) return null
+  return route.highConfidence ? "high" : "suspected"
+}
+
+export type ReturnRoutePillTone = "cmin2" | "cn2" | "cug" | "plain"
+
+export function returnRoutePillTone(line: string): ReturnRoutePillTone {
+  const normalized = String(line || "").trim().toUpperCase()
+  if (!normalized) return "plain"
+  if (normalized === "CMIN2" || normalized === "CMI") return "cmin2"
+  if (normalized === "CN2 GIA" || normalized === "CN2 GT" || normalized === "CN2") return "cn2"
+  if (
+    normalized === "CUG VIP" ||
+    normalized === "CUG 优化" ||
+    normalized === "9929" ||
+    normalized === "10099" ||
+    normalized === "CUG"
+  ) {
+    return "cug"
+  }
+  return "plain"
+}
