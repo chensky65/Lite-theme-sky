@@ -1,4 +1,5 @@
 import ServerFlag from "@/components/ServerFlag"
+import OsLogo from "@/components/OsLogo"
 import ServerLatencySummary from "@/components/ServerLatencySummary"
 import TrafficBar from "@/components/TrafficBar"
 import { formatBytes, formatSpeed, splitFormattedMeasure } from "@/lib/format"
@@ -111,13 +112,15 @@ export default function ServerCard({
             <ServerFlag country_code={info.country_code} className="h-[18px] w-[26px] rounded-[3px]" />
             <span className="min-w-0 flex-1">
               <strong className="lite-server-card__name block truncate" title={info.name}>{info.name}</strong>
-              <span className="lite-server-card__subtitle block truncate">
-                {systemName} · {info.arch || "--"}
-              </span>
             </span>
-            <span className={cn("lite-server-card__status inline-flex shrink-0 items-center gap-1.5 self-start", info.online ? "lite-server-card__status--online" : "lite-server-card__status--offline")}>
-              <i className={cn("size-[5px] rounded-full", info.online ? "bg-[var(--card-green)]" : "bg-[var(--card-danger)]")} />
-              {info.online ? t("online") : t("offline")}
+            <span className={cn("lite-server-card__signal", !info.online && "lite-server-card__signal--offline")} title={info.online ? t("online") : t("offline")}>
+              <span />
+              <span />
+              <span />
+              <span />
+            </span>
+            <span className="lite-server-card__os-badge">
+              <OsLogo osName={systemName} className="size-[20px]" />
             </span>
           </div>
           <div className="lite-server-card__rates">
