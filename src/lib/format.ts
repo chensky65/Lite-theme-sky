@@ -37,6 +37,33 @@ export function formatClockTime(timestamp: number): string {
   return `${hours}:${minutes}`
 }
 
+/** Split a status duration into capsule parts: online shows days only
+ * (a single hours part under a day), offline shows hours, minutes and
+ * seconds (one part each). The badge ticks live (see ServerCard), so
+ * offline seconds visibly advance like a clock. */
+export interface StatusDurationCard {
+  value: string
+  unit: string
+}
+export function getStatusDurationCards(totalSeconds: number, online: boolean): StatusDurationCard[] {
+  const seconds = Math.max(0, Math.floor(totalSeconds))
+  if (online) {
+    const days = Math.floor(seconds / 86400)
+    const hours = Math.floor((seconds % 86400) / 3600)
+    if (days > 0) return [{ value: String(days), unit: "天" }]
+    return [{ value: String(hours), unit: "小时" }]
+  }
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const secs = seconds % 60
+  const pad = (n: number) => String(n).padStart(2, "0")
+  return [
+    { value: pad(hours), unit: "小时" },
+    { value: pad(minutes), unit: "分" },
+    { value: pad(secs), unit: "秒" },
+  ]
+}
+
 export function formatDelayAxisTick(value: number, compact = false): string {
   const n = Number(value)
   if (!Number.isFinite(n)) return ""
@@ -48,13 +75,3 @@ export function formatDelayAxisTick(value: number, compact = false): string {
   return `${n.toFixed(2)}ms`
 }
 
-/** Format a duration in seconds as days + hours + minutes. */
-export function formatStatusDuration(totalSeconds: number): string {
-  const seconds = Math.max(0, Math.floor(totalSeconds))
-  const days = Math.floor(seconds / 86400)
-  const hours = Math.floor((seconds % 86400) / 3600)
-  const minutes = Math.floor((seconds % 3600) / 60)
-  if (days > 0) return `${days}天${hours}小时${minutes}分钟`
-  if (hours > 0) return `${hours}小时${minutes}分钟`
-  return `${minutes}分钟`
-}

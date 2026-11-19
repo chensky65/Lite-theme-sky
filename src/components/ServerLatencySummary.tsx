@@ -76,29 +76,27 @@ function TaskProbeRow({
         </span>
       </span>
       <span className="lite-probe-row__viz">
-        <span className="lite-probe-row__viz-nums">
+        <span className="lite-probe-row__viz-col">
           <span className="lite-probe-row__viz-delay">
             <b className="tabular-nums" data-tone={delayTone}>{latency.value}</b>
             {latency.unit ? <small>{latency.unit}</small> : null}
           </span>
-          {showPacketLoss ? (
-            <span className="lite-probe-row__viz-loss" title={`${lossLabel} ${packetLoss}`}>
-              <b className="tabular-nums">{packetLoss}</b>
-            </span>
-          ) : null}
-        </span>
-        <span className="lite-probe-row__viz-bars">
           <LatencyHistoryBars
             values={summary.latencyHistory}
             label={`${summary.taskName} ${t("serverCard.latency")} ${latencyLabel}`}
           />
-          {showPacketLoss ? (
+        </span>
+        {showPacketLoss ? (
+          <span className="lite-probe-row__viz-col">
+            <span className="lite-probe-row__viz-loss" title={`${lossLabel} ${packetLoss}`}>
+              <b className="tabular-nums">{packetLoss}</b>
+            </span>
             <PacketLossHistoryBars
               values={summary.packetLossHistory}
               label={`${summary.taskName} ${lossLabel} ${packetLoss}`}
             />
-          ) : null}
-        </span>
+          </span>
+        ) : null}
       </span>
     </button>
   )
@@ -159,8 +157,25 @@ export default function ServerLatencySummary({
       data-testid="server-latency-summary"
     >
       <div className="lite-server-card__quality-title">
-        <h3>{t("serverCard.networkQuality")}</h3>
-        <span>{t("serverCard.recentHour")}</span>
+        <h3>
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
+            <rect x="1" y="11" width="3" height="4" rx="1" />
+            <rect x="5" y="8" width="3" height="7" rx="1" />
+            <rect x="9" y="5" width="3" height="10" rx="1" />
+            <rect x="13" y="2" width="3" height="13" rx="1" />
+          </svg>
+          {t("serverCard.networkQuality")}
+        </h3>
+        <span>
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
+            <circle cx="8" cy="8" r="6.5" />
+            <path d="M8 4.5V8l2.5 1.5" />
+          </svg>
+          {t("serverCard.recentHour")}
+          <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M6 3.5 10.5 8 6 12.5" />
+          </svg>
+        </span>
       </div>
       {displayed.length > 0 ? (
         <div

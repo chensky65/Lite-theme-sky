@@ -55,8 +55,12 @@ test("load bars use per-core load instead of the CPU model name count", () => {
   assert.equal(resourceUsageTone(loadUsagePercent(3.6, 4)), "coral")
   assert.match(utils, /cpu_cores: Number\(server\.cpu_cores\) \|\| 0/)
   assert.match(serverCard, /loadUsagePercent\(info\.load_1, info\.cpu_cores\)/)
-  assert.match(serverCard, /resourceUsageTone/)
-  assert.match(serverCard, /RESOURCE_SWATCH\.(cpu|memory|storage|load)/)
+  // Resource bars use fixed per-resource colors now (the redesigned card),
+  // so the card no longer colors them by usage tone; the load width still
+  // comes from the per-core percent above.
+  assert.match(serverCard, /RESOURCE_SWATCH\.(cpu|memory|storage)/)
+  assert.match(serverCard, /RESOURCE_SWATCH/)
+  assert.doesNotMatch(serverCard, /resourceUsageTone/)
   assert.match(css, /--card-accent: #078dee/)
   assert.match(css, /--card-green: #22c55e/)
   assert.match(css, /--card-danger: #ff5630/)

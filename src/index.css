@@ -248,8 +248,28 @@ html.dark .lite-server-card {
   border-radius: inherit;
 }
 
+/* Status bar: a 2px colored strip on the card's left edge, full brightness
+   (same solid green/red as before, only narrower). Green = online,
+   red = offline. It lives on the frame so the card hover glow (which
+   recolors the article border) never touches it. */
+.lite-server-card[data-online="true"] .lite-server-card__frame {
+  border-left: 2px solid #22c55e;
+}
+
+.lite-server-card[data-online="false"] .lite-server-card__frame {
+  border-left: 2px solid #ff5630;
+}
+
+.lite-duration-pill svg {
+  width: 13px;
+  height: 13px;
+  flex-shrink: 0;
+  align-self: center;
+  margin-right: 2px;
+}
+
 .lite-server-card__hero {
-  padding: 14px 18px 0;
+  padding: 10px 18px 0;
   background: var(--card-bg);
 }
 
@@ -274,41 +294,75 @@ html.dark .lite-server-card {
   height: 20px;
 }
 
-/* Online status as an always-on duration badge: how long the server has been
-   in its current state, e.g. "12天5小时30分钟". Green = online, red = offline. */
+/* Online status as a single always-on capsule: how long the server has
+   been in its current state. Rounded pill, translucent color background,
+   color text. Green = online, red = offline. Online shows days + hours
+   (a single hours part under a day); offline shows hours, minutes and
+   seconds, side by side. Number and unit share one font size. */
 .lite-server-card__duration {
   flex-shrink: 0;
   align-self: center;
-  padding: 1px 7px;
-  border: 1px solid rgba(34, 197, 94, 0.55);
+  display: flex;
+}
+
+.lite-duration-pill {
+  flex-shrink: 0;
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 4px 10px;
   border-radius: 999px;
-  background: rgba(34, 197, 94, 0.10);
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 15px;
-  color: #22c55e;
+  background: rgba(34, 197, 94, 0.14);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
-.lite-server-card__duration--offline {
-  border-color: rgba(255, 86, 48, 0.55);
-  background: rgba(255, 86, 48, 0.10);
+.lite-duration-pill__part {
+  display: flex;
+  align-items: baseline;
+  gap: 1px;
+}
+
+.lite-duration-pill__num {
+  font-size: 11px;
+  font-weight: 700;
+  color: #22c55e;
+}
+
+.lite-duration-pill__unit {
+  font-size: 11px;
+  color: #22c55e;
+}
+
+.lite-server-card__duration--offline .lite-duration-pill {
+  background: rgba(255, 86, 48, 0.14);
+}
+
+.lite-server-card__duration--offline .lite-duration-pill__num,
+.lite-server-card__duration--offline .lite-duration-pill__unit {
   color: #ff5630;
 }
 
-.lite-server-card__rates {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+/* Network: upload and download as two separate rounded sub-cards,
+   one content per block, inset from the card edges like the traffic card. */
+.lite-server-card__net {
+  display: flex;
   gap: 10px;
   margin-top: 12px;
 }
 
-.lite-server-card__rates > div {
+.lite-server-card__net-cell {
+  flex: 1;
   min-width: 0;
-  padding: 8px 12px;
+  padding: 10px 14px;
   border: 1px solid var(--card-inset-border);
-  border-radius: 10px;
+  border-radius: 16px;
   background: var(--card-inset);
+}
+
+.lite-server-card__net-cell .lite-server-card__speed {
+  font-size: 24px;
 }
 
 .lite-server-card__rate-label {
@@ -334,10 +388,10 @@ html.dark .lite-server-card {
   align-items: baseline;
   gap: 5px;
   margin-top: 3px;
-  font-size: 28px;
+  font-size: 20px;
   font-weight: 800;
   line-height: 1.15;
-  letter-spacing: -0.75px;
+  letter-spacing: -0.5px;
 }
 
 .lite-server-card__speed small {
@@ -365,45 +419,79 @@ html.dark .lite-server-card {
   min-width: 0;
   flex: 1;
   flex-direction: column;
-  padding: 0 18px;
+  gap: 8px;
+  padding: 8px 18px 12px;
 }
 
+/* System strip: CPU / memory / storage / load in one rounded sub-card,
+   four columns, each with an icon, a large number and a thin bar in a
+   fixed per-resource color. */
 .lite-server-card__resources {
   display: grid;
   flex: none;
-  grid-template-columns: 1fr 1fr;
-  column-gap: 16px;
-  row-gap: 8px;
-  padding: 12px 0 0;
+  grid-template-columns: repeat(4, 1fr);
+  padding: 10px 6px;
+  border: 1px solid var(--card-inset-border);
+  border-radius: 16px;
+  background: var(--card-inset);
 }
 
-.lite-server-card__metric-label {
+.lite-server-card__resource {
+  min-width: 0;
+  padding: 0 12px;
+}
+
+.lite-server-card__resource + .lite-server-card__resource {
+  border-left: 1px solid var(--card-line);
+}
+
+.lite-server-card__resource-label {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
+  align-items: center;
+  gap: 6px;
   font-size: 12.5px;
-  font-weight: 700;
-  line-height: 18px;
+  font-weight: 600;
+  line-height: 16px;
   color: var(--card-secondary);
 }
 
-.lite-server-card__metric-label b {
-  font-size: 14px;
+.lite-server-card__resource-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  width: 15px;
+  height: 15px;
+}
+
+.lite-server-card__resource-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.lite-server-card__resource-value {
+  display: block;
+  margin-top: 4px;
+  font-size: 18px;
   font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.5px;
   color: var(--card-text);
 }
 
-.lite-server-card__metric-label small {
+.lite-server-card__resource-value small {
   margin-left: 2px;
-  font-size: 10.5px;
-  font-weight: 400;
+  font-size: 11px;
+  font-weight: 600;
   color: var(--card-muted);
 }
 
+.lite-server-card__resource .lite-server-card__meter {
+  margin-top: 8px;
+}
+
 .lite-server-card__meter {
-  height: 6px;
-  margin-top: 5px;
+  height: 4px;
+  margin-top: 4px;
   overflow: hidden;
   border-radius: 999px;
   background: var(--card-track);
@@ -421,14 +509,19 @@ html.dark .lite-server-card {
 .lite-server-card__fill--amber { background: var(--card-amber); }
 .lite-server-card__fill--danger { background: var(--card-danger); }
 
+/* Network quality as one rounded sub-card, one content per block, inset
+   from the card edges like the traffic card. The header and the probe
+   rows live inside it; the old dashed frame around the rows is gone. */
 .lite-server-card__quality {
   display: flex;
   min-width: 0;
   min-height: 0;
   flex: 1 1 auto;
   flex-direction: column;
-  margin-top: 14px;
-  padding-bottom: 0;
+  padding: 6px 14px 10px;
+  border: 1px solid var(--card-inset-border);
+  border-radius: 16px;
+  background: var(--card-inset);
 }
 
 .lite-server-card__quality-title {
@@ -442,28 +535,50 @@ html.dark .lite-server-card {
   line-height: 20px;
 }
 
+.lite-server-card__quality-title h3 {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+}
+
+.lite-server-card__quality-title h3 svg {
+  width: 15px;
+  height: 15px;
+  color: var(--card-traffic);
+}
+
 .lite-server-card__quality-title span {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   font-size: 11.5px;
   font-weight: 400;
   color: var(--card-muted);
 }
 
-/* Probes: Komari-style vertical list. Each row shows the probe name (plus
-   the return-route line when available), a latency history strip, the
-   current delay and the packet loss, matching the Komari SAO row layout.
-   The rows sit inside a dashed box with equal 8px gaps (8px vertical and
-   4px horizontal padding, so the text sits close to the dashed border),
-   and each row keeps its separator line below it except the last one. */
+.lite-server-card__quality-title span svg {
+  width: 13px;
+  height: 13px;
+  color: var(--card-traffic);
+}
+
+.lite-server-card__quality-title span svg:last-child {
+  width: 11px;
+  height: 11px;
+  color: var(--card-muted);
+}
+
+/* Probe rows sit directly in the quality sub-card, tight with no gap. */
 .lite-server-card__probes {
   display: flex;
   min-width: 0;
   flex: 0 0 auto;
   flex-direction: column;
-  gap: 8px;
   margin-top: auto;
-  padding: 4px;
-  border: 1px dashed rgba(255, 255, 255, 0.18);
-  border-radius: 10px;
 }
 
 .lite-probe-row {
@@ -586,63 +701,51 @@ html[lang="zh-TW"] .lite-probe-row__return {
   font-weight: 700;
 }
 
-/* Probe viz: latency squares and packet-loss circles sit side by side on one
-   line, with each numeric value right-aligned directly above its own strip
-   (delay above latency, loss percent above the loss circles). The viz fills
-   whatever width is left after the name column; each strip takes half, and
-   the 12 dots in a strip share the strip width (4px min, 9px max, square via
-   aspect-ratio), so dots grow on wide cards and shrink on narrow ones
-   without squeezing the name or truncating the return label. */
+/* Probe viz: two columns side by side — latency on the left, packet loss
+   on the right. Each column stacks its own number directly above its own
+   strip, both right-aligned to the column's right edge, so the "ms" unit
+   sits above the latency strip instead of drifting into the middle gap.
+   Adaptive inside the box: the viz takes whatever width the row leaves
+   (flex: 1, min-width: 0), each column takes half of it, and the bars
+   stay 1px while their gaps stretch with space-between — so the strip
+   always fills its column, the "ms" always lands on the strip's tail end,
+   and nothing can ever spill past the box. */
 .lite-probe-row__viz {
   display: flex;
-  min-width: 124px;
   flex: 1 1 0;
-  flex-direction: column;
-  justify-content: center;
-  gap: 2px;
-}
-
-.lite-probe-row[data-loss="false"] .lite-probe-row__viz {
-  flex: 0 1 118px;
-  min-width: 58px;
-}
-
-.lite-probe-row__viz-bars {
-  display: flex;
+  min-width: 0;
   align-items: center;
-  gap: 8px;
+  gap: 16px;
 }
 
-.lite-probe-row__viz-nums {
+.lite-probe-row__viz-col {
   display: flex;
-  align-items: baseline;
-  gap: 8px;
-  height: 14px;
+  flex: 1 1 0;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
 }
 
 .lite-latency-bars {
   display: flex;
-  min-width: 0;
-  flex: 1 1 0;
+  flex: none;
   align-items: center;
+  margin-left: auto;
   gap: 2px;
-  justify-content: space-between;
 }
 
-/* Latency squares / loss circles: 4px min, 9px max. */
+/* Latency squares / loss circles: 4px min, no max — they flex to fill the
+   strip evenly, so no leftover gap is left to spread unevenly. */
 .lite-latency-bars__bar {
-  flex: 1 1 0;
-  min-width: 4px;
-  max-width: 9px;
-  aspect-ratio: 1;
-  height: auto;
-  border-radius: 2px;
+  flex: none;
+  width: 1px;
+  height: 14px;
+  border-radius: 1px;
   background: var(--card-line);
 }
 
-.lite-latency-bars--loss .lite-latency-bars__bar {
-  border-radius: 50%;
-}
+
 
 .lite-latency-bars__bar[data-tone="green"] {
   background: var(--card-green);
@@ -663,11 +766,11 @@ html[lang="zh-TW"] .lite-probe-row__return {
 
 .lite-probe-row__viz-delay {
   display: inline-flex;
-  flex: 1 1 0;
-  min-width: 0;
+  margin-left: auto;
   align-items: baseline;
   justify-content: flex-end;
-  gap: 3px;
+  gap: 2px;
+  height: 14px;
   white-space: nowrap;
 }
 
@@ -692,18 +795,18 @@ html[lang="zh-TW"] .lite-probe-row__return {
 }
 
 .lite-probe-row__viz-delay small {
-  font-size: 9px;
+  font-size: 10px;
   font-weight: 400;
   line-height: 1;
-  color: var(--card-muted);
+  color: var(--card-secondary);
 }
 
 .lite-probe-row__viz-loss {
   display: inline-flex;
-  flex: 1 1 0;
-  min-width: 0;
+  margin-left: auto;
   align-items: baseline;
   justify-content: flex-end;
+  height: 14px;
   font-size: 10px;
   font-weight: 550;
   line-height: 14px;
@@ -721,12 +824,27 @@ html.dark .lite-probe-row__return {
 .lite-server-card__tone--amber { color: var(--card-amber); }
 .lite-server-card__tone--danger { color: var(--card-danger); }
 
-.lite-server-card__quota {
-  margin-top: 12px;
-  padding: 10px 18px 0;
-  border-top: 1px solid var(--card-line);
+/* Bottom: traffic progress-bar card on top, billing card below. The two
+   rows stack (one row could not hold traffic + billing on a narrow card). */
+.lite-server-card__bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
 }
 
+.lite-server-card__traffic-card {
+  padding: 12px 16px;
+  border: 1px solid var(--card-inset-border);
+  border-radius: 16px;
+  background: var(--card-inset);
+}
+
+.lite-server-card__quota {
+  min-width: 0;
+}
+
+/* Traffic line: used / limit on the left, percent right-aligned. */
 .lite-server-card__quota-line {
   display: flex;
   align-items: baseline;
@@ -782,12 +900,12 @@ html.dark .lite-probe-row__return {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  column-gap: 13px;
+  column-gap: 10px;
   row-gap: 6px;
-  min-height: 44px;
-  margin-top: 12px;
-  padding: 10px 18px;
-  border-top: 1px solid var(--card-line);
+  padding: 10px 16px;
+  border: 1px solid var(--card-inset-border);
+  border-radius: 16px;
+  background: var(--card-inset);
   line-height: 20px;
 }
 
@@ -806,19 +924,20 @@ html.dark .lite-probe-row__return {
   display: inline-flex;
   align-items: baseline;
   color: var(--card-text);
-  font-size: 21px;
+  font-size: 24px;
   font-weight: 800;
-  line-height: 20px;
-  letter-spacing: -0.2px;
+  line-height: 26px;
+  letter-spacing: -0.8px;
   white-space: nowrap;
 }
 
 .lite-server-card__footer-price small {
   margin-left: 2px;
   color: var(--card-muted);
-  font-size: 11px;
+  font-size: 14px;
   font-weight: 600;
   line-height: 1;
+  letter-spacing: 0;
 }
 
 .lite-server-card__footer-rule {
@@ -874,22 +993,22 @@ html.dark .lite-server-card__footer-extra {
 .lite-server-card__bandwidth {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   margin-left: auto;
   max-width: 100%;
-  padding: 5px 10px;
-  border: 1px solid var(--card-chip-border);
-  border-radius: 7px;
-  background: var(--card-chip-bg);
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--card-chip-text);
+  padding: 7px 13px;
+  border: none;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #be185d, #9d174d);
+  font-size: 14px;
+  font-weight: 800;
+  color: #fbcfe8;
 }
 
 .lite-server-card__bandwidth svg {
-  width: 12px;
-  height: 12px;
-  color: var(--card-chip-text);
+  width: 13px;
+  height: 13px;
+  color: #fbcfe8;
 }
 
 @container server-card (max-width: 399px) {
@@ -898,26 +1017,23 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-server-card__body {
-    padding-right: 16px;
-    padding-left: 16px;
+    padding: 8px 16px 14px;
   }
 
-  .lite-server-card__rates {
-    gap: 10px;
+  .lite-server-card__net-cell {
+    padding: 10px 12px;
   }
 
-  .lite-server-card__speed {
-    font-size: clamp(24px, 8cqi, 28px);
+  .lite-server-card__net-cell .lite-server-card__speed {
+    font-size: clamp(20px, 7cqi, 24px);
   }
 
   .lite-server-card__resources {
-    column-gap: 14px;
+    padding: 10px 4px;
   }
 
-  .lite-server-card__quota,
-  .lite-server-card__footer {
-    padding-right: 16px;
-    padding-left: 16px;
+  .lite-server-card__resource {
+    padding: 0 8px;
   }
 }
 

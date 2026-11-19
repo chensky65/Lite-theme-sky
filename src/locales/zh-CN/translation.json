@@ -255,6 +255,7 @@
     "system": "跟随系统"
   },
   "traffic": {
+    "remainingTraffic": "剩余流量",
     "resetInDays": "{{count}} 天后重置",
     "resetToday": "今天重置",
     "usedTraffic": "已用流量"

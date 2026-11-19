@@ -66,3 +66,9 @@ test("isolates server detail live-traffic curves from global homepage traffic an
   assert.match(detailChart, /recordServerTraffic\(/)
   assert.doesNotMatch(detailChart, /recordHomeTraffic/)
 })
+
+test("the home card does not wire a per-server wave", () => {
+  const card = readFileSync(new URL("../src/components/ServerCard.tsx", import.meta.url), "utf8")
+  assert.doesNotMatch(card, /TrafficWave/)
+  assert.doesNotMatch(card, /recordServerTraffic/)
+})

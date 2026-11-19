@@ -2,12 +2,12 @@ import ServerFlag from "@/components/ServerFlag"
 import OsLogo from "@/components/OsLogo"
 import ServerLatencySummary from "@/components/ServerLatencySummary"
 import TrafficBar from "@/components/TrafficBar"
-import { formatBytes, formatSpeed, formatStatusDuration, splitFormattedMeasure } from "@/lib/format"
+import { formatBytes, formatSpeed, getStatusDurationCards, splitFormattedMeasure } from "@/lib/format"
 import type { HomeLatencyTaskSummary } from "@/lib/home-latency"
 import type { PublicReturnRoute } from "@/lib/home-return-route"
 import { saveHomeScroll } from "@/lib/home-scroll"
 import { prefetchServerMonitor } from "@/lib/prefetch-monitor"
-import { loadUsagePercent, resourceUsageTone } from "@/lib/meter-tone"
+import { loadUsagePercent } from "@/lib/meter-tone"
 import { RESOURCE_SWATCH } from "@/lib/theme-tokens"
 import { parseCardTags } from "@/lib/server-tags"
 import { GetOsName } from "@/lib/logo-class"
@@ -15,34 +15,65 @@ import { readHideEmptyProbeWindow, readShowServerBandwidth, serverBandwidthLabel
 import { calcTrafficUsed, cn, formatLiteInfo, parsePublicNote } from "@/lib/utils"
 import { LiteServer } from "@/types/lite-api"
 import { useQueryClient } from "@tanstack/react-query"
-import { useCallback } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router-dom"
 
 import PlanInfo from "./PlanInfo"
 import BillingInfo from "./billingInfo"
 
-function resourceFill(percent: number, swatch: string) {
-  const tone = resourceUsageTone(percent)
-  if (tone === "amber") return "var(--card-amber)"
-  if (tone === "coral") return "var(--card-danger)"
-  if (tone === "empty") return "transparent"
-  return swatch
+function CpuIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="4" y="4" width="8" height="8" rx="1.5" />
+      <path d="M6.5 1.5v2M9.5 1.5v2M6.5 12.5v2M9.5 12.5v2M1.5 6.5h2M1.5 9.5h2M12.5 6.5h2M12.5 9.5h2" />
+    </svg>
+  )
 }
 
-function ResourceMetric({ label, value, unit, percent, swatch }: { label: string; value: string; unit?: string; percent: number; swatch: string }) {
+function MemoryIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="2" y="5" width="12" height="6" rx="1.5" />
+      <path d="M5 7.5v1M8 7.5v1M11 7.5v1M5 2.5v1M8 2.5v1M11 2.5v1M5 12.5v1M8 12.5v1M11 12.5v1" />
+    </svg>
+  )
+}
+
+function StorageIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <ellipse cx="8" cy="4" rx="5.5" ry="2.2" />
+      <path d="M2.5 4v8c0 1.2 2.5 2.2 5.5 2.2s5.5-1 5.5-2.2V4" />
+      <path d="M2.5 8c0 1.2 2.5 2.2 5.5 2.2s5.5-1 5.5-2.2" />
+    </svg>
+  )
+}
+
+function LoadIcon() {
+  return (
+    <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <path d="M2.5 12.5a6.5 6.5 0 1 1 11 0" />
+      <path d="M8 11.5 11 8" />
+      <circle cx="8" cy="11.5" r="1" fill="currentColor" stroke="none" />
+    </svg>
+  )
+}
+
+function ResourceMetric({ label, value, unit, percent, color, icon }: { label: string; value: string; unit?: string; percent: number; color: string; icon: React.ReactNode }) {
   const width = Math.min(100, Math.max(0, percent))
   return (
-    <div>
-      <div className="lite-server-card__metric-label">
+    <div className="lite-server-card__resource">
+      <div className="lite-server-card__resource-label">
+        <span className="lite-server-card__resource-icon" style={{ color }}>{icon}</span>
         <span className="truncate">{label}</span>
-        <b className="shrink-0 tabular-nums">
-          {value}
-          {unit ? <small>{unit}</small> : null}
-        </b>
       </div>
+      <b className="lite-server-card__resource-value tabular-nums">
+        {value}
+        {unit ? <small>{unit}</small> : null}
+      </b>
       <div className="lite-server-card__meter" aria-hidden="true">
-        <span style={{ width: `${width}%`, background: resourceFill(percent, swatch) }} />
+        <span style={{ width: `${width}%`, background: color }} />
       </div>
     </div>
   )
@@ -77,6 +108,21 @@ export default function ServerCard({
     [queryClient, serverInfo.id],
   )
   const info = formatLiteInfo(now, serverInfo)
+  // Live-ticking duration badge: the badge counts up every second like a
+  // clock. Anchor on the server-reported duration and re-anchor whenever it
+  // changes (new data arrives); between arrivals add wall-clock seconds
+  // elapsed since the anchor, so minutes/seconds visibly advance.
+  const durationAnchor = useRef({ seconds: info.statusDurationSeconds, at: Date.now() })
+  const [nowMs, setNowMs] = useState(() => Date.now())
+  useEffect(() => {
+    durationAnchor.current = { seconds: info.statusDurationSeconds, at: Date.now() }
+  }, [info.statusDurationSeconds])
+  useEffect(() => {
+    const id = window.setInterval(() => setNowMs(Date.now()), 1000)
+    return () => window.clearInterval(id)
+  }, [])
+  const displayDurationSeconds =
+    durationAnchor.current.seconds + Math.max(0, Math.floor((nowMs - durationAnchor.current.at) / 1000))
   const parsedData = parsePublicNote(info.public_note)
   const systemName = info.platform.includes("Windows") ? "Windows" : GetOsName(info.platform)
   const trafficUsed = calcTrafficUsed(info.net_out_transfer, info.net_in_transfer, info.traffic_limit_type)
@@ -114,19 +160,30 @@ export default function ServerCard({
               <strong className="lite-server-card__name block truncate" title={info.name}>{info.name}</strong>
             </span>
             <span className={cn("lite-server-card__duration", !info.online && "lite-server-card__duration--offline")} title={info.online ? t("online") : t("offline")}>
-              {formatStatusDuration(info.statusDurationSeconds)}
+              <span className="lite-duration-pill">
+                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
+                  <circle cx="8" cy="8" r="6.5" />
+                  <path d="M8 4.5V8l2.5 1.5" />
+                </svg>
+                {getStatusDurationCards(displayDurationSeconds, info.online).map((card, index) => (
+                  <span key={index} className="lite-duration-pill__part">
+                    <span className="lite-duration-pill__num">{card.value}</span>
+                    <span className="lite-duration-pill__unit">{card.unit}</span>
+                  </span>
+                ))}
+              </span>
             </span>
             <span className="lite-server-card__os-badge">
               <OsLogo osName={systemName} className="size-[20px]" />
             </span>
           </div>
-          <div className="lite-server-card__rates">
-            <div className="min-w-0">
+          <div className="lite-server-card__net">
+            <div className="lite-server-card__net-cell min-w-0">
               <span className="lite-server-card__rate-label lite-server-card__rate-label--up"><span>↑</span>{t("serverCard.upload")}</span>
               <SpeedValue text={formatSpeed(info.up)} />
               <span className="lite-server-card__rate-total block truncate tabular-nums">{t("serverCard.cumulative")} {formatBytes(info.net_out_transfer)}</span>
             </div>
-            <div className="min-w-0">
+            <div className="lite-server-card__net-cell min-w-0">
               <span className="lite-server-card__rate-label lite-server-card__rate-label--down"><span>↓</span>{t("serverCard.download")}</span>
               <SpeedValue text={formatSpeed(info.down)} />
               <span className="lite-server-card__rate-total block truncate tabular-nums">{t("serverCard.cumulative")} {formatBytes(info.net_in_transfer)}</span>
@@ -136,10 +193,10 @@ export default function ServerCard({
 
         <div className="lite-server-card__body">
           <section className="lite-server-card__resources">
-            <ResourceMetric label="CPU" value={info.cpu.toFixed(1)} unit="%" percent={info.cpu} swatch={RESOURCE_SWATCH.cpu} />
-            <ResourceMetric label={t("serverCard.mem")} value={info.mem.toFixed(1)} unit="%" percent={info.mem} swatch={RESOURCE_SWATCH.memory} />
-            <ResourceMetric label={t("serverCard.stg")} value={info.stg.toFixed(1)} unit="%" percent={info.stg} swatch={RESOURCE_SWATCH.storage} />
-            <ResourceMetric label={t("serverCard.load")} value={String(info.load_1)} percent={loadUsagePercent(info.load_1, info.cpu_cores)} swatch={RESOURCE_SWATCH.load} />
+            <ResourceMetric label="CPU" value={info.cpu.toFixed(1)} unit="%" percent={info.cpu} color={RESOURCE_SWATCH.cpu} icon={<CpuIcon />} />
+            <ResourceMetric label={t("serverCard.mem")} value={info.mem.toFixed(1)} unit="%" percent={info.mem} color={RESOURCE_SWATCH.memory} icon={<MemoryIcon />} />
+            <ResourceMetric label={t("serverCard.stg")} value={info.stg.toFixed(1)} unit="%" percent={info.stg} color={RESOURCE_SWATCH.storage} icon={<StorageIcon />} />
+            <ResourceMetric label={t("serverCard.load")} value={String(info.load_1)} percent={loadUsagePercent(info.load_1, info.cpu_cores)} color="var(--card-down)" icon={<LoadIcon />} />
           </section>
 
           {showProbeWindow ? (
@@ -154,49 +211,52 @@ export default function ServerCard({
               }}
             />
           ) : null}
-        </div>
 
-        {showTraffic || showFooter ? (
-          <div className="lite-server-card__bottom">
-            {showTraffic ? (
-              <TrafficBar
-                used={trafficUsed}
-                limit={info.traffic_limit}
-                resetDay={info.traffic_reset_day}
-                resetTime={info.traffic_reset_time}
-                resetTimezone={info.traffic_reset_timezone}
-                resetAt={info.traffic_reset_at}
-                now={now}
-                limitType={info.traffic_limit_type}
-              />
-            ) : null}
-            {showFooter ? (
-              <footer className="lite-server-card__footer">
-                {parsedData?.billingDataMod ? (
-                  <BillingInfo
-                    variant="card"
-                    parsedData={parsedData}
-                    remainingValue={serverInfo.remaining_value}
-                    remainingValueCurrency={serverInfo.remaining_value_currency}
+          {showTraffic || showFooter ? (
+            <div className="lite-server-card__bottom">
+              {showTraffic ? (
+                <div className="lite-server-card__traffic-card">
+                  <TrafficBar
+                    used={trafficUsed}
+                    limit={info.traffic_limit}
+                    resetDay={info.traffic_reset_day}
+                    resetTime={info.traffic_reset_time}
+                    resetTimezone={info.traffic_reset_timezone}
+                    resetAt={info.traffic_reset_at}
+                    now={now}
+                    limitType={info.traffic_limit_type}
                   />
-                ) : null}
-                {(showTags || showBandwidth) ? (
-                  <div className="ml-auto flex max-w-full min-w-0 flex-wrap items-center justify-end gap-x-[11px] gap-y-1.5">
-                    {showTags ? <PlanInfo parsedData={parsedData} tags={serverInfo.tags} /> : null}
-                    {showBandwidth ? (
-                      <span className="lite-server-card__bandwidth">
-                        <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
-                          <path d="M2 12h12M4 8.5h8M6.5 5h3" />
-                        </svg>
-                        {bandwidth}
-                      </span>
-                    ) : null}
-                  </div>
-                ) : null}
-              </footer>
-            ) : null}
-          </div>
-        ) : null}
+                </div>
+              ) : null}
+              {showFooter ? (
+                <footer className="lite-server-card__footer">
+                  {parsedData?.billingDataMod ? (
+                    <BillingInfo
+                      variant="card"
+                      parsedData={parsedData}
+                      remainingValue={serverInfo.remaining_value}
+                      remainingValueCurrency={serverInfo.remaining_value_currency}
+                    />
+                  ) : null}
+                  {(showTags || showBandwidth) ? (
+                    <div className="ml-auto flex max-w-full min-w-0 flex-wrap items-center justify-end gap-x-[11px] gap-y-1.5">
+                      {showTags ? <PlanInfo parsedData={parsedData} tags={serverInfo.tags} /> : null}
+                      {showBandwidth ? (
+                        <span className="lite-server-card__bandwidth">
+                          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                            <path d="M5.64 18.36A9 9 0 1 1 18.36 18.36" />
+                            <path d="M12 12.5 16.5 7.5" />
+                          </svg>
+                          {bandwidth}
+                        </span>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </footer>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
       </div>
     </article>
   )

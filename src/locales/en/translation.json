@@ -255,6 +255,7 @@
     "system": "System"
   },
   "traffic": {
+    "remainingTraffic": "Remaining",
     "resetInDays": "Resets in {{count}} days",
     "resetToday": "Resets today",
     "usedTraffic": "Used traffic"

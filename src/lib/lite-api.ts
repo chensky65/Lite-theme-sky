@@ -421,21 +421,21 @@ export async function fetchHomeLatency(entityIds: string[]): Promise<HomeLatency
       {
         entity_ids: uniqueEntityIds,
         hours: 1,
-        max_points: 12,
+        max_points: 30,
       },
       { timeout: 15000 },
     ),
     fetchPublicPingTasks(),
-    fetchPingMetricSeries({ entity_ids: uniqueEntityIds, hours: 1 }, 12).catch(() => null),
+    fetchPingMetricSeries({ entity_ids: uniqueEntityIds, hours: 1 }, 30).catch(() => null),
   ])
 
-  const statsBased = mapPingStatsToHomeLatency(statsResult?.stats || [], tasks)
+  const statsBased = mapPingStatsToHomeLatency(statsResult?.stats || [], tasks, 30)
   // Prefer the real 1-hour series for the history dots; fall back to the
   // stats-based (padded) history for tasks the series does not cover.
   let result = statsBased
   if (metricData && metricData.series.length > 0) {
     const samples = homeLatencySamplesFromMetricSeries(metricData.series, metricData.tasks)
-    const seriesBased = summarizeHomeLatencySamples(samples, 12)
+    const seriesBased = summarizeHomeLatencySamples(samples, 30)
     if (Object.keys(seriesBased).length > 0) {
       result = { ...statsBased }
       for (const [entityId, summaries] of Object.entries(seriesBased)) {

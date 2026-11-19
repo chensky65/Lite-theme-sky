@@ -70,7 +70,7 @@ test("ignores stale or unrelated latency cache entries", () => {
 })
 
 test("keeps every ping task as a separate weighted summary", () => {
-  const bucket = 5 * 60_000
+  const bucket = 2 * 60_000
   const result = summarizeHomeLatencySamples(
     [sample("1", bucket, 20, 0, 10), sample("1", bucket, 40, 0.1, 10), sample("1", bucket * 2, 35, 0, 20), sample("2", bucket * 2, 80, 0, 5)],
     2,
@@ -88,7 +88,7 @@ test("keeps every ping task as a separate weighted summary", () => {
 })
 
 test("keeps each task timeline continuous when records skip intervals", () => {
-  const bucket = 5 * 60_000
+  const bucket = 2 * 60_000
   const result = summarizeHomeLatencySamples([sample("1", bucket, 20, 1, 1), sample("1", bucket * 3, 30, 0, 1)], 3)["node-a"][0]
 
   assert.deepEqual(result.latencyHistory, [null, null, 30])
@@ -97,7 +97,7 @@ test("keeps each task timeline continuous when records skip intervals", () => {
 })
 
 test("weights a task loss rate by probe count", () => {
-  const bucket = 5 * 60_000
+  const bucket = 2 * 60_000
   const result = summarizeHomeLatencySamples([sample("1", bucket, null, 1, 2), sample("1", bucket * 2, 25, 0, 18)], 2)["node-a"][0]
 
   assert.equal(result.packetLoss, 10)
@@ -186,15 +186,15 @@ test("maps ping metric stats onto per-task home summaries", () => {
   assert.equal(result["node-a"][1].taskName, "Tokyo")
 })
 
-test("pads ping-stat histories to the full 12-dot window with the latest sample last", () => {
+test("pads ping-stat histories to the full 30-dot window with the latest sample last", () => {
   const result = mapPingStatsToHomeLatency([{ entity_id: "node-a", task_id: "1", name: "Shanghai", latest: 42, loss: 2 }])
   const summary = result["node-a"][0]
-  assert.equal(summary.latencyHistory.length, 12)
-  assert.deepEqual(summary.latencyHistory.slice(0, 11), Array(11).fill(null))
-  assert.equal(summary.latencyHistory[11], 42)
-  assert.equal(summary.packetLossHistory.length, 12)
-  assert.deepEqual(summary.packetLossHistory.slice(0, 11), Array(11).fill(null))
-  assert.equal(summary.packetLossHistory[11], 2)
+  assert.equal(summary.latencyHistory.length, 30)
+  assert.deepEqual(summary.latencyHistory.slice(0, 29), Array(29).fill(null))
+  assert.equal(summary.latencyHistory[29], 42)
+  assert.equal(summary.packetLossHistory.length, 30)
+  assert.deepEqual(summary.packetLossHistory.slice(0, 29), Array(29).fill(null))
+  assert.equal(summary.packetLossHistory[29], 2)
 })
 
 test("treats zero-sample ping stats as empty instead of a full green bar", () => {
@@ -243,46 +243,83 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   assert.match(css, /\.lite-latency-bars__bar\[data-tone="coral"\] \{[\s\S]*?background:\s*var\(--card-danger\)/)
   assert.match(css, /\.lite-probe-row__viz-delay b\[data-tone="green"\] \{[\s\S]*?color:\s*var\(--card-green\)/)
   assert.match(css, /\.lite-probe-row__viz-delay b\[data-tone="coral"\] \{[\s\S]*?color:\s*var\(--card-danger\)/)
-  // Probe rows use a fixed-width name column: 64px, wide enough for the
-  // longest return-route tag, so the tag is fully visible and never
-  // truncated. The name stays 64px wide; the tag is a uniform 56px wide
-  // on every row with centered text, so the gap to each end is the same on
-  // both sides (~5px for the longest tag CN2 GIA) and the padding is 3px
-  // so the longest tag still fits. The group is exactly the column width:
-  // its left edge sits the same distance from the card border as the viz
-  // sits from the right edge, and the gap to the viz is a uniform 8px on
-  // every row. The viz fills the rest. Each strip takes half the viz and
-  // its 12 dots share the strip width (4px min, 9px max, square via
-  // aspect-ratio), so dots grow on wide cards and shrink on narrow ones
-  // without squeezing the name. Numbers use the same flex as their strips
-  // so their right edges stay aligned with the strips.
+  // Probe rows stack the name and return tag: the name is a fixed 64px,
+  // the tag is a uniform 56px wide below it, text centered in each, so the
+  // group is exactly the column width and the tag's center line always
+  // matches the name above it. The row has a fixed height of 39px. The gap
+  // to the viz is a uniform 8px on every row. The viz fills the rest. Each
+  // strip takes half the viz and its 12 dots share the strip width (4px
+  // min, no max, square via aspect-ratio), so dots grow on wide cards and
+  // shrink on narrow ones without squeezing the name, and the strip is
+  // always exactly filled (no leftover gap spread unevenly). Numbers use
+  // the same flex as their strips so their right edges stay aligned with
+  // the strips.
   assert.match(css, /\.lite-probe-row__main \{[\s\S]*?flex:\s*0 0 64px/)
   assert.match(css, /\.lite-probe-row__main \{[\s\S]*?width:\s*64px/)
   assert.match(css, /\.lite-probe-row__main \{[\s\S]*?align-items:\s*flex-start/)
+  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?min-height:\s*34px/)
+  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?justify-content:\s*center/)
   assert.match(css, /\.lite-probe-row__main-group \{[\s\S]*?align-items:\s*center/)
   assert.match(css, /\.lite-probe-row__name \{[\s\S]*?width:\s*64px/)
   assert.match(css, /\.lite-probe-row__name \{[\s\S]*?text-align:\s*center/)
   assert.match(css, /\.lite-probe-row__return \{[\s\S]*?width:\s*56px/)
   assert.match(css, /\.lite-probe-row__return \{[\s\S]*?padding:\s*1px 3px/)
   assert.match(css, /\.lite-probe-row__return \{[\s\S]*?text-align:\s*center/)
-  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?min-height:\s*34px/)
-  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?justify-content:\s*center/)
+  // Adaptive inside the box: the viz takes whatever width the row leaves
+  // (flex: 1, min-width: 0), each column takes half of it, and the bars
+  // stay 1px while their gaps stretch with space-between — so the strip
+  // always fills its column, the "ms" always lands on the strip's tail
+  // end, and nothing can ever spill past the box. No fixed pixel width
+  // is pinned anywhere in the viz.
   assert.match(css, /\.lite-probe-row__viz \{[\s\S]*?flex:\s*1 1 0/)
-  assert.match(css, /\.lite-probe-row__viz \{[\s\S]*?min-width:\s*124px/)
-  assert.match(css, /\.lite-probe-row\[data-loss="false"\] \.lite-probe-row__viz \{[\s\S]*?flex:\s*0 1 118px/)
-  assert.match(css, /\.lite-probe-row__viz-delay \{[\s\S]*?flex:\s*1 1 0/)
-  assert.match(css, /\.lite-probe-row__viz-loss \{[\s\S]*?flex:\s*1 1 0/)
-  assert.match(css, /\.lite-latency-bars \{[\s\S]*?flex:\s*1 1 0/)
-  assert.match(css, /\.lite-latency-bars__bar \{[\s\S]*?flex:\s*1 1 0/)
-  assert.match(css, /\.lite-latency-bars__bar \{[\s\S]*?min-width:\s*4px/)
-  assert.match(css, /\.lite-latency-bars__bar \{[\s\S]*?max-width:\s*9px/)
-  assert.match(css, /\.lite-latency-bars__bar \{[\s\S]*?aspect-ratio:\s*1/)
+  assert.match(css, /\.lite-probe-row__viz \{[\s\S]*?min-width:\s*0/)
+  assert.match(css, /\.lite-probe-row__viz \{[\s\S]*?gap:\s*16px/)
+  assert.doesNotMatch(css, /\.lite-probe-row__viz \{[^}]*width:\s*\d+px/)
+  assert.doesNotMatch(css, /\.lite-probe-row\[data-loss="false"\] \.lite-probe-row__viz \{/)
+  // Each number sits in a column directly above its own strip, so the
+  // "ms" unit lands above the latency strip instead of drifting into the
+  // middle gap: the viz is a row of two columns, not a nums row over a
+  // bars row.
+  assert.match(css, /\.lite-probe-row__viz-col \{[\s\S]*?flex-direction:\s*column/)
+  assert.match(css, /\.lite-probe-row__viz-col \{[\s\S]*?align-items:\s*flex-end/)
+  assert.match(css, /\.lite-probe-row__viz-col \{[\s\S]*?flex:\s*1 1 0/)
+  assert.match(css, /\.lite-probe-row__viz-col \{[\s\S]*?min-width:\s*0/)
+  assert.doesNotMatch(css, /\.lite-probe-row__viz-col \{[^}]*width:\s*\d+px/)
+  assert.doesNotMatch(css, /\.lite-probe-row__viz-delay \{[^}]*flex:\s*1 1 0/)
+  assert.doesNotMatch(css, /\.lite-probe-row__viz-loss \{[^}]*flex:\s*1 1 0/)
+  assert.doesNotMatch(css, /\.lite-probe-row__viz-nums \{/)
+  assert.doesNotMatch(css, /\.lite-probe-row__viz-bars \{/)
+  assert.match(css, /\.lite-latency-bars \{[\s\S]*?display:\s*flex/)
+  assert.match(css, /\.lite-latency-bars \{[\s\S]*?flex:\s*none/)
+  assert.match(css, /\.lite-latency-bars \{[\s\S]*?gap:\s*2px/)
+  // Small vertical lines: fixed 1px wide, 14px tall, evenly spaced with a
+  // fixed 2px gap (the old squares-and-dots arrangement) — 30 bars share
+  // one uniform gap, so the strip reads as one even row.
+  assert.doesNotMatch(css, /\.lite-latency-bars \{[^}]*justify-content:\s*space-between/)
+  assert.doesNotMatch(css, /\.lite-latency-bars \{[^}]*display:\s*grid/)
+  assert.match(css, /\.lite-latency-bars__bar \{[\s\S]*?width:\s*1px/)
+  assert.match(css, /\.lite-latency-bars__bar \{[\s\S]*?height:\s*14px/)
+  assert.match(css, /\.lite-latency-bars__bar \{[\s\S]*?flex:\s*none/)
+  assert.doesNotMatch(css, /\.lite-latency-bars__bar \{[^}]*aspect-ratio:/)
+  assert.doesNotMatch(css, /\.lite-latency-bars__bar \{[^}]*max-width:/)
   // Return-route tag is bold in Chinese only (en/ja keep regular weight).
   assert.match(css, /html\[lang="zh-CN"\] \.lite-probe-row__return,[\s\S]*?font-weight:\s*700/)
   assert.match(css, /html\[lang="zh-TW"\] \.lite-probe-row__return \{[\s\S]*?font-weight:\s*700/)
   // No fixed width tiers remain.
   assert.doesNotMatch(css, /flex-basis:\s*(290|264|244|222|197|177|139|127|115|107|95|82)px/)
-  assert.match(css, /\.lite-server-card__quota \{[\s\S]*?border-top:\s*1px solid var\(--card-line\)/)
+  // Card bottom: traffic and billing are two separate rounded sub-cards
+  // stacked with a gap, no single top border on the container. Traffic is
+  // the original horizontal progress bar; the fill color follows the usage
+  // tone.
+  assert.match(css, /\.lite-server-card__bottom \{[\s\S]*?flex-direction:\s*column/)
+  assert.match(css, /\.lite-server-card__traffic-card \{[\s\S]*?border:\s*1px solid var\(--card-inset-border\)/)
+  assert.match(css, /\.lite-server-card__traffic-card \{[\s\S]*?border-radius:\s*16px/)
+  assert.doesNotMatch(css, /\.lite-server-card__bottom \{[^}]*border-top:\s*1px solid var\(--card-line\)/)
+  assert.match(css, /\.lite-server-card__quota-meter \{[\s\S]*?height:\s*5px/)
+  assert.match(css, /\.lite-server-card__fill--traffic \{[\s\S]*?background:\s*var\(--card-traffic\)/)
+  assert.match(css, /\.lite-server-card__fill--danger \{[\s\S]*?background:\s*var\(--card-danger\)/)
+  assert.doesNotMatch(css, /\.lite-server-card__donut/)
+  assert.doesNotMatch(css, /\.lite-server-card__quota \{[^}]*border-top:\s*1px solid var\(--card-line\)/)
   assert.match(css, /\.lite-server-card__quality \{[\s\S]*flex:\s*1 1 auto/)
   assert.match(card, /h-full/)
   assert.match(home, /items-stretch/)

@@ -41,7 +41,7 @@ interface TaskBuckets {
 }
 
 const MINUTE_MS = 60_000
-const HOME_BUCKET_MS = 5 * MINUTE_MS
+const HOME_BUCKET_MS = 2 * MINUTE_MS
 const HOME_LATENCY_CACHE_KEY = "lite-home-latency-v2"
 const HOME_LATENCY_CACHE_MAX_AGE_MS = 5 * MINUTE_MS
 export const HOME_LATENCY_WINDOW_HOURS = 1
@@ -155,7 +155,7 @@ function finiteOrNull(value: unknown): number | null {
   return Number.isFinite(number) ? number : null
 }
 
-export function summarizeHomeLatencySamples(samples: HomeLatencySample[], historyLimit = 12): HomeLatencyByServer {
+export function summarizeHomeLatencySamples(samples: HomeLatencySample[], historyLimit = 30): HomeLatencyByServer {
   const taskBuckets = new Map<string, TaskBuckets>()
 
   for (const sample of samples) {
@@ -240,7 +240,7 @@ export interface PingStatForHome {
 export function mapPingStatsToHomeLatency(
   stats: PingStatForHome[],
   tasks: Array<{ id?: number | string; name?: string }> = [],
-  historyLimit = 12,
+  historyLimit = 30,
 ): HomeLatencyByServer {
   const taskNames = new Map(tasks.map((task) => [String(task.id), task.name || `Task ${task.id}`]))
   const taskOrder = new Map(tasks.map((task, index) => [String(task.id), index]))

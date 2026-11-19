@@ -255,6 +255,7 @@
     "system": "システムに従う"
   },
   "traffic": {
+    "remainingTraffic": "残り通信量",
     "resetInDays": "{{count}} 日後にリセット",
     "resetToday": "本日リセット",
     "usedTraffic": "使用済み通信量"
