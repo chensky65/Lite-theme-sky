@@ -292,9 +292,9 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   // The capsule is tinted by the return line's quality tier, light
   // background and no glow: premium is light gold, optimized light blue,
   // regular light gray, internal light green.
-  assert.match(css, /\.lite-probe-row__return\[data-quality="premium"\] \{[\s\S]*?background:\s*#fef3c7/)
-  assert.match(css, /\.lite-probe-row__return\[data-quality="optimized"\] \{[\s\S]*?background:\s*#93c5fd/)
-  assert.match(css, /\.lite-probe-row__return\[data-quality="internal"\] \{[\s\S]*?background:\s*#dcfce7/)
+  assert.match(css, /\.lite-probe-row__return\[data-quality="premium"\] \{[\s\S]*?background:\s*#fffbeb/)
+  assert.match(css, /\.lite-probe-row__return\[data-quality="optimized"\] \{[\s\S]*?background:\s*#bfdbfe/)
+  assert.match(css, /\.lite-probe-row__return\[data-quality="internal"\] \{[\s\S]*?background:\s*#f0fdf4/)
   assert.doesNotMatch(css, /\.lite-probe-row__return \{[^}]*box-shadow:/)
   assert.doesNotMatch(css, /\.lite-probe-row__return \{[^}]*linear-gradient\(90deg, #a855f7/)
   assert.match(css, /\.lite-probe-row__return \{[\s\S]*?text-align:\s*center/)

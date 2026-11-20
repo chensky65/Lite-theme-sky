@@ -680,7 +680,7 @@ html.dark .lite-server-card {
   padding: 1px 0;
   border: 1px solid #94a3b8;
   border-radius: 999px;
-  background: #f1f5f9;
+  background: #f8fafc;
   font-size: 11px;
   line-height: 14px;
   color: #475569;
@@ -691,25 +691,25 @@ html.dark .lite-server-card {
 
 .lite-probe-row__main .lite-probe-row__return[data-quality="premium"] {
   border-color: #d97706;
-  background: #fef3c7;
+  background: #fffbeb;
   color: #92400e;
 }
 
 .lite-probe-row__main .lite-probe-row__return[data-quality="optimized"] {
   border-color: #2563eb;
-  background: #93c5fd;
+  background: #bfdbfe;
   color: #1e3a8a;
 }
 
 .lite-probe-row__main .lite-probe-row__return[data-quality="regular"] {
   border-color: #94a3b8;
-  background: #f1f5f9;
+  background: #f8fafc;
   color: #475569;
 }
 
 .lite-probe-row__main .lite-probe-row__return[data-quality="internal"] {
   border-color: #22c55e;
-  background: #dcfce7;
+  background: #f0fdf4;
   color: #166534;
 }
 
