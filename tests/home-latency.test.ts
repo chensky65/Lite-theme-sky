@@ -293,7 +293,7 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   // background and no glow: premium is light gold, optimized light blue,
   // regular light gray, internal light green.
   assert.match(css, /\.lite-probe-row__return\[data-quality="premium"\] \{[\s\S]*?background:\s*#fffbeb/)
-  assert.match(css, /\.lite-probe-row__return\[data-quality="optimized"\] \{[\s\S]*?background:\s*#bfdbfe/)
+  assert.match(css, /\.lite-probe-row__return\[data-quality="optimized"\] \{[\s\S]*?background:\s*#dbeafe/)
   assert.match(css, /\.lite-probe-row__return\[data-quality="internal"\] \{[\s\S]*?background:\s*#f0fdf4/)
   assert.doesNotMatch(css, /\.lite-probe-row__return \{[^}]*box-shadow:/)
   assert.doesNotMatch(css, /\.lite-probe-row__return \{[^}]*linear-gradient\(90deg, #a855f7/)
