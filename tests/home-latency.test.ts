@@ -288,13 +288,18 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   assert.match(css, /\.lite-probe-row__return \{[\s\S]*?width:\s*56px/)
   assert.match(css, /\.lite-probe-row__return \{[\s\S]*?padding:\s*1px 0/)
   assert.match(css, /\.lite-probe-row__name \{[\s\S]*?font-size:\s*14px/)
-  assert.match(css, /\.lite-probe-row__name \{[\s\S]*?color:\s*#ffffff/)
-  // The capsule has the lightest background fill by the return line's
-  // quality tier, and no glow: premium light gold, optimized lightest
-  // blue, regular light gray, internal light green.
-  assert.match(css, /\.lite-probe-row__return\[data-quality="premium"\] \{[\s\S]*?background:\s*#fffbeb/)
-  assert.match(css, /\.lite-probe-row__return\[data-quality="optimized"\] \{[\s\S]*?background:\s*#eff6ff/)
-  assert.match(css, /\.lite-probe-row__return\[data-quality="internal"\] \{[\s\S]*?background:\s*#f0fdf4/)
+  // The name follows the card text color, so it stays readable in both
+  // modes: white on a dark card, dark on a light card.
+  assert.match(css, /\.lite-probe-row__name \{[\s\S]*?color:\s*var\(--card-text\)/)
+  // The capsule has no glow and its fill follows the text color, a
+  // lighter tint of it (the text color at low opacity), so the pill
+  // reads in both modes.
+  assert.match(css, /\.lite-probe-row__return\[data-quality="premium"\] \{[\s\S]*?background:\s*linear-gradient\(120deg, #d2ab4f 0%, #e2c15c 30%, #fdf3c4 50%, #e2c15c 70%, #d2ab4f 100%\)/)
+  assert.match(css, /\.lite-probe-row__return\[data-quality="optimized"\] \{[\s\S]*?background:\s*linear-gradient\(120deg, #1d4ed8 0%, #3b82f6 30%, #dbeafe 50%, #3b82f6 70%, #1d4ed8 100%\)/)
+  assert.match(css, /\.lite-probe-row__return\[data-quality="internal"\] \{[\s\S]*?background:\s*rgba\(22, 101, 52, 0\.15\)/)
+  assert.match(css, /html\.dark \.lite-probe-row__main \.lite-probe-row__return\[data-quality="premium"\] \{[\s\S]*?background:\s*linear-gradient\(120deg, #c49c38 0%, #f3c923 30%, #fef6c0 50%, #f3c923 70%, #c49c38 100%\)/)
+  assert.match(css, /html\.dark \.lite-probe-row__main \.lite-probe-row__return\[data-quality="optimized"\] \{[\s\S]*?background:\s*linear-gradient\(120deg, #1e40af 0%, #3b82f6 30%, #bfdbfe 50%, #3b82f6 70%, #1e40af 100%\)/)
+  assert.match(css, /html\.dark \.lite-probe-row__main \.lite-probe-row__return\[data-quality="internal"\] \{[\s\S]*?background:\s*rgba\(21, 128, 61, 0\.22\)/)
   assert.doesNotMatch(css, /\.lite-probe-row__return \{[^}]*box-shadow:/)
   assert.doesNotMatch(css, /\.lite-probe-row__return \{[^}]*linear-gradient\(90deg, #a855f7/)
   assert.match(css, /\.lite-probe-row__return \{[\s\S]*?text-align:\s*center/)
@@ -345,10 +350,48 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   assert.match(css, /\.lite-server-card__bottom \{[\s\S]*?flex-direction:\s*column/)
   assert.match(css, /\.lite-server-card__traffic-card \{[\s\S]*?border:\s*1px solid var\(--card-inset-border\)/)
   assert.match(css, /\.lite-server-card__traffic-card \{[\s\S]*?border-radius:\s*16px/)
+  // 3D: every content sub-card is raised with a drop shadow plus a top
+  // highlight, and the numbers and bars inside carry the depth too.
+  assert.match(css, /\.lite-server-card__resources \{[\s\S]*?box-shadow:\s*var\(--card-inset-shadow\)/)
+  assert.match(css, /\.lite-server-card__quality \{[\s\S]*?box-shadow:\s*var\(--card-inset-shadow\)/)
+  assert.match(css, /\.lite-server-card__traffic-card \{[\s\S]*?box-shadow:\s*var\(--card-inset-shadow\)/)
+  assert.match(css, /\.lite-server-card__footer \{[\s\S]*?box-shadow:\s*var\(--card-inset-shadow\)/)
+  assert.match(css, /\.lite-server-card__net-cell \{[\s\S]*?box-shadow:\s*var\(--card-inset-shadow\)/)
+  assert.match(css, /\.lite-server-card__speed \{[\s\S]*?text-shadow:\s*var\(--card-num-shadow\)/)
+  assert.match(css, /\.lite-server-card__resource-value \{[\s\S]*?text-shadow:\s*var\(--card-num-shadow\)/)
+  // Dark mode 3D reads stronger: the drop shadow is deeper and the top
+  // highlight brighter, since black-on-black barely shows.
+  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-inset-shadow:\s*0 20px 44px rgba\(0, 0, 0, 0\.80\), 0 6px 16px rgba\(0, 0, 0, 0\.70\), inset 0 1px 0 rgba\(255, 255, 255, 0\.30\), inset 0 -1px 0 rgba\(0, 0, 0, 0\.40\)/)
+  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-num-shadow:\s*0 4px 10px rgba\(0, 0, 0, 0\.85\)/)
+  assert.match(css, /html\.dark \.lite-server-card__meter,[\s\S]*?box-shadow:\s*inset 0 2px 5px rgba\(0, 0, 0, 0\.60\)/)
+  assert.match(css, /\.lite-server-card__meter \{[\s\S]*?box-shadow:\s*inset 0 2px 4px rgba\(0, 0, 0, 0\.30\)/)
+  assert.match(css, /\.lite-server-card__quota-meter \{[\s\S]*?box-shadow:\s*inset 0 2px 4px rgba\(0, 0, 0, 0\.30\)/)
+  // The empty part of a progress bar (the track) is a solid bar with a
+  // clear outline, so the bar's full length reads at a glance.
+  assert.match(css, /\.lite-server-card__meter \{[\s\S]*?background:\s*var\(--card-track\)/)
+  assert.match(css, /\.lite-server-card \{[\s\S]*?--card-track:\s*#dbe2ec/)
+  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-track:\s*#475569/)
+  // Country flag and OS logo float with a drop shadow, so they read as
+  // raised emblems instead of flat print.
+  assert.match(css, /\.lite-server-card__flag \{[\s\S]*?filter:\s*var\(--card-icon-shadow\)/)
+  assert.match(css, /\.lite-server-card__os-badge svg \{[\s\S]*?filter:\s*var\(--card-icon-shadow\)/)
+  // VPS name and online-duration pill carry the depth too, with a
+  // stronger two-layer shadow so the header row reads clearly raised.
+  // (VPS name shadow removed 2026-11-20 at the user's request; the
+  // duration pill numbers keep theirs.)
+  assert.doesNotMatch(css, /\.lite-server-card__name \{[^}]*text-shadow:/)
+  assert.match(css, /\.lite-duration-pill \{[\s\S]*?box-shadow:\s*0 4px 10px rgba\(0, 0, 0, 0\.38\), 0 1px 3px rgba\(0, 0, 0, 0\.30\), inset 0 1px 0 rgba\(255, 255, 255, 0\.45\), inset 0 -1px 0 rgba\(0, 0, 0, 0\.12\)/)
+  assert.match(css, /\.lite-duration-pill__num \{[\s\S]*?text-shadow:\s*var\(--card-name-shadow\)/)
   assert.doesNotMatch(css, /\.lite-server-card__bottom \{[^}]*border-top:\s*1px solid var\(--card-line\)/)
   assert.match(css, /\.lite-server-card__quota-meter \{[\s\S]*?height:\s*5px/)
   assert.match(css, /\.lite-server-card__fill--traffic \{[\s\S]*?background:\s*var\(--card-traffic\)/)
   assert.match(css, /\.lite-server-card__fill--danger \{[\s\S]*?background:\s*var\(--card-danger\)/)
+  // The fill glows in its own color (a lit strip) so the bar reads
+  // clearly at its original height.
+  assert.match(css, /\.lite-server-card__fill--accent \{[\s\S]*?filter:\s*drop-shadow\(0 0 4px var\(--card-accent\)\)/)
+  assert.match(css, /\.lite-server-card__fill--traffic \{[\s\S]*?filter:\s*drop-shadow\(0 0 4px var\(--card-traffic\)\)/)
+  assert.match(css, /\.lite-server-card__fill--amber \{[\s\S]*?filter:\s*drop-shadow\(0 0 4px var\(--card-amber\)\)/)
+  assert.match(css, /\.lite-server-card__fill--danger \{[\s\S]*?filter:\s*drop-shadow\(0 0 4px var\(--card-danger\)\)/)
   assert.doesNotMatch(css, /\.lite-server-card__donut/)
   assert.doesNotMatch(css, /\.lite-server-card__quota \{[^}]*border-top:\s*1px solid var\(--card-line\)/)
   assert.match(css, /\.lite-server-card__quality \{[\s\S]*flex:\s*1 1 auto/)

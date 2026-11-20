@@ -155,7 +155,7 @@ export default function ServerCard({
       <div className="lite-server-card__frame">
         <header className="lite-server-card__hero">
           <div className="flex min-w-0 items-center gap-2.5">
-            <ServerFlag country_code={info.country_code} className="h-[18px] w-[26px] rounded-[3px]" />
+            <ServerFlag country_code={info.country_code} className="lite-server-card__flag h-[18px] w-[26px] rounded-[3px]" />
             <span className="min-w-0 flex-1">
               <strong className="lite-server-card__name block truncate" title={info.name}>{info.name}</strong>
             </span>
