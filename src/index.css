@@ -166,13 +166,13 @@ html {
 }
 
 .lite-server-card {
-  --card-bg: #ffffff;
+  --card-bg: #dde5eb;
   --card-text: #1c252e;
   --card-secondary: #637381;
   --card-muted: #58707f;
   --card-line: #d5dfe8;
   --card-border: #d5dfe8;
-  --card-inset: #f1f5f8;
+  --card-inset: #ffffff;
   --card-inset-border: #d5dfe8;
   --card-track: #dbe2ec;
   --card-accent: #078dee;
@@ -212,7 +212,7 @@ html {
 }
 
 html.dark .lite-server-card {
-  --card-bg: #1b2735;
+  --card-bg: #232f3f;
   --card-text: #ffffff;
   --card-secondary: #c4cdd5;
   --card-muted: #8ea2b5;
@@ -346,14 +346,19 @@ html.dark .lite-server-card {
 .lite-duration-pill__num {
   font-size: 11px;
   font-weight: 700;
-  color: #22c55e;
+  color: #15803d;
   text-shadow: var(--card-name-shadow);
 }
 
 .lite-duration-pill__unit {
   font-size: 11px;
-  color: #22c55e;
+  color: #15803d;
   text-shadow: var(--card-name-shadow);
+}
+
+html.dark .lite-duration-pill__num,
+html.dark .lite-duration-pill__unit {
+  color: #22c55e;
 }
 
 .lite-server-card__duration--offline .lite-duration-pill {

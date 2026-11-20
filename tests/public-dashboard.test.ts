@@ -157,6 +157,12 @@ test("homepage latency probes keep latency and packet loss in one compact metric
   assert.match(css, /\.lite-server-card__net \{[\s\S]*?display:\s*flex/)
   assert.match(css, /\.lite-server-card__net-cell \{[\s\S]*?border:\s*1px solid var\(--card-inset-border\)/)
   assert.match(css, /\.lite-server-card__net-cell \{[\s\S]*?border-radius:\s*16px/)
+  // Light mode: the card itself is a soft grey-blue so the white sub-cards
+  // (net cells, resources, quality, traffic, footer) read as raised panels.
+  assert.match(css, /\.lite-server-card \{[\s\S]*?--card-bg:\s*#dde5eb/)
+  assert.match(css, /\.lite-server-card \{[\s\S]*?--card-inset:\s*#ffffff/)
+  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-bg:\s*#232f3f/)
+  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-inset:\s*#131e2b/)
   assert.match(css, /\.lite-server-card__net-cell \.lite-server-card__speed \{[\s\S]*?font-size:\s*24px/)
   assert.doesNotMatch(css, /\.lite-server-card__rates \{/)
   assert.doesNotMatch(css, /\.lite-server-card__spark/)
