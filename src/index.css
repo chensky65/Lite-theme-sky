@@ -593,16 +593,12 @@ html.dark .lite-server-card {
   gap: 8px;
   padding: 0 2px;
   border: 0;
-  border-bottom: 1px solid var(--card-line);
+  border-bottom: 1px dashed rgba(148, 163, 184, 0.55);
   background: transparent;
   color: inherit;
   font: inherit;
   text-align: left;
   cursor: pointer;
-}
-
-.lite-probe-row:last-child {
-  border-bottom: 0;
 }
 
 .lite-probe-row[data-accent="1"] {
@@ -626,27 +622,28 @@ html.dark .lite-server-card {
   border-radius: 8px;
 }
 
+/* Probe main: name + return tag stacked vertically, name on top, tag
+   below. Name and tag are both a fixed 64px wide, text centered in each,
+   so the two form one uniform 64px column and read as a single unit. The
+   column's left edge sits the same distance from the card border as the
+   viz sits from the right edge, and the gap to the viz is a uniform 8px
+   on every row. */
 .lite-probe-row__main {
   display: flex;
   width: 64px;
   flex: 0 0 64px;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   min-height: 34px;
   gap: 1px;
 }
 
-/* Name + return tag form one group: name and tag are both fixed 64px wide
-   (the same as the column), text centered in each, so the group is exactly
-   the column width, its left edge sits the same distance from the card
-   border as the viz sits from the right edge, and the gap to the viz is a
-   uniform 8px on every row. */
 .lite-probe-row__main-group {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1px;
+  gap: 0;
 }
 
 /* Single strip (no packet loss): the name column stays a fixed 64px and
@@ -660,39 +657,60 @@ html.dark .lite-server-card {
   width: 64px;
   max-width: 100%;
   min-width: 0;
-  font-size: 13px;
-  font-weight: 550;
-  line-height: 18px;
-  color: var(--card-text);
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 16px;
+  color: #ffffff;
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* Return-route tag: pill shape, background matches the card so only the
-   gray border outlines it, text keeps the row's accent color. The tag is a
-   fixed 64px wide (same as the name above it), text centered, so the tag
-   is fully visible and never truncated; name and tag sit in one group
-   with the name centered over the tag, so the tag's center line always
-   matches the name above it. */
-/* Return capsule: uniform 56px for every row, text centered so the gap to
-   each end is the same on both sides (~5px for the longest label CN2 GIA).
-   Padding is 3px so the longest label still fits. */
+/* Return capsule: uniform 56px for every row, sized to just fit the longest
+   label (CN2 GIA) with a small gap to each end, text centered. Light
+   background, no glow; the fill is tinted by the line's quality tier:
+   premium is light gold, optimized light blue, regular light gray, and the
+   internal network light green. */
 .lite-probe-row__return {
   overflow: hidden;
   width: 56px;
   max-width: 100%;
   min-width: 0;
-  padding: 1px 3px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
+  box-sizing: border-box;
+  padding: 1px 0;
+  border: 1px solid #94a3b8;
   border-radius: 999px;
-  background: var(--card-bg);
+  background: #f1f5f9;
   font-size: 11px;
-  line-height: 15px;
-  color: var(--probe-accent);
+  line-height: 14px;
+  color: #475569;
   text-align: center;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.lite-probe-row__main .lite-probe-row__return[data-quality="premium"] {
+  border-color: #d97706;
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.lite-probe-row__main .lite-probe-row__return[data-quality="optimized"] {
+  border-color: #2563eb;
+  background: #93c5fd;
+  color: #1e3a8a;
+}
+
+.lite-probe-row__main .lite-probe-row__return[data-quality="regular"] {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+  color: #475569;
+}
+
+.lite-probe-row__main .lite-probe-row__return[data-quality="internal"] {
+  border-color: #22c55e;
+  background: #dcfce7;
+  color: #166534;
 }
 
 /* Bold return-route tag in Chinese only (en/ja keep regular weight). */
@@ -701,72 +719,68 @@ html[lang="zh-TW"] .lite-probe-row__return {
   font-weight: 700;
 }
 
-/* Probe viz: two columns side by side — latency on the left, packet loss
-   on the right. Each column stacks its own number directly above its own
-   strip, both right-aligned to the column's right edge, so the "ms" unit
-   sits above the latency strip instead of drifting into the middle gap.
-   Adaptive inside the box: the viz takes whatever width the row leaves
-   (flex: 1, min-width: 0), each column takes half of it, and the bars
-   stay 1px while their gaps stretch with space-between — so the strip
-   always fills its column, the "ms" always lands on the strip's tail end,
-   and nothing can ever spill past the box. */
+/* Probe viz: one line of numbers on top, one combined history strip below.
+   The strip is a single row of bars, full width: bar height shows the
+   latency in that bucket (taller = higher latency, 200ms = full height),
+   bar color is coral whenever the bucket had any packet loss, otherwise
+   the latency tone. The viz takes whatever width the row leaves
+   (flex: 1, min-width: 0); the bars flex to fill the strip evenly, so the
+   strip always fills its width and nothing can ever spill past the box. */
 .lite-probe-row__viz {
   display: flex;
   flex: 1 1 0;
   min-width: 0;
-  align-items: center;
-  gap: 16px;
+  flex-direction: column;
+  justify-content: center;
+  gap: 3px;
 }
 
-.lite-probe-row__viz-col {
+.lite-probe-row__viz-top {
   display: flex;
-  flex: 1 1 0;
-  min-width: 0;
-  flex-direction: column;
+  align-items: baseline;
+  justify-content: flex-end;
+  gap: 10px;
+  height: 14px;
+}
+
+.lite-probe-strip {
+  display: flex;
+  width: 100%;
+  height: 16px;
   align-items: flex-end;
   gap: 2px;
 }
 
-.lite-latency-bars {
-  display: flex;
-  flex: none;
-  align-items: center;
-  margin-left: auto;
-  gap: 2px;
-}
-
-/* Latency squares / loss circles: 4px min, no max — they flex to fill the
-   strip evenly, so no leftover gap is left to spread unevenly. */
-.lite-latency-bars__bar {
-  flex: none;
-  width: 1px;
-  height: 14px;
+.lite-probe-strip__bar {
+  flex: 1 1 0;
+  min-width: 0;
   border-radius: 1px;
   background: var(--card-line);
 }
 
-
-
-.lite-latency-bars__bar[data-tone="green"] {
+.lite-probe-strip__bar[data-tone="green"] {
   background: var(--card-green);
 }
 
-.lite-latency-bars__bar[data-tone="amber"] {
+.lite-probe-strip__bar[data-tone="amber"] {
   background: var(--card-amber);
 }
 
-.lite-latency-bars__bar[data-tone="coral"] {
+.lite-probe-strip__bar[data-tone="coral"] {
   background: var(--card-danger);
 }
 
-.lite-latency-bars__bar[data-tone="empty"] {
+.lite-probe-strip__bar[data-tone="loss"] {
+  background: #a855f7;
+}
+
+.lite-probe-strip__bar[data-tone="empty"] {
   background: var(--card-muted);
   opacity: 0.55;
 }
 
 .lite-probe-row__viz-delay {
   display: inline-flex;
-  margin-left: auto;
   align-items: baseline;
   justify-content: flex-end;
   gap: 2px;
@@ -803,7 +817,6 @@ html[lang="zh-TW"] .lite-probe-row__return {
 
 .lite-probe-row__viz-loss {
   display: inline-flex;
-  margin-left: auto;
   align-items: baseline;
   justify-content: flex-end;
   height: 14px;

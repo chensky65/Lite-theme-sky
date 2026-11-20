@@ -121,6 +121,31 @@ export function lossBarTone(loss: number | null): LossBarTone {
   return "green"
 }
 
+/* Combined probe strip: one bar per bucket shows latency (height) and loss
+   (color). Height scales with the latency value (200ms = full height, 2px
+   minimum so a good bucket is still visible). Color is purple whenever the
+   bucket had any packet loss — loss gets its own color so it never reads as
+   high latency — otherwise it follows the latency tone (green <= 80ms,
+   amber <= 180ms, coral above). */
+export const PROBE_STRIP_MAX_HEIGHT_PX = 16
+export const PROBE_STRIP_HEIGHT_SCALE_MS = 200
+export const PROBE_STRIP_LOSS_COLOR = "#a855f7"
+
+export type ProbeStripBarTone = LatencyBarTone | "loss"
+
+export function probeStripBarHeight(latency: number | null): number {
+  if (latency === null || !Number.isFinite(latency) || latency < 0) return 2
+  return Math.max(
+    2,
+    Math.min(PROBE_STRIP_MAX_HEIGHT_PX, Math.round((latency / PROBE_STRIP_HEIGHT_SCALE_MS) * PROBE_STRIP_MAX_HEIGHT_PX)),
+  )
+}
+
+export function probeStripBarTone(latency: number | null, loss: number | null): ProbeStripBarTone {
+  if (loss !== null && Number.isFinite(loss) && loss > 0) return "loss"
+  return latencyBarTone(latency)
+}
+
 export const PROBE_MISSING_VALUE = "—"
 
 export function formatProbePacketLoss(packetLoss: number | null): string {

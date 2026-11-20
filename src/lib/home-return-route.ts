@@ -84,6 +84,21 @@ export function returnLineForPingTask(route: PublicReturnRoute | undefined | nul
   return route.tasks.find((item) => item.pingTaskId === id)?.line || ""
 }
 
+/* Quality tier of a return line, for the capsule color. Only CN2 GIA is
+   premium; CN2 GT, CMIN2 and CUG VIP are optimized; the internal network
+   is its own tier (not a carrier route); anything else, including 163 and
+   CMI, is regular. */
+export type ReturnLineQuality = "premium" | "optimized" | "regular" | "internal"
+
+export function returnLineQuality(line: string): ReturnLineQuality {
+  const label = String(line || "").trim().toUpperCase()
+  if (!label) return "regular"
+  if (label === "1" || label.includes("内网") || label.includes("LAN")) return "internal"
+  if (label.includes("GIA")) return "premium"
+  if (label.includes("CUG VIP") || label.includes("CN2 GT") || label.includes("CMIN2")) return "optimized"
+  return "regular"
+}
+
 export function hasPublicReturnRoute(route?: PublicReturnRoute | null): boolean {
   if (!route) return false
   return route.lines.length > 0 || route.tasks.length > 0 || route.suspectedBlocked

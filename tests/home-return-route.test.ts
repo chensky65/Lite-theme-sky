@@ -7,6 +7,7 @@ import {
   hasPublicReturnRoute,
   mapPublicReturnRoutes,
   returnLineForPingTask,
+  returnLineQuality,
   returnRouteForServer,
 } from "../src/lib/home-return-route.ts"
 
@@ -41,6 +42,19 @@ test("maps public return routes without private probe fields", () => {
   assert.equal(route?.suspectedBlocked, true)
   assert.equal(route?.highConfidence, true)
   assert.equal(hasPublicReturnRoute(returnRouteForServer(mapped, "node-b")), false)
+})
+
+test("return line quality tiers: only CN2 GIA is premium", () => {
+  assert.equal(returnLineQuality("CN2 GIA"), "premium")
+  assert.equal(returnLineQuality("cn2 gia"), "premium")
+  assert.equal(returnLineQuality("CN2 GT"), "optimized")
+  assert.equal(returnLineQuality("CMIN2"), "optimized")
+  assert.equal(returnLineQuality("CUG VIP"), "optimized")
+  assert.equal(returnLineQuality("163"), "regular")
+  assert.equal(returnLineQuality("CMI"), "regular")
+  assert.equal(returnLineQuality(""), "regular")
+  assert.equal(returnLineQuality("1"), "internal")
+  assert.equal(returnLineQuality("内网"), "internal")
 })
 
 test("homepage cards load public return routes onto matching ping-task rows", () => {

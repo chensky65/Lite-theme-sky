@@ -19,6 +19,8 @@ import {
   latencyBarTone,
   lossBarTone,
   mapPingStatsToHomeLatency,
+  probeStripBarHeight,
+  probeStripBarTone,
   readHomeLatencyCache,
   summarizeHomeLatencySamples,
   writeHomeLatencyCache,
@@ -161,11 +163,34 @@ test("colors packet loss green at 0%, amber below 5%, and coral at 5%+", () => {
 
 test("homepage probe rows render latency and packet-loss history strips", () => {
   const summary = readFileSync(new URL("../src/components/ServerLatencySummary.tsx", import.meta.url), "utf8")
-  assert.match(summary, /LatencyHistoryBars/)
-  assert.match(summary, /PacketLossHistoryBars/)
+  assert.match(summary, /ProbeHistoryStrip/)
+  assert.doesNotMatch(summary, /LatencyHistoryBars/)
+  assert.doesNotMatch(summary, /PacketLossHistoryBars/)
   assert.match(summary, /packetLossHistory/)
-  const bars = readFileSync(new URL("../src/components/PacketLossHistoryBars.tsx", import.meta.url), "utf8")
-  assert.match(bars, /lossBarTone/)
+  const strip = readFileSync(new URL("../src/components/ProbeHistoryStrip.tsx", import.meta.url), "utf8")
+  assert.match(strip, /probeStripBarTone/)
+  assert.match(strip, /probeStripBarHeight/)
+})
+
+test("combined probe strip: loss turns the bar purple, height follows latency", () => {
+  // Any packet loss gets its own purple tone so it never reads as high
+  // latency: a 160ms bucket with loss is "loss", not coral.
+  assert.equal(probeStripBarTone(160, 2.1), "loss")
+  assert.equal(probeStripBarTone(13, 0.1), "loss")
+  // No loss: the latency tone decides.
+  assert.equal(probeStripBarTone(160, 0), "amber")
+  assert.equal(probeStripBarTone(13, 0), "green")
+  assert.equal(probeStripBarTone(200, 0), "coral")
+  assert.equal(probeStripBarTone(null, 0), "empty")
+  assert.equal(probeStripBarTone(null, null), "empty")
+  // Height scales with latency (200ms = full 16px), 2px minimum.
+  assert.equal(probeStripBarHeight(null), 2)
+  assert.equal(probeStripBarHeight(-4), 2)
+  assert.equal(probeStripBarHeight(1.32), 2)
+  assert.equal(probeStripBarHeight(80), 6)
+  assert.equal(probeStripBarHeight(160), 13)
+  assert.equal(probeStripBarHeight(200), 16)
+  assert.equal(probeStripBarHeight(400), 16)
 })
 
 test("maps ping metric stats onto per-task home summaries", () => {
@@ -210,22 +235,22 @@ test("homepage cards keep at most four probe tasks", () => {
 
 test("homepage probes render as Komari-style rows with a latency history strip", () => {
   const latency = readFileSync(new URL("../src/components/ServerLatencySummary.tsx", import.meta.url), "utf8")
-  const bars = readFileSync(new URL("../src/components/LatencyHistoryBars.tsx", import.meta.url), "utf8")
+  const bars = readFileSync(new URL("../src/components/ProbeHistoryStrip.tsx", import.meta.url), "utf8")
   const css = readFileSync(new URL("../src/index.css", import.meta.url), "utf8")
   const card = readFileSync(new URL("../src/components/ServerCard.tsx", import.meta.url), "utf8")
   const home = readFileSync(new URL("../src/pages/Server.tsx", import.meta.url), "utf8")
   assert.match(latency, /slice\(0, HOME_LATENCY_CARD_LIMIT\)/)
   assert.match(latency, /lite-probe-row/)
-  assert.match(latency, /LatencyHistoryBars/)
+  assert.match(latency, /ProbeHistoryStrip/)
   assert.match(latency, /data-count=\{displayed.length\}/)
   assert.match(latency, /probeAccentIndex/)
   assert.match(latency, /latencyBarTone/)
   assert.match(latency, /lite-probe-row__return/)
   assert.match(latency, /lite-probe-row__viz-delay/)
   assert.match(latency, /lite-probe-row__viz-loss/)
-  assert.match(bars, /latencyBarTone/)
-  assert.match(bars, /lite-latency-bars/)
-  assert.match(bars, /lite-latency-bars__bar/)
+  assert.match(bars, /probeStripBarTone/)
+  assert.match(bars, /lite-probe-strip/)
+  assert.match(bars, /lite-probe-strip__bar/)
   assert.match(bars, /data-tone=\{tone\}/)
   assert.match(css, /data-tone="green"/)
   assert.doesNotMatch(latency, /lite-probe-chip/)
@@ -235,73 +260,79 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   assert.doesNotMatch(css, /grid-template-rows:\s*subgrid/)
   assert.match(css, /\.lite-server-card__probes \{[\s\S]*?display:\s*flex/)
   assert.match(css, /\.lite-server-card__probes \{[\s\S]*?flex-direction:\s*column/)
-  assert.match(css, /\.lite-probe-row \{[\s\S]*?border-bottom:\s*1px solid var\(--card-line\)/)
-  assert.match(css, /\.lite-probe-row:last-child \{[\s\S]*?border-bottom:\s*0/)
-  assert.match(css, /\.lite-latency-bars \{[\s\S]*?display:\s*flex/)
-  assert.match(css, /\.lite-latency-bars__bar\[data-tone="green"\] \{[\s\S]*?background:\s*var\(--card-green\)/)
-  assert.match(css, /\.lite-latency-bars__bar\[data-tone="amber"\] \{[\s\S]*?background:\s*var\(--card-amber\)/)
-  assert.match(css, /\.lite-latency-bars__bar\[data-tone="coral"\] \{[\s\S]*?background:\s*var\(--card-danger\)/)
+  assert.match(css, /\.lite-probe-row \{[\s\S]*?border-bottom:\s*1px dashed rgba\(148, 163, 184, 0\.55\)/)
+  assert.doesNotMatch(css, /\.lite-probe-row:last-child \{[\s\S]*?border-bottom:\s*0/)
+  assert.match(css, /\.lite-probe-strip \{[\s\S]*?display:\s*flex/)
+  assert.match(css, /\.lite-probe-strip__bar\[data-tone="green"\] \{[\s\S]*?background:\s*var\(--card-green\)/)
+  assert.match(css, /\.lite-probe-strip__bar\[data-tone="amber"\] \{[\s\S]*?background:\s*var\(--card-amber\)/)
+  assert.match(css, /\.lite-probe-strip__bar\[data-tone="coral"\] \{[\s\S]*?background:\s*var\(--card-danger\)/)
+  assert.match(css, /\.lite-probe-strip__bar\[data-tone="loss"\] \{[\s\S]*?background:\s*#a855f7/)
   assert.match(css, /\.lite-probe-row__viz-delay b\[data-tone="green"\] \{[\s\S]*?color:\s*var\(--card-green\)/)
   assert.match(css, /\.lite-probe-row__viz-delay b\[data-tone="coral"\] \{[\s\S]*?color:\s*var\(--card-danger\)/)
-  // Probe rows stack the name and return tag: the name is a fixed 64px,
-  // the tag is a uniform 56px wide below it, text centered in each, so the
-  // group is exactly the column width and the tag's center line always
-  // matches the name above it. The row has a fixed height of 39px. The gap
-  // to the viz is a uniform 8px on every row. The viz fills the rest. Each
-  // strip takes half the viz and its 12 dots share the strip width (4px
-  // min, no max, square via aspect-ratio), so dots grow on wide cards and
-  // shrink on narrow ones without squeezing the name, and the strip is
-  // always exactly filled (no leftover gap spread unevenly). Numbers use
-  // the same flex as their strips so their right edges stay aligned with
-  // the strips.
+  // Probe rows stack the name and return tag: the name and the tag are
+  // both a fixed 64px wide, text centered in each, so the two form one
+  // uniform column and read as a single unit. The row has a fixed height
+  // of 39px. The gap to the viz is a uniform 8px on every row. The viz
+  // fills the rest.
   assert.match(css, /\.lite-probe-row__main \{[\s\S]*?flex:\s*0 0 64px/)
   assert.match(css, /\.lite-probe-row__main \{[\s\S]*?width:\s*64px/)
-  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?align-items:\s*flex-start/)
+  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?flex-direction:\s*column/)
+  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?align-items:\s*center/)
   assert.match(css, /\.lite-probe-row__main \{[\s\S]*?min-height:\s*34px/)
-  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?justify-content:\s*center/)
+  assert.doesNotMatch(css, /\.lite-probe-row__main \{[^}]*border-radius:/)
+  assert.doesNotMatch(css, /\.lite-probe-row__main \{[^}]*background:/)
+  assert.match(css, /\.lite-probe-row__main-group \{[\s\S]*?flex-direction:\s*column/)
   assert.match(css, /\.lite-probe-row__main-group \{[\s\S]*?align-items:\s*center/)
   assert.match(css, /\.lite-probe-row__name \{[\s\S]*?width:\s*64px/)
   assert.match(css, /\.lite-probe-row__name \{[\s\S]*?text-align:\s*center/)
   assert.match(css, /\.lite-probe-row__return \{[\s\S]*?width:\s*56px/)
-  assert.match(css, /\.lite-probe-row__return \{[\s\S]*?padding:\s*1px 3px/)
+  assert.match(css, /\.lite-probe-row__return \{[\s\S]*?padding:\s*1px 0/)
+  assert.match(css, /\.lite-probe-row__name \{[\s\S]*?font-size:\s*14px/)
+  assert.match(css, /\.lite-probe-row__name \{[\s\S]*?color:\s*#ffffff/)
+  // The capsule is tinted by the return line's quality tier, light
+  // background and no glow: premium is light gold, optimized light blue,
+  // regular light gray, internal light green.
+  assert.match(css, /\.lite-probe-row__return\[data-quality="premium"\] \{[\s\S]*?background:\s*#fef3c7/)
+  assert.match(css, /\.lite-probe-row__return\[data-quality="optimized"\] \{[\s\S]*?background:\s*#93c5fd/)
+  assert.match(css, /\.lite-probe-row__return\[data-quality="internal"\] \{[\s\S]*?background:\s*#dcfce7/)
+  assert.doesNotMatch(css, /\.lite-probe-row__return \{[^}]*box-shadow:/)
+  assert.doesNotMatch(css, /\.lite-probe-row__return \{[^}]*linear-gradient\(90deg, #a855f7/)
   assert.match(css, /\.lite-probe-row__return \{[\s\S]*?text-align:\s*center/)
   // Adaptive inside the box: the viz takes whatever width the row leaves
-  // (flex: 1, min-width: 0), each column takes half of it, and the bars
-  // stay 1px while their gaps stretch with space-between — so the strip
-  // always fills its column, the "ms" always lands on the strip's tail
-  // end, and nothing can ever spill past the box. No fixed pixel width
-  // is pinned anywhere in the viz.
+  // (flex: 1, min-width: 0) and stacks a numbers line over one combined
+  // strip — so the strip always fills its width and nothing can ever
+  // spill past the box. No fixed pixel width is pinned anywhere in the viz.
   assert.match(css, /\.lite-probe-row__viz \{[\s\S]*?flex:\s*1 1 0/)
   assert.match(css, /\.lite-probe-row__viz \{[\s\S]*?min-width:\s*0/)
-  assert.match(css, /\.lite-probe-row__viz \{[\s\S]*?gap:\s*16px/)
+  assert.match(css, /\.lite-probe-row__viz \{[\s\S]*?flex-direction:\s*column/)
+  assert.match(css, /\.lite-probe-row__viz \{[\s\S]*?gap:\s*3px/)
   assert.doesNotMatch(css, /\.lite-probe-row__viz \{[^}]*width:\s*\d+px/)
   assert.doesNotMatch(css, /\.lite-probe-row\[data-loss="false"\] \.lite-probe-row__viz \{/)
-  // Each number sits in a column directly above its own strip, so the
-  // "ms" unit lands above the latency strip instead of drifting into the
-  // middle gap: the viz is a row of two columns, not a nums row over a
-  // bars row.
-  assert.match(css, /\.lite-probe-row__viz-col \{[\s\S]*?flex-direction:\s*column/)
-  assert.match(css, /\.lite-probe-row__viz-col \{[\s\S]*?align-items:\s*flex-end/)
-  assert.match(css, /\.lite-probe-row__viz-col \{[\s\S]*?flex:\s*1 1 0/)
-  assert.match(css, /\.lite-probe-row__viz-col \{[\s\S]*?min-width:\s*0/)
-  assert.doesNotMatch(css, /\.lite-probe-row__viz-col \{[^}]*width:\s*\d+px/)
+  // Numbers sit on one line above the strip: the viz is a column (nums
+  // row over one bars row), not a row of two columns.
+  assert.match(css, /\.lite-probe-row__viz-top \{[\s\S]*?display:\s*flex/)
+  assert.match(css, /\.lite-probe-row__viz-top \{[\s\S]*?justify-content:\s*flex-end/)
+  assert.match(css, /\.lite-probe-row__viz-top \{[\s\S]*?gap:\s*10px/)
+  assert.doesNotMatch(css, /\.lite-probe-row__viz-col \{/)
+  assert.doesNotMatch(css, /\.lite-latency-bars \{/)
   assert.doesNotMatch(css, /\.lite-probe-row__viz-delay \{[^}]*flex:\s*1 1 0/)
   assert.doesNotMatch(css, /\.lite-probe-row__viz-loss \{[^}]*flex:\s*1 1 0/)
   assert.doesNotMatch(css, /\.lite-probe-row__viz-nums \{/)
   assert.doesNotMatch(css, /\.lite-probe-row__viz-bars \{/)
-  assert.match(css, /\.lite-latency-bars \{[\s\S]*?display:\s*flex/)
-  assert.match(css, /\.lite-latency-bars \{[\s\S]*?flex:\s*none/)
-  assert.match(css, /\.lite-latency-bars \{[\s\S]*?gap:\s*2px/)
-  // Small vertical lines: fixed 1px wide, 14px tall, evenly spaced with a
-  // fixed 2px gap (the old squares-and-dots arrangement) — 30 bars share
-  // one uniform gap, so the strip reads as one even row.
-  assert.doesNotMatch(css, /\.lite-latency-bars \{[^}]*justify-content:\s*space-between/)
-  assert.doesNotMatch(css, /\.lite-latency-bars \{[^}]*display:\s*grid/)
-  assert.match(css, /\.lite-latency-bars__bar \{[\s\S]*?width:\s*1px/)
-  assert.match(css, /\.lite-latency-bars__bar \{[\s\S]*?height:\s*14px/)
-  assert.match(css, /\.lite-latency-bars__bar \{[\s\S]*?flex:\s*none/)
-  assert.doesNotMatch(css, /\.lite-latency-bars__bar \{[^}]*aspect-ratio:/)
-  assert.doesNotMatch(css, /\.lite-latency-bars__bar \{[^}]*max-width:/)
+  assert.match(css, /\.lite-probe-strip \{[\s\S]*?display:\s*flex/)
+  assert.match(css, /\.lite-probe-strip \{[\s\S]*?height:\s*16px/)
+  assert.match(css, /\.lite-probe-strip \{[\s\S]*?align-items:\s*flex-end/)
+  assert.match(css, /\.lite-probe-strip \{[\s\S]*?gap:\s*2px/)
+  // One combined strip: bars flex to fill the width (no fixed 1px width),
+  // heights vary with the latency value (inline style), so the strip reads
+  // as one even row whose skyline shows the latency trend.
+  assert.doesNotMatch(css, /\.lite-probe-strip \{[^}]*justify-content:\s*space-between/)
+  assert.doesNotMatch(css, /\.lite-probe-strip \{[^}]*display:\s*grid/)
+  assert.match(css, /\.lite-probe-strip__bar \{[\s\S]*?flex:\s*1 1 0/)
+  assert.match(css, /\.lite-probe-strip__bar \{[\s\S]*?min-width:\s*0/)
+  assert.doesNotMatch(css, /\.lite-probe-strip__bar \{[^}]*width:\s*1px/)
+  assert.doesNotMatch(css, /\.lite-probe-strip__bar \{[^}]*aspect-ratio:/)
+  assert.doesNotMatch(css, /\.lite-probe-strip__bar \{[^}]*max-width:/)
   // Return-route tag is bold in Chinese only (en/ja keep regular weight).
   assert.match(css, /html\[lang="zh-CN"\] \.lite-probe-row__return,[\s\S]*?font-weight:\s*700/)
   assert.match(css, /html\[lang="zh-TW"\] \.lite-probe-row__return \{[\s\S]*?font-weight:\s*700/)

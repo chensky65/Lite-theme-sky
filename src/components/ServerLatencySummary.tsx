@@ -1,5 +1,4 @@
-import LatencyHistoryBars from "@/components/LatencyHistoryBars"
-import PacketLossHistoryBars from "@/components/PacketLossHistoryBars"
+import ProbeHistoryStrip from "@/components/ProbeHistoryStrip"
 import {
   HOME_LATENCY_CARD_LIMIT,
   type HomeLatencyTaskSummary,
@@ -9,7 +8,7 @@ import {
   latencyBarTone,
 } from "@/lib/home-latency"
 import { probeAccentIndex } from "@/lib/home-probe-accent"
-import { returnLineForPingTask, type PublicReturnRoute } from "@/lib/home-return-route"
+import { returnLineForPingTask, returnLineQuality, type PublicReturnRoute } from "@/lib/home-return-route"
 import { readShowHomePacketLoss, readShowHomeReturnRoute } from "@/lib/theme-config"
 import { useEffect, useRef } from "react"
 import { useTranslation } from "react-i18next"
@@ -71,32 +70,27 @@ function TaskProbeRow({
         <span className="lite-probe-row__main-group">
           <span className="lite-probe-row__name" title={summary.taskName}>{summary.taskName}</span>
           {returnLine ? (
-            <span className="lite-probe-row__return" title={returnLabel}>{returnLabel}</span>
+            <span className="lite-probe-row__return" data-quality={returnLineQuality(returnLine)} title={returnLabel}>{returnLabel}</span>
           ) : null}
         </span>
       </span>
       <span className="lite-probe-row__viz">
-        <span className="lite-probe-row__viz-col">
+        <span className="lite-probe-row__viz-top">
           <span className="lite-probe-row__viz-delay">
             <b className="tabular-nums" data-tone={delayTone}>{latency.value}</b>
             {latency.unit ? <small>{latency.unit}</small> : null}
           </span>
-          <LatencyHistoryBars
-            values={summary.latencyHistory}
-            label={`${summary.taskName} ${t("serverCard.latency")} ${latencyLabel}`}
-          />
-        </span>
-        {showPacketLoss ? (
-          <span className="lite-probe-row__viz-col">
+          {showPacketLoss ? (
             <span className="lite-probe-row__viz-loss" title={`${lossLabel} ${packetLoss}`}>
               <b className="tabular-nums">{packetLoss}</b>
             </span>
-            <PacketLossHistoryBars
-              values={summary.packetLossHistory}
-              label={`${summary.taskName} ${lossLabel} ${packetLoss}`}
-            />
-          </span>
-        ) : null}
+          ) : null}
+        </span>
+        <ProbeHistoryStrip
+          latency={summary.latencyHistory}
+          loss={summary.packetLossHistory}
+          label={`${summary.taskName} ${t("serverCard.latency")} ${latencyLabel}`}
+        />
       </span>
     </button>
   )
