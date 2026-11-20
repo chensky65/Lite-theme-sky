@@ -678,7 +678,7 @@ html.dark .lite-server-card {
   min-width: 0;
   box-sizing: border-box;
   padding: 1px 0;
-  border: 1px solid #94a3b8;
+  border: none;
   border-radius: 999px;
   background: #f8fafc;
   font-size: 11px;
@@ -690,25 +690,21 @@ html.dark .lite-server-card {
 }
 
 .lite-probe-row__main .lite-probe-row__return[data-quality="premium"] {
-  border-color: #d97706;
   background: #fffbeb;
   color: #b45309;
 }
 
 .lite-probe-row__main .lite-probe-row__return[data-quality="optimized"] {
-  border-color: #2563eb;
-  background: #dbeafe;
+  background: #eff6ff;
   color: #1e40af;
 }
 
 .lite-probe-row__main .lite-probe-row__return[data-quality="regular"] {
-  border-color: #94a3b8;
   background: #f8fafc;
   color: #64748b;
 }
 
 .lite-probe-row__main .lite-probe-row__return[data-quality="internal"] {
-  border-color: #22c55e;
   background: #f0fdf4;
   color: #15803d;
 }
