@@ -93,7 +93,37 @@ test("homepage uses a card-style status overview with a light health gradient", 
   assert.doesNotMatch(overview, /slice\(0, 32\)/)
   const css = readFileSync(new URL("../src/index.css", import.meta.url), "utf8")
   assert.match(css, /\.lite-home-overview__live \.lite-home-chart \{[\s\S]*flex: 1 1 auto/)
-  assert.match(css, /\.lite-home-overview__live \.lite-home-chart__svg \{[\s\S]*min-height: 92px/)
+  assert.match(css, /\.lite-home-overview__live \.lite-home-chart__svg \{[\s\S]*min-height: 72px/)
+  assert.match(css, /\.lite-home-overview__layout \{[\s\S]*?gap: 12px/)
+  assert.match(css, /\.lite-home-overview__live \{[\s\S]*?padding: 14px 16px/)
+  // Mobile metric numbers are 17px (not 23px): the widest max value
+  // ("999.99 M/s", 72px) must fit a 360px phone tile (75px of room),
+  // and 17px is the point where shrinking stops narrowing the text.
+  // Tiles use 10px side padding and the sub-line is 8px for the same reason.
+  assert.match(css, /\.lite-home-overview__metrics \.lite-home-measure \{[\s\S]*?font-size:\s*17px/)
+  assert.match(css, /\.lite-home-overview--mobile-open \.lite-home-overview__metrics > article \{[\s\S]*?padding: 10px 10px/)
+  assert.match(css, /\.lite-home-overview__metrics p \{[\s\S]*?font-size:\s*8px/)
+})
+
+test("homepage overview renders as raised 3D sub-cards like the server cards", () => {
+  const css = readFileSync(new URL("../src/index.css", import.meta.url), "utf8")
+  assert.match(css, /\.lite-home-overview \{[\s\S]*?--home-bg: #dde5eb/)
+  assert.match(css, /\.lite-home-overview \{[\s\S]*?--home-inset: #ffffff/)
+  assert.match(css, /\.lite-home-overview \{[\s\S]*?background: var\(--home-bg\)/)
+  assert.match(css, /\.lite-home-overview \{[\s\S]*?box-shadow: var\(--home-inset-shadow\)/)
+  assert.match(css, /html\.dark \.lite-home-overview \{[\s\S]*?--home-bg: #232f3f/)
+  assert.match(css, /html\.dark \.lite-home-overview \{[\s\S]*?--home-inset: #131e2b/)
+  assert.match(css, /\.lite-home-overview \.lite-home-measure \{[\s\S]*?text-shadow: var\(--home-num-shadow\)/)
+  assert.match(css, /\.lite-home-overview__desk-head \{[\s\S]*?background: var\(--home-inset\)/)
+  assert.match(css, /\.lite-home-overview__desk-head \{[\s\S]*?box-shadow: var\(--home-inset-shadow\)/)
+  assert.match(css, /\.lite-home-overview__layout \{[\s\S]*?gap: 16px/)
+  assert.match(css, /\.lite-home-overview__live \{[\s\S]*?background: var\(--home-inset\)/)
+  assert.match(css, /\.lite-home-overview__stats \{[\s\S]*?background: var\(--home-inset\)/)
+  assert.match(css, /\.lite-home-overview__stats \{[\s\S]*?box-shadow: var\(--home-inset-shadow\)/)
+  assert.doesNotMatch(css, /\.lite-home-overview__stats \{[\s\S]*?border-left: 1px solid var\(--home-line\)/)
+  assert.match(css, /\.lite-home-overview--mobile-open \.lite-home-overview__metrics > article \{[\s\S]*?background: var\(--home-inset\)/)
+  assert.match(css, /\.lite-home-overview__flow \{[\s\S]*?background: var\(--home-inset\)/)
+  assert.match(css, /\.lite-home-greeting-name \{[\s\S]*?-webkit-text-fill-color: transparent/)
 })
 
 test("homepage latency probes keep latency and packet loss in one compact metric group", () => {
@@ -206,10 +236,17 @@ test("homepage latency probes keep latency and packet loss in one compact metric
   assert.doesNotMatch(planInfo, /networkRoute/)
   assert.match(card, /lite-server-card__footer/)
   assert.match(card, /lite-server-card__bottom/)
-  // Resource numbers are 18px (not 21px); the blocks share one fixed
-  // 12px gap (the body flex gap), with no per-block margin on top.
-  assert.match(css, /\.lite-server-card__resource-value \{[\s\S]*?font-size:\s*18px/)
+  // Resource numbers are 17px (not 18px): the widest max value
+  // ("100.0 %") must fit a 360px phone card column, so the size was
+  // cut by 1px; the blocks share one fixed 12px gap (the body flex
+  // gap), with no per-block margin on top.
+  assert.match(css, /\.lite-server-card__resource-value \{[\s\S]*?font-size:\s*17px/)
   assert.match(css, /\.lite-server-card__body \{[\s\S]*?gap:\s*12px/)
+  // Narrow cards (<=399px): the four resource cells use 5px side padding
+  // (not 8px), so the widest max value ("100.0 %", 54px at 17px) gets
+  // ~6px of slack in a 360px phone column instead of sitting exactly
+  // at the limit.
+  assert.match(css, /@container server-card \(max-width: 399px\) \{[\s\S]*?\.lite-server-card__resource \{[\s\S]*?padding:\s*0 5px/)
   assert.doesNotMatch(css, /\.lite-server-card__quality \{[^}]*margin-top:/)
   assert.doesNotMatch(css, /\.lite-server-card__bottom \{[^}]*margin-top:/)
   // Traffic and billing sit inside the body, so they share the body's
