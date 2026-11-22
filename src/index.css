@@ -370,6 +370,13 @@ html.dark .lite-duration-pill__unit {
   color: #ff5630;
 }
 
+/* Dark mode sets the pill text green with a more specific selector, so the
+   offline red needs the same parent to win. */
+html.dark .lite-server-card__duration--offline .lite-duration-pill__num,
+html.dark .lite-server-card__duration--offline .lite-duration-pill__unit {
+  color: #ff5630;
+}
+
 /* Network: upload and download as two separate rounded sub-cards,
    one content per block, inset from the card edges like the traffic card. */
 .lite-server-card__net {
@@ -1897,11 +1904,39 @@ html.dark .lite-home-overview {
 .lite-panel {
   --lite-panel-pad-x: 23px;
   --lite-panel-pad-y: 20px;
+  --detail-inset: #ffffff;
+  --detail-inset-border: #d5dfe8;
+  --detail-inset-shadow: 0 12px 28px rgba(31, 52, 71, 0.22), 0 4px 10px rgba(31, 52, 71, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.85), inset 0 -1px 0 rgba(31, 52, 71, 0.08);
+  --detail-num-shadow: 0 2px 4px rgba(31, 52, 71, 0.35);
   overflow: hidden;
-  border: 1px solid var(--home-border, var(--lite-line));
+  border: 1px solid var(--detail-inset-border);
   border-radius: 22px;
-  background: var(--lite-paper);
-  box-shadow: 0 1px 2px rgba(28, 37, 46, 0.03);
+  background: var(--detail-inset);
+  box-shadow: var(--detail-inset-shadow);
+}
+
+html.dark .lite-panel {
+  --detail-inset: #131e2b;
+  --detail-inset-border: #1d2a3a;
+  --detail-inset-shadow: 0 20px 44px rgba(0, 0, 0, 0.80), 0 6px 16px rgba(0, 0, 0, 0.70), inset 0 1px 0 rgba(255, 255, 255, 0.30), inset 0 -1px 0 rgba(0, 0, 0, 0.40);
+  --detail-num-shadow: 0 4px 10px rgba(0, 0, 0, 0.85);
+}
+
+/* 最底层去黑 + 面板去外层投影（全端）：露背景图，圆角下无三角阴影 */
+html.dark {
+  background-color: transparent;
+}
+
+body {
+  background-color: transparent;
+}
+
+.lite-panel {
+  --detail-inset-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.85), inset 0 -1px 0 rgba(31, 52, 71, 0.08);
+}
+
+html.dark .lite-panel {
+  --detail-inset-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), inset 0 -1px 0 rgba(0, 0, 0, 0.4);
 }
 
 .lite-detail-head {
@@ -2136,6 +2171,7 @@ html.dark .lite-page-tabs__item.is-active {
   font-weight: 600;
   letter-spacing: -0.7px;
   line-height: 42px;
+  text-shadow: var(--detail-num-shadow);
 }
 
 .lite-speed-measure small {
@@ -2362,6 +2398,7 @@ html.dark .lite-page-tabs__item.is-active {
   font-weight: 600;
   letter-spacing: -0.3px;
   line-height: 26px;
+  text-shadow: var(--detail-num-shadow);
 }
 
 .lite-resource-metric__meter {
@@ -2651,7 +2688,7 @@ html.dark .lite-page-tabs__item.is-active {
   padding: 4px 11px;
   border: 1px solid var(--home-border, var(--lite-line));
   border-radius: 10px;
-  background: var(--lite-paper);
+  background: var(--detail-inset);
   font-size: 12px;
   color: var(--home-text, var(--lite-ink));
 }
@@ -2691,7 +2728,7 @@ html.dark .lite-page-tabs__item.is-active {
   border: 1px solid var(--home-border, var(--lite-line));
   border-radius: 10px;
   padding: 4px 11px;
-  background: var(--lite-paper);
+  background: var(--detail-inset);
   font: inherit;
   font-size: 12px;
   color: var(--lite-secondary);
@@ -2701,7 +2738,7 @@ html.dark .lite-page-tabs__item.is-active {
 .lite-task-chips__item.is-active {
   border-color: #078dee;
   color: #078dee;
-  background: color-mix(in srgb, #078dee 8%, var(--lite-paper));
+  background: color-mix(in srgb, #078dee 8%, var(--detail-inset));
 }
 
 .lite-task-chips__more {
@@ -2733,6 +2770,7 @@ html.dark .lite-page-tabs__item.is-active {
   font-weight: 600;
   letter-spacing: -0.65px;
   line-height: 36px;
+  text-shadow: var(--detail-num-shadow);
 }
 
 .lite-monitor-summary__metrics strong small,

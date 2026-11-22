@@ -126,6 +126,27 @@ test("homepage overview renders as raised 3D sub-cards like the server cards", (
   assert.match(css, /\.lite-home-greeting-name \{[\s\S]*?-webkit-text-fill-color: transparent/)
 })
 
+test("server detail panels render as raised 3D cards like the server cards", () => {
+  const css = readFileSync(new URL("../src/index.css", import.meta.url), "utf8")
+  assert.match(css, /\.lite-panel \{[\s\S]*?--detail-inset: #ffffff/)
+  assert.match(css, /\.lite-panel \{[\s\S]*?--detail-inset-border: #d5dfe8/)
+  assert.match(css, /\.lite-panel \{[\s\S]*?border: 1px solid var\(--detail-inset-border\)/)
+  assert.match(css, /\.lite-panel \{[\s\S]*?background: var\(--detail-inset\)/)
+  assert.match(css, /\.lite-panel \{[\s\S]*?box-shadow: var\(--detail-inset-shadow\)/)
+  assert.match(css, /html\.dark \.lite-panel \{[\s\S]*?--detail-inset: #131e2b/)
+  assert.match(css, /html\.dark \.lite-panel \{[\s\S]*?--detail-inset-border: #1d2a3a/)
+  assert.match(css, /\.lite-resource-metric__top b \{[\s\S]*?text-shadow: var\(--detail-num-shadow\)/)
+  assert.match(css, /\.lite-speed-measure \{[\s\S]*?text-shadow: var\(--detail-num-shadow\)/)
+  assert.match(css, /\.lite-monitor-summary__metrics strong \{[\s\S]*?text-shadow: var\(--detail-num-shadow\)/)
+  assert.match(css, /\.lite-task-chips__item,[\s\S]*?\.lite-task-chips__more \{[\s\S]*?background: var\(--detail-inset\)/)
+  assert.match(css, /\.lite-task-chips__item\.is-active \{[\s\S]*?background: color-mix\(in srgb, #078dee 8%, var\(--detail-inset\)\)/)
+  assert.match(css, /\.lite-monitor-summary__choose \{[\s\S]*?background: var\(--detail-inset\)/)
+  assert.doesNotMatch(css, /\[data-testid="network-chart-card"\][\s\S]*?--detail-inset: transparent;/)
+  assert.match(css, /html\.dark \{[\s\S]*?background-color: transparent;[\s\S]*?body \{[\s\S]*?background-color: transparent;/)
+  assert.match(css, /\.lite-panel \{[\s\S]*?--detail-inset-shadow: inset 0 1px 0 rgba\(255, 255, 255, 0\.85\), inset 0 -1px 0 rgba\(31, 52, 71, 0\.08\);/)
+  assert.match(css, /html\.dark \.lite-panel \{[\s\S]*?--detail-inset-shadow: inset 0 1px 0 rgba\(255, 255, 255, 0\.3\), inset 0 -1px 0 rgba\(0, 0, 0, 0\.4\);/)
+})
+
 test("homepage latency probes keep latency and packet loss in one compact metric group", () => {
   const latency = readFileSync(new URL("../src/components/ServerLatencySummary.tsx", import.meta.url), "utf8")
   const bars = readFileSync(new URL("../src/components/ProbeHistoryStrip.tsx", import.meta.url), "utf8")
