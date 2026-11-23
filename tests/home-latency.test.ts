@@ -361,7 +361,7 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   assert.match(css, /\.lite-server-card__resource-value \{[\s\S]*?text-shadow:\s*var\(--card-num-shadow\)/)
   // Dark mode 3D reads stronger: the drop shadow is deeper and the top
   // highlight brighter, since black-on-black barely shows.
-  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-inset-shadow:\s*0 12px 28px rgba\(0, 0, 0, 0\.45\), 0 4px 10px rgba\(0, 0, 0, 0\.35\), inset 0 -1px 0 rgba\(0, 0, 0, 0\.25\)/)
+  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-inset-shadow:\s*0 20px 44px rgba\(0, 0, 0, 0\.80\), 0 6px 16px rgba\(0, 0, 0, 0\.70\), inset 0 1px 0 rgba\(255, 255, 255, 0\.30\), inset 0 -1px 0 rgba\(0, 0, 0, 0\.40\)/)
   assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-num-shadow:\s*0 4px 10px rgba\(0, 0, 0, 0\.85\)/)
   assert.match(css, /html\.dark \.lite-server-card__meter,[\s\S]*?box-shadow:\s*inset 0 2px 5px rgba\(0, 0, 0, 0\.60\)/)
   assert.match(css, /\.lite-server-card__meter \{[\s\S]*?box-shadow:\s*inset 0 2px 4px rgba\(0, 0, 0, 0\.30\)/)
