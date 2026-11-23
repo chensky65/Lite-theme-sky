@@ -212,14 +212,14 @@ html {
 }
 
 html.dark .lite-server-card {
-  --card-bg: #33465c;
+  --card-bg: #1e2a38;
   --card-text: #ffffff;
-  --card-secondary: #c4cdd5;
-  --card-muted: #8ea2b5;
+  --card-secondary: #dde7ef;
+  --card-muted: #b0c1d0;
   --card-line: #1d2a3a;
   --card-border: #243447;
-  --card-inset: linear-gradient(180deg, #1a2836 0%, #131e2b 100%);
-  --card-inset-border: #1d2a3a;
+  --card-inset: #28374a;
+  --card-inset-border: transparent;
   --card-track: #475569;
   --card-accent: #58b7f5;
   --card-traffic: #58b7f5;
@@ -240,7 +240,7 @@ html.dark .lite-server-card {
   --card-chip-border: rgba(242, 112, 138, 0.28);
   --card-chip-text: #f2708a;
   --card-shadow: 0 18px 44px rgba(0, 0, 0, 0.42);
-  --card-inset-shadow: 0 28px 56px rgba(0, 0, 0, 0.85), 0 10px 24px rgba(0, 0, 0, 0.75);
+  --card-inset-shadow: 0 12px 28px rgba(0, 0, 0, 0.45), 0 4px 10px rgba(0, 0, 0, 0.35), inset 0 -1px 0 rgba(0, 0, 0, 0.25);
   --card-num-shadow: 0 4px 10px rgba(0, 0, 0, 0.85);
   --card-icon-shadow: drop-shadow(0 5px 9px rgba(0, 0, 0, 0.80));
   --card-name-shadow: 0 3px 6px rgba(0, 0, 0, 0.90), 0 8px 18px rgba(0, 0, 0, 0.70);
@@ -1224,8 +1224,8 @@ html.dark .lite-home-overview {
   --home-muted: #90a4b7;
   --home-line: #2b394a;
   --home-border: #2a394b;
-  --home-bg: #33465c;
-  --home-inset: linear-gradient(180deg, #1a2836 0%, #131e2b 100%);
+  --home-bg: #1e2a38;
+  --home-inset: #28374a;
   --home-inset-shadow: 0 20px 44px rgba(0, 0, 0, 0.80), 0 6px 16px rgba(0, 0, 0, 0.70), inset 0 1px 0 rgba(255, 255, 255, 0.30), inset 0 -1px 0 rgba(0, 0, 0, 0.40);
   --home-num-shadow: 0 4px 10px rgba(0, 0, 0, 0.85);
 }
@@ -1939,7 +1939,7 @@ html.dark .lite-home-overview {
 }
 
 html.dark .lite-panel {
-  --detail-inset: #131e2b;
+  --detail-inset: #28374a;
   --detail-inset-border: #1d2a3a;
   --detail-inset-shadow: 0 20px 44px rgba(0, 0, 0, 0.80), 0 6px 16px rgba(0, 0, 0, 0.70), inset 0 1px 0 rgba(255, 255, 255, 0.30), inset 0 -1px 0 rgba(0, 0, 0, 0.40);
   --detail-num-shadow: 0 4px 10px rgba(0, 0, 0, 0.85);

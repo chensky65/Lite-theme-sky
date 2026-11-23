@@ -111,8 +111,8 @@ test("homepage overview renders as raised 3D sub-cards like the server cards", (
   assert.match(css, /\.lite-home-overview \{[\s\S]*?--home-inset: #ffffff/)
   assert.match(css, /\.lite-home-overview \{[\s\S]*?background: var\(--home-bg\)/)
   assert.match(css, /\.lite-home-overview \{[\s\S]*?box-shadow: var\(--home-inset-shadow\)/)
-  assert.match(css, /html\.dark \.lite-home-overview \{[\s\S]*?--home-bg: #33465c/)
-  assert.match(css, /html\.dark \.lite-home-overview \{[\s\S]*?--home-inset: linear-gradient\(180deg, #1a2836 0%, #131e2b 100%\)/)
+  assert.match(css, /html\.dark \.lite-home-overview \{[\s\S]*?--home-bg: #1e2a38/)
+  assert.match(css, /html\.dark \.lite-home-overview \{[\s\S]*?--home-inset: #28374a/)
   assert.match(css, /\.lite-home-overview \.lite-home-measure \{[\s\S]*?text-shadow: var\(--home-num-shadow\)/)
   assert.match(css, /\.lite-home-overview__desk-head \{[\s\S]*?background: var\(--home-inset\)/)
   assert.match(css, /\.lite-home-overview__desk-head \{[\s\S]*?box-shadow: var\(--home-inset-shadow\)/)
@@ -133,7 +133,7 @@ test("server detail panels render as raised 3D cards like the server cards", () 
   assert.match(css, /\.lite-panel \{[\s\S]*?border: 1px solid var\(--detail-inset-border\)/)
   assert.match(css, /\.lite-panel \{[\s\S]*?background: var\(--detail-inset\)/)
   assert.match(css, /\.lite-panel \{[\s\S]*?box-shadow: var\(--detail-inset-shadow\)/)
-  assert.match(css, /html\.dark \.lite-panel \{[\s\S]*?--detail-inset: #131e2b/)
+  assert.match(css, /html\.dark \.lite-panel \{[\s\S]*?--detail-inset: #28374a/)
   assert.match(css, /html\.dark \.lite-panel \{[\s\S]*?--detail-inset-border: #1d2a3a/)
   assert.match(css, /\.lite-resource-metric__top b \{[\s\S]*?text-shadow: var\(--detail-num-shadow\)/)
   assert.match(css, /\.lite-speed-measure \{[\s\S]*?text-shadow: var\(--detail-num-shadow\)/)
@@ -213,12 +213,16 @@ test("homepage latency probes keep latency and packet loss in one compact metric
   // (net cells, resources, quality, traffic, footer) read as raised panels.
   assert.match(css, /\.lite-server-card \{[\s\S]*?--card-bg:\s*#dde5eb/)
   assert.match(css, /\.lite-server-card \{[\s\S]*?--card-inset:\s*#ffffff/)
-  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-bg:\s*#33465c/)
-  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-inset:\s*linear-gradient\(180deg, #1a2836 0%, #131e2b 100%\)/)
-  // Night B (2026-11-23): keep the dark sub-cards, strengthen the 3D
-  // separation instead — brighter inset border and top highlight.
-  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-inset-border:\s*#1d2a3a/)
-  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-inset-shadow:\s*0 28px 56px rgba\(0, 0, 0, 0\.85\), 0 10px 24px rgba\(0, 0, 0, 0\.75\)/)
+  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-bg:\s*#1e2a38/)
+  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-inset:\s*#28374a/)
+  // Content clarity (2026-11-23): after restoring the card colors to
+  // 1.3.11, brighten the night labels and secondary text; the sub-card
+  // border was first strengthened for clarity, then removed entirely
+  // (transparent) at the user's request the same day.
+  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-secondary:\s*#dde7ef/)
+  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-muted:\s*#b0c1d0/)
+  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-inset-border:\s*transparent/)
+  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-inset-shadow:\s*0 12px 28px rgba\(0, 0, 0, 0\.45\), 0 4px 10px rgba\(0, 0, 0, 0\.35\), inset 0 -1px 0 rgba\(0, 0, 0, 0\.25\)/)
   // Scheme C label colors reverted to the pre-C defaults on 2026-11-23:
   // labels read --card-secondary, totals read --card-muted; the night-only
   // 11px label size was removed the same day so day and night label sizes
