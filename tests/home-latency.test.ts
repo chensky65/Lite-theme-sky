@@ -380,6 +380,11 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   // (VPS name shadow removed 2026-11-20 at the user's request; the
   // duration pill numbers keep theirs.)
   assert.doesNotMatch(css, /\.lite-server-card__name \{[^}]*text-shadow:/)
+  // Metal gradient name (v1.3.10 look, one shade darker since the
+  // 2026-11-23 chrome revert): dark steel by day, solid white by night
+  // (white since 2026-11-23 at the user's request).
+  assert.match(css, /\.lite-server-card__name \{[^}]*background:\s*linear-gradient\(180deg, #475569 0%, #0f172a 55%, #020617 100%\)/)
+  assert.match(css, /html\.dark \.lite-server-card__name \{[^}]*-webkit-text-fill-color:\s*#ffffff/)
   assert.match(css, /\.lite-duration-pill \{[\s\S]*?box-shadow:\s*0 4px 10px rgba\(0, 0, 0, 0\.38\), 0 1px 3px rgba\(0, 0, 0, 0\.30\), inset 0 1px 0 rgba\(255, 255, 255, 0\.45\), inset 0 -1px 0 rgba\(0, 0, 0, 0\.12\)/)
   assert.match(css, /\.lite-duration-pill__num \{[\s\S]*?text-shadow:\s*var\(--card-name-shadow\)/)
   assert.doesNotMatch(css, /\.lite-server-card__bottom \{[^}]*border-top:\s*1px solid var\(--card-line\)/)
