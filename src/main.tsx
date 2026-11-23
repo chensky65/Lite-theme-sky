@@ -9,8 +9,11 @@ import { ThemeColorManager } from "./components/ThemeColorManager"
 import { ThemeProvider } from "./components/ThemeProvider"
 import { MotionProvider } from "./components/motion/motion-provider"
 import { i18nReady } from "./i18n"
+import { startAutoUpdate } from "./lib/auto-update"
 import { isRpcAuthLossError } from "./lib/rpc-auth"
 import "./index.css"
+
+startAutoUpdate()
 
 const queryClient = new QueryClient({
   defaultOptions: {

@@ -349,7 +349,7 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   // tone.
   assert.match(css, /\.lite-server-card__bottom \{[\s\S]*?flex-direction:\s*column/)
   assert.match(css, /\.lite-server-card__traffic-card \{[\s\S]*?border:\s*1px solid var\(--card-inset-border\)/)
-  assert.match(css, /\.lite-server-card__traffic-card \{[\s\S]*?border-radius:\s*16px/)
+  assert.match(css, /\.lite-server-card__traffic-card \{[\s\S]*?border-radius:\s*12px/)
   // 3D: every content sub-card is raised with a drop shadow plus a top
   // highlight, and the numbers and bars inside carry the depth too.
   assert.match(css, /\.lite-server-card__resources \{[\s\S]*?box-shadow:\s*var\(--card-inset-shadow\)/)
@@ -361,7 +361,7 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   assert.match(css, /\.lite-server-card__resource-value \{[\s\S]*?text-shadow:\s*var\(--card-num-shadow\)/)
   // Dark mode 3D reads stronger: the drop shadow is deeper and the top
   // highlight brighter, since black-on-black barely shows.
-  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-inset-shadow:\s*0 20px 44px rgba\(0, 0, 0, 0\.80\), 0 6px 16px rgba\(0, 0, 0, 0\.70\), inset 0 1px 0 rgba\(255, 255, 255, 0\.30\), inset 0 -1px 0 rgba\(0, 0, 0, 0\.40\)/)
+  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-inset-shadow:\s*0 28px 56px rgba\(0, 0, 0, 0\.85\), 0 10px 24px rgba\(0, 0, 0, 0\.75\)/)
   assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-num-shadow:\s*0 4px 10px rgba\(0, 0, 0, 0\.85\)/)
   assert.match(css, /html\.dark \.lite-server-card__meter,[\s\S]*?box-shadow:\s*inset 0 2px 5px rgba\(0, 0, 0, 0\.60\)/)
   assert.match(css, /\.lite-server-card__meter \{[\s\S]*?box-shadow:\s*inset 0 2px 4px rgba\(0, 0, 0, 0\.30\)/)
@@ -385,6 +385,26 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   // (white since 2026-11-23 at the user's request).
   assert.match(css, /\.lite-server-card__name \{[^}]*background:\s*linear-gradient\(180deg, #475569 0%, #0f172a 55%, #020617 100%\)/)
   assert.match(css, /html\.dark \.lite-server-card__name \{[^}]*-webkit-text-fill-color:\s*#ffffff/)
+  // Scheme C (2026-11-23): big key numbers, quiet labels. Sizes were
+  // fit-checked at 360px/390px against the widest values (999.99 M/s,
+  // 100.0%, 100.00%, $999/月, 1000 Mbps). The probe latency number
+  // went back to the original 11px the same day at the user's request.
+  assert.match(css, /\.lite-server-card__name \{[^}]*font-size:\s*18px/)
+  assert.match(css, /\.lite-server-card__speed \{[\s\S]*?font-size:\s*clamp\(22px, 7\.2cqi, 28px\)/)
+  assert.match(css, /\.lite-server-card__speed small \{[^}]*white-space:\s*nowrap/)
+  assert.match(css, /\.lite-server-card__resource-value \{[^}]*font-size:\s*18px/)
+  assert.match(css, /\.lite-probe-row__viz-delay b \{[^}]*font-size:\s*11px/)
+  assert.match(css, /\.lite-server-card__quota-percent \{[^}]*font-size:\s*18px/)
+  assert.match(css, /\.lite-server-card__footer-price \{[^}]*font-size:\s*28px/)
+  // Day and night label sizes are the same (2026-11-23): the C scheme's
+  // night-only 11px override was removed, so the four labels keep their
+  // base sizes in both modes.
+  assert.match(css, /\.lite-server-card__rate-label \{[^}]*font-size:\s*12px/)
+  assert.match(css, /\.lite-server-card__resource-label \{[^}]*font-size:\s*12\.5px/)
+  assert.match(css, /\.lite-server-card__quota-meta \{[^}]*font-size:\s*11\.5px/)
+  assert.match(css, /\.lite-server-card__quality-title \{[^}]*font-size:\s*13\.5px/)
+  assert.doesNotMatch(css, /html\.dark \.lite-server-card__(rate-label|resource-label|quota-meta|quality-title)/)
+  assert.match(css, /@container server-card \(max-width: 399px\) \{[\s\S]*?\.lite-server-card__resource \{\s*padding:\s*0 2px/)
   assert.match(css, /\.lite-duration-pill \{[\s\S]*?box-shadow:\s*0 4px 10px rgba\(0, 0, 0, 0\.38\), 0 1px 3px rgba\(0, 0, 0, 0\.30\), inset 0 1px 0 rgba\(255, 255, 255, 0\.45\), inset 0 -1px 0 rgba\(0, 0, 0, 0\.12\)/)
   assert.match(css, /\.lite-duration-pill__num \{[\s\S]*?text-shadow:\s*var\(--card-name-shadow\)/)
   assert.doesNotMatch(css, /\.lite-server-card__bottom \{[^}]*border-top:\s*1px solid var\(--card-line\)/)

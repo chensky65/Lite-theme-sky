@@ -111,8 +111,8 @@ test("homepage overview renders as raised 3D sub-cards like the server cards", (
   assert.match(css, /\.lite-home-overview \{[\s\S]*?--home-inset: #ffffff/)
   assert.match(css, /\.lite-home-overview \{[\s\S]*?background: var\(--home-bg\)/)
   assert.match(css, /\.lite-home-overview \{[\s\S]*?box-shadow: var\(--home-inset-shadow\)/)
-  assert.match(css, /html\.dark \.lite-home-overview \{[\s\S]*?--home-bg: #232f3f/)
-  assert.match(css, /html\.dark \.lite-home-overview \{[\s\S]*?--home-inset: #131e2b/)
+  assert.match(css, /html\.dark \.lite-home-overview \{[\s\S]*?--home-bg: #33465c/)
+  assert.match(css, /html\.dark \.lite-home-overview \{[\s\S]*?--home-inset: linear-gradient\(180deg, #1a2836 0%, #131e2b 100%\)/)
   assert.match(css, /\.lite-home-overview \.lite-home-measure \{[\s\S]*?text-shadow: var\(--home-num-shadow\)/)
   assert.match(css, /\.lite-home-overview__desk-head \{[\s\S]*?background: var\(--home-inset\)/)
   assert.match(css, /\.lite-home-overview__desk-head \{[\s\S]*?box-shadow: var\(--home-inset-shadow\)/)
@@ -182,9 +182,9 @@ test("homepage latency probes keep latency and packet loss in one compact metric
   assert.match(css, /\.lite-server-card__bottom \{[\s\S]*?flex-direction:\s*column/)
   assert.doesNotMatch(css, /\.lite-server-card__bottom \{[^}]*border-top:\s*1px solid var\(--card-line\)/)
   assert.match(css, /\.lite-server-card__traffic-card \{[\s\S]*?border:\s*1px solid var\(--card-inset-border\)/)
-  assert.match(css, /\.lite-server-card__traffic-card \{[\s\S]*?border-radius:\s*16px/)
+  assert.match(css, /\.lite-server-card__traffic-card \{[\s\S]*?border-radius:\s*12px/)
   assert.match(css, /\.lite-server-card__footer \{[\s\S]*?border:\s*1px solid var\(--card-inset-border\)/)
-  assert.match(css, /\.lite-server-card__footer \{[\s\S]*?border-radius:\s*16px/)
+  assert.match(css, /\.lite-server-card__footer \{[\s\S]*?border-radius:\s*12px/)
   // Billing remaining days and balance stack vertically (two lines),
   // not side by side on one line.
   assert.match(css, /\.lite-server-card__footer-remain \{[\s\S]*?flex-direction:\s*column/)
@@ -208,26 +208,41 @@ test("homepage latency probes keep latency and packet loss in one compact metric
   // block, no sparkline.
   assert.match(css, /\.lite-server-card__net \{[\s\S]*?display:\s*flex/)
   assert.match(css, /\.lite-server-card__net-cell \{[\s\S]*?border:\s*1px solid var\(--card-inset-border\)/)
-  assert.match(css, /\.lite-server-card__net-cell \{[\s\S]*?border-radius:\s*16px/)
+  assert.match(css, /\.lite-server-card__net-cell \{[\s\S]*?border-radius:\s*12px/)
   // Light mode: the card itself is a soft grey-blue so the white sub-cards
   // (net cells, resources, quality, traffic, footer) read as raised panels.
   assert.match(css, /\.lite-server-card \{[\s\S]*?--card-bg:\s*#dde5eb/)
   assert.match(css, /\.lite-server-card \{[\s\S]*?--card-inset:\s*#ffffff/)
-  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-bg:\s*#232f3f/)
-  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-inset:\s*#131e2b/)
-  assert.match(css, /\.lite-server-card__net-cell \.lite-server-card__speed \{[\s\S]*?font-size:\s*24px/)
+  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-bg:\s*#33465c/)
+  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-inset:\s*linear-gradient\(180deg, #1a2836 0%, #131e2b 100%\)/)
+  // Night B (2026-11-23): keep the dark sub-cards, strengthen the 3D
+  // separation instead — brighter inset border and top highlight.
+  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-inset-border:\s*#1d2a3a/)
+  assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-inset-shadow:\s*0 28px 56px rgba\(0, 0, 0, 0\.85\), 0 10px 24px rgba\(0, 0, 0, 0\.75\)/)
+  // Scheme C label colors reverted to the pre-C defaults on 2026-11-23:
+  // labels read --card-secondary, totals read --card-muted; the night-only
+  // 11px label size was removed the same day so day and night label sizes
+  // match (rate 12px, resource 12.5px, quota 11.5px, quality 13.5px).
+  assert.doesNotMatch(css, /#7d90a5/)
+  assert.doesNotMatch(css, /#6b7f93/)
+  assert.match(css, /\.lite-server-card__net-cell \.lite-server-card__speed \{[\s\S]*?font-size:\s*clamp\(22px, 7\.2cqi, 28px\)/)
+  // Bandwidth gauge: bold 270° dial (bottom opening) with the needle
+  // reaching the dial, matching the reference badge (2026-11-23).
+  assert.match(card, /M5\.64 18\.36A9 9 0 1 1 18\.36 18\.36/)
+  assert.match(card, /M12 12\.5 17\.8 5\.6/)
+  assert.match(card, /strokeWidth="3"/)
   assert.doesNotMatch(css, /\.lite-server-card__rates \{/)
   assert.doesNotMatch(css, /\.lite-server-card__spark/)
   // Redesigned card: CPU / memory / storage / load in one rounded sub-card
   // of four columns.
   assert.match(css, /\.lite-server-card__resources \{[\s\S]*?grid-template-columns:\s*repeat\(4, 1fr\)/)
   assert.match(css, /\.lite-server-card__resources \{[\s\S]*?border:\s*1px solid var\(--card-inset-border\)/)
-  assert.match(css, /\.lite-server-card__resources \{[\s\S]*?border-radius:\s*16px/)
+  assert.match(css, /\.lite-server-card__resources \{[\s\S]*?border-radius:\s*12px/)
   assert.doesNotMatch(css, /\.lite-server-card__resources \{[^}]*border-bottom:\s*1px solid var\(--card-line\)/)
   // Probes: stacked rows with latency and loss history strips, inside
   // one rounded sub-card (the old dashed frame around the rows is gone).
   assert.match(css, /\.lite-server-card__quality \{[\s\S]*?border:\s*1px solid var\(--card-inset-border\)/)
-  assert.match(css, /\.lite-server-card__quality \{[\s\S]*?border-radius:\s*16px/)
+  assert.match(css, /\.lite-server-card__quality \{[\s\S]*?border-radius:\s*12px/)
   assert.doesNotMatch(css, /\.lite-server-card__probes \{[\s\S]*?border:\s*1px dashed/)
   assert.doesNotMatch(latency, /flex-col items-end/)
   assert.doesNotMatch(latency, /稳定/)
@@ -258,17 +273,16 @@ test("homepage latency probes keep latency and packet loss in one compact metric
   assert.doesNotMatch(planInfo, /networkRoute/)
   assert.match(card, /lite-server-card__footer/)
   assert.match(card, /lite-server-card__bottom/)
-  // Resource numbers are 17px (not 18px): the widest max value
-  // ("100.0 %") must fit a 360px phone card column, so the size was
-  // cut by 1px; the blocks share one fixed 12px gap (the body flex
-  // gap), with no per-block margin on top.
-  assert.match(css, /\.lite-server-card__resource-value \{[\s\S]*?font-size:\s*17px/)
+  // Resource numbers are 18px: the widest max value ("100.0 %") fits a
+  // 360px phone card column because the cells use 2px side padding
+  // (below); the blocks share one fixed 12px gap (the body flex gap),
+  // with no per-block margin on top.
+  assert.match(css, /\.lite-server-card__resource-value \{[\s\S]*?font-size:\s*18px/)
   assert.match(css, /\.lite-server-card__body \{[\s\S]*?gap:\s*12px/)
-  // Narrow cards (<=399px): the four resource cells use 5px side padding
-  // (not 8px), so the widest max value ("100.0 %", 54px at 17px) gets
-  // ~6px of slack in a 360px phone column instead of sitting exactly
-  // at the limit.
-  assert.match(css, /@container server-card \(max-width: 399px\) \{[\s\S]*?\.lite-server-card__resource \{[\s\S]*?padding:\s*0 5px/)
+  // Narrow cards (<=399px): the four resource cells use 2px side padding
+  // (not 5px), so the widest max value ("100.0 %", ~64px at 18px) gets
+  // ~5px of slack in a 360px phone column instead of overflowing.
+  assert.match(css, /@container server-card \(max-width: 399px\) \{[\s\S]*?\.lite-server-card__resource \{[\s\S]*?padding:\s*0 2px/)
   assert.doesNotMatch(css, /\.lite-server-card__quality \{[^}]*margin-top:/)
   assert.doesNotMatch(css, /\.lite-server-card__bottom \{[^}]*margin-top:/)
   // Traffic and billing sit inside the body, so they share the body's
