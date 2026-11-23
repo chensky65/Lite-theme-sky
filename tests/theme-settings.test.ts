@@ -20,7 +20,7 @@ test("publishes the independent Lite-Theme identity", () => {
   assert.equal(existsSync(new URL("../komari-theme.json", import.meta.url)), false)
   assert.equal(manifest.name, "Lite-Theme-Sky")
   assert.equal(manifest.short, "lite-theme")
-  assert.equal(manifest.version, "1.3.9")
+  assert.equal(manifest.version, "1.3.10")
   assert.equal(manifest.author, "sky")
   assert.equal(manifest.url, "https://github.com/chensky65/Lite-theme-sky")
   assert.equal(manifest.preview, "preview.png")

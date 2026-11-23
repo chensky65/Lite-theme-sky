@@ -286,12 +286,29 @@ html.dark .lite-server-card {
   font-weight: 700;
   line-height: 22px;
   letter-spacing: -0.32px;
+  background: linear-gradient(180deg, #64748b 0%, #1e293b 55%, #0f172a 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 2px 2px rgba(31, 52, 71, 0.25));
+}
+
+html.dark .lite-server-card__name {
+  background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 55%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.45));
 }
 
 /* Country flag and OS logo: both float with a drop shadow, so they read
-   as raised emblems instead of flat print. */
+   as raised emblems instead of flat print. The flag also gets an inset
+   top highlight and bottom shade, so it reads as a glossy 3D badge. */
 .lite-server-card__flag {
   filter: var(--card-icon-shadow);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.55), inset 0 -2px 3px rgba(0, 0, 0, 0.28);
 }
 
 .lite-server-card__os-badge svg {
@@ -2728,7 +2745,8 @@ html.dark .lite-page-tabs__item.is-active {
   border: 1px solid var(--home-border, var(--lite-line));
   border-radius: 10px;
   padding: 4px 11px;
-  background: var(--detail-inset);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, var(--detail-inset) 55%, rgba(0, 0, 0, 0.08) 100%);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.28);
   font: inherit;
   font-size: 12px;
   color: var(--lite-secondary);
