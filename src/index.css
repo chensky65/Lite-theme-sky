@@ -708,8 +708,8 @@ html.dark .lite-server-card__quota-meter {
   height: 39px;
   box-sizing: border-box;
   align-items: center;
-  gap: 8px;
-  padding: 0 2px;
+  gap: 5px;
+  padding: 0 1px;
   border: 0;
   border-bottom: 1px dashed rgba(148, 163, 184, 0.55);
   background: transparent;
@@ -740,125 +740,224 @@ html.dark .lite-server-card__quota-meter {
   border-radius: 8px;
 }
 
-/* Probe main: name + return tag stacked vertically, name on top, tag
-   below. Name and tag are both a fixed 64px wide, text centered in each,
-   so the two form one uniform 64px column and read as a single unit. The
-   column's left edge sits the same distance from the card border as the
-   viz sits from the right edge, and the gap to the viz is a uniform 8px
-   on every row. */
+/* Probe main: no tile, no dark card — the operator logo sits directly on
+   the sub-card, 84px wide and 34px tall, so the row stays at its original
+   39px height. The name sits on top and the return line below it on the
+   right, both left-aligned in one 52px column so their left edges line
+   up on one vertical line. The column is sized to the longest content
+   (the name "电信 V4" at 14px bold is about 49px; "CN2 GIA" at 9px is
+   about 43px with its dot), so the full text shows with no ellipsis
+   and almost no dead space before the history strip: the old 72px
+   column (sized for the removed "· 精品" suffix) left about 23px of
+   empty column, and the 56px column still left about 7px. The gap to
+   the viz is a tight 5px and the row padding 1px, so the empty band
+   between the end of the text and the strip is about 9px. */
 .lite-probe-row__main {
   display: flex;
-  width: 64px;
-  flex: 0 0 64px;
+  width: 84px;
+  flex: 0 0 84px;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
   min-height: 34px;
   gap: 1px;
 }
 
+/* The operator column: transparent, no border, no shadow, no gradient.
+   The logo is on the left spanning both rows, the name on top and the
+   return line below it on the right. A row with no return route has no
+   return line, so the name spans both rows and sits vertically centered
+   with the logo. */
 .lite-probe-row__main-group {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 8px;
+  row-gap: 1px;
   align-items: center;
-  gap: 0;
+  box-sizing: border-box;
+  width: 84px;
+  min-height: 34px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
 }
 
-/* Single strip (no packet loss): the name column stays a fixed 64px and
+.lite-probe-row__logo {
+  grid-column: 1;
+  grid-row: 1 / 3;
+  display: flex;
+  width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+}
+
+.lite-probe-row__logo svg {
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+/* A row with no return route has no return line below the name, so the name
+   spans both grid rows and sits vertically centered with the logo. */
+.lite-probe-row[data-return="false"] .lite-probe-row__name {
+  grid-row: 1 / 3;
+}
+
+/* Single strip (no packet loss): the name column stays a fixed 84px and
    the viz stays one strip wide. */
 .lite-probe-row[data-loss="false"] .lite-probe-row__main {
-  flex: 0 0 64px;
+  flex: 0 0 84px;
 }
 
 .lite-probe-row__name {
+  grid-column: 2;
+  grid-row: 1;
   overflow: hidden;
-  width: 64px;
-  max-width: 100%;
+  width: 52px;
   min-width: 0;
   font-size: 14px;
-  font-weight: 650;
+  font-weight: 700;
   line-height: 16px;
+  color: #0f172a;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html.dark .lite-probe-row__name {
   color: var(--card-text);
-  text-align: center;
-  text-overflow: ellipsis;
-  white-space: nowrap;
 }
 
-/* Return capsule: uniform 56px for every row, sized to just fit the longest
-   label (CN2 GIA) with a small gap to each end, text centered. Light
-   background, no glow; the fill is tinted by the line's quality tier:
-   premium is light gold, optimized light blue, regular light gray, and the
-   internal network light green. */
+/* Return line: no capsule, no gradient, no tier word — a 6px dot in the
+   tier color plus 9px text (the line name only, e.g. "CN2 GIA"), left-
+   aligned in the same 52px column as the name, so every row's dot sits
+   on one vertical line and every return text starts on the same line.
+   The tier is shown by the dot/text color only. The column is wide
+   enough for the longest line, so the full text shows with no ellipsis.
+   A row with no return route renders no line, leaving the bottom of the
+   column empty. */
 .lite-probe-row__return {
+  grid-column: 2;
+  grid-row: 2;
+  display: flex;
   overflow: hidden;
-  width: 56px;
-  max-width: 100%;
-  min-width: 0;
+  width: 52px;
+  max-width: 52px;
+  min-width: 52px;
   box-sizing: border-box;
-  padding: 1px 0;
-  border: none;
-  border-radius: 999px;
-  background: rgba(71, 85, 105, 0.15);
-  font-size: 11px;
-  line-height: 14px;
-  color: #475569;
-  text-align: center;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  font-size: 9px;
+  font-weight: 600;
+  line-height: 11px;
+  color: #64748b;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.lite-probe-row__return-dot {
+  flex: 0 0 auto;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #64748b;
+}
+
+.lite-probe-row__return-text {
+  overflow: hidden;
+  min-width: 0;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* Return capsule colors, light mode: the fill follows the text color, a
-   lighter tint of it (the text color at low opacity), so the pill reads
-   on a light card. Dark mode uses the lightest fills (see the html.dark
-   overrides below). */
-/* Premium is hot-stamped gold foil: a metallic gradient with a bright
-   sheen, not a flat tint, so it reads as gold foil rather than the flat
-   amber of the latency bars. */
-.lite-probe-row__main .lite-probe-row__return[data-quality="premium"] {
-  background: linear-gradient(120deg, #d2ab4f 0%, #e2c15c 30%, #fdf3c4 50%, #e2c15c 70%, #d2ab4f 100%);
-  color: #5c4306;
-}
-
-.lite-probe-row__main .lite-probe-row__return[data-quality="optimized"] {
-  background: linear-gradient(120deg, #1d4ed8 0%, #3b82f6 30%, #dbeafe 50%, #3b82f6 70%, #1d4ed8 100%);
-  color: #1e3a8a;
-}
-
-.lite-probe-row__main .lite-probe-row__return[data-quality="regular"] {
-  background: rgba(71, 85, 105, 0.15);
-  color: #475569;
-}
-
-.lite-probe-row__main .lite-probe-row__return[data-quality="internal"] {
-  background: rgba(22, 101, 52, 0.15);
-  color: #166534;
-}
-
-/* Dark mode: the fill is the same idea, a lighter tint of the text color. */
-html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="premium"] {
-  background: linear-gradient(120deg, #c49c38 0%, #f3c923 30%, #fef6c0 50%, #f3c923 70%, #c49c38 100%);
-  color: #2e2503;
-}
-
-html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="optimized"] {
-  background: linear-gradient(120deg, #1e40af 0%, #3b82f6 30%, #bfdbfe 50%, #3b82f6 70%, #1e40af 100%);
-  color: #172554;
-}
-
-html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="regular"] {
-  background: rgba(100, 116, 139, 0.22);
-  color: #64748b;
-}
-
-html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="internal"] {
-  background: rgba(21, 128, 61, 0.22);
-  color: #15803d;
-}
-
-/* Bold return-route tag in Chinese only (en/ja keep regular weight). */
+/* Return text reads bolder in Chinese (weight 700), regular weight 600. */
 html[lang="zh-CN"] .lite-probe-row__return,
 html[lang="zh-TW"] .lite-probe-row__return {
   font-weight: 700;
+}
+
+/* Return dot colors per tier: gold for premium, blue for optimized,
+   gray for regular, green for the internal network. The selectors are
+   scoped to the probe main column so they win over any dark-mode
+   return-line rules. */
+.lite-probe-row__main .lite-probe-row__return[data-quality="premium"] .lite-probe-row__return-dot {
+  background: #d2ab4f;
+}
+
+.lite-probe-row__main .lite-probe-row__return[data-quality="optimized"] .lite-probe-row__return-dot {
+  background: #3b82f6;
+}
+
+.lite-probe-row__main .lite-probe-row__return[data-quality="regular"] .lite-probe-row__return-dot {
+  background: #64748b;
+}
+
+.lite-probe-row__main .lite-probe-row__return[data-quality="internal"] .lite-probe-row__return-dot {
+  background: #22c55e;
+}
+
+/* Return text is a plain solid color per tier (the foil gradients were
+   reverted): dark gold for premium, blue for optimized, gray for
+   regular. Internal stays a plain green, never gold/blue/gray. The
+   dot stays solid in the same tier color. */
+.lite-probe-row__main .lite-probe-row__return[data-quality="premium"] .lite-probe-row__return-text {
+  color: #5c4306;
+}
+
+.lite-probe-row__main .lite-probe-row__return[data-quality="optimized"] .lite-probe-row__return-text {
+  color: #1e40af;
+}
+
+.lite-probe-row__main .lite-probe-row__return[data-quality="regular"] .lite-probe-row__return-text {
+  color: #64748b;
+}
+
+.lite-probe-row__main .lite-probe-row__return[data-quality="internal"] {
+  color: #166534;
+}
+
+/* Dark mode: text and dot share one bright solid color per tier, so dot
+   and text read as one. Scoped through .lite-probe-row__main so these win
+   over any variable-based return color rule; internal stays plain green. */
+html.dark .lite-probe-row__main .lite-probe-row__return {
+  color: #94a3b8;
+}
+
+html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="premium"] .lite-probe-row__return-text {
+  color: #f3c923;
+}
+
+html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="optimized"] .lite-probe-row__return-text {
+  color: #60a5fa;
+}
+
+html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="regular"] .lite-probe-row__return-text {
+  color: #94a3b8;
+}
+
+html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="internal"] {
+  color: #22c55e;
+}
+
+html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="premium"] .lite-probe-row__return-dot {
+  background: #f3c923;
+}
+
+html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="optimized"] .lite-probe-row__return-dot {
+  background: #60a5fa;
+}
+
+html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="regular"] .lite-probe-row__return-dot {
+  background: #94a3b8;
 }
 
 /* Probe viz: one line of numbers on top, one combined history strip below.
@@ -971,9 +1070,12 @@ html[lang="zh-TW"] .lite-probe-row__return {
   text-shadow: var(--card-num-shadow);
 }
 
-html.dark .lite-probe-row__return {
-  color: var(--probe-accent);
-}
+/* Deleted: a capsule-era leftover set the return text to the row accent
+   color in dark mode (teal/blue/purple/pink per row), so each return
+   line showed up in a different tint. In the B scheme the return line
+   (dot and text) follows the tier color — gold/blue/gray/green — never
+   the row accent, so no rule may set the return text from
+   --probe-accent. */
 
 .lite-server-card__tone--traffic { color: var(--card-traffic); }
 .lite-server-card__tone--green { color: var(--card-green); }

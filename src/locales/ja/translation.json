@@ -123,6 +123,12 @@
     "offlineNow": "オフライン",
     "packetLoss": "パケットロス",
     "recentHour": "直近 1 時間",
+    "returnQuality": {
+      "internal": "内部ネットワーク",
+      "optimized": "最適化",
+      "premium": "プレミアム",
+      "regular": "通常"
+    },
     "returnRoute": "復路",
     "returnRouteTag": "{{line}}",
     "route": "回線",

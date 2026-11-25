@@ -269,37 +269,92 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   assert.match(css, /\.lite-probe-strip__bar\[data-tone="loss"\] \{[\s\S]*?background:\s*#a855f7/)
   assert.match(css, /\.lite-probe-row__viz-delay b\[data-tone="green"\] \{[\s\S]*?color:\s*var\(--card-green\)/)
   assert.match(css, /\.lite-probe-row__viz-delay b\[data-tone="coral"\] \{[\s\S]*?color:\s*var\(--card-danger\)/)
-  // Probe rows stack the name and return tag: the name and the tag are
-  // both a fixed 64px wide, text centered in each, so the two form one
-  // uniform column and read as a single unit. The row has a fixed height
-  // of 39px. The gap to the viz is a uniform 8px on every row. The viz
-  // fills the rest.
-  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?flex:\s*0 0 64px/)
-  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?width:\s*64px/)
+  // Probe rows keep the original 39px height and a fixed 84px main
+  // column (24px logo + 8px gap + 52px name/return column). There is
+  // no dark tile any more: the operator logo sits directly on the
+  // sub-card, the name on top and the return line below it on the
+  // right, both left-aligned in one 52px column so their left edges
+  // line up on one vertical line. The column is sized to the longest
+  // content (name "电信 V4" at 14px bold is about 49px; "CN2 GIA" at
+  // 9px is about 43px with its dot), so the full text shows with no
+  // ellipsis and almost no dead space before the history strip. The gap
+  // to the viz is a tight 5px and the row padding 1px on every row.
+  // The viz fills the rest.
+  assert.match(css, /\.lite-probe-row \{[\s\S]*?height:\s*39px/)
+  assert.match(css, /\.lite-probe-row \{[\s\S]*?gap:\s*5px/)
+  assert.match(css, /\.lite-probe-row \{[\s\S]*?padding:\s*0 1px/)
+  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?flex:\s*0 0 84px/)
+  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?width:\s*84px/)
   assert.match(css, /\.lite-probe-row__main \{[\s\S]*?flex-direction:\s*column/)
-  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?align-items:\s*center/)
+  assert.match(css, /\.lite-probe-row__main \{[\s\S]*?align-items:\s*flex-start/)
   assert.match(css, /\.lite-probe-row__main \{[\s\S]*?min-height:\s*34px/)
-  assert.doesNotMatch(css, /\.lite-probe-row__main \{[^}]*border-radius:/)
-  assert.doesNotMatch(css, /\.lite-probe-row__main \{[^}]*background:/)
-  assert.match(css, /\.lite-probe-row__main-group \{[\s\S]*?flex-direction:\s*column/)
-  assert.match(css, /\.lite-probe-row__main-group \{[\s\S]*?align-items:\s*center/)
-  assert.match(css, /\.lite-probe-row__name \{[\s\S]*?width:\s*64px/)
-  assert.match(css, /\.lite-probe-row__name \{[\s\S]*?text-align:\s*center/)
-  assert.match(css, /\.lite-probe-row__return \{[\s\S]*?width:\s*56px/)
-  assert.match(css, /\.lite-probe-row__return \{[\s\S]*?padding:\s*1px 0/)
+  assert.match(css, /\.lite-probe-row__main-group \{[\s\S]*?display:\s*grid/)
+  assert.match(css, /\.lite-probe-row__main-group \{[\s\S]*?grid-template-columns:\s*24px minmax\(0, 1fr\)/)
+  assert.match(css, /\.lite-probe-row__main-group \{[\s\S]*?width:\s*84px/)
+  assert.match(css, /\.lite-probe-row__main-group \{[\s\S]*?min-height:\s*34px/)
+  assert.match(css, /\.lite-probe-row__main-group \{[\s\S]*?background:\s*transparent/)
+  assert.match(css, /\.lite-probe-row__main-group \{[\s\S]*?box-shadow:\s*none/)
+  assert.doesNotMatch(css, /#1b2436/)
+  assert.match(css, /\.lite-probe-row__logo \{[\s\S]*?grid-row:\s*1 \/ 3/)
+  assert.match(css, /\.lite-probe-row__logo \{[\s\S]*?width:\s*24px/)
+  assert.match(css, /\.lite-probe-row__logo \{[\s\S]*?height:\s*24px/)
+  assert.match(css, /\.lite-probe-row__logo svg \{[\s\S]*?width:\s*24px/)
+  assert.doesNotMatch(css, /\.lite-probe-row__logo svg \{[^}]*drop-shadow/)
+  // The internal network gets a logo too: a green house for 内网, in the
+  // internal tier color, so it reads like the carrier marks.
+  assert.match(latency, /taskName\.includes\("内网"\)/)
+  assert.match(latency, /M23 4 42 19v21a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V19L23 4z" fill="#22c55e"/)
+  assert.match(css, /\.lite-probe-row__name \{[\s\S]*?grid-column:\s*2/)
+  assert.match(css, /\.lite-probe-row__name \{[\s\S]*?grid-row:\s*1/)
+  assert.match(css, /\.lite-probe-row__name \{[\s\S]*?width:\s*52px/)
   assert.match(css, /\.lite-probe-row__name \{[\s\S]*?font-size:\s*14px/)
-  // The name follows the card text color, so it stays readable in both
-  // modes: white on a dark card, dark on a light card.
-  assert.match(css, /\.lite-probe-row__name \{[\s\S]*?color:\s*var\(--card-text\)/)
-  // The capsule has no glow and its fill follows the text color, a
-  // lighter tint of it (the text color at low opacity), so the pill
-  // reads in both modes.
-  assert.match(css, /\.lite-probe-row__return\[data-quality="premium"\] \{[\s\S]*?background:\s*linear-gradient\(120deg, #d2ab4f 0%, #e2c15c 30%, #fdf3c4 50%, #e2c15c 70%, #d2ab4f 100%\)/)
-  assert.match(css, /\.lite-probe-row__return\[data-quality="optimized"\] \{[\s\S]*?background:\s*linear-gradient\(120deg, #1d4ed8 0%, #3b82f6 30%, #dbeafe 50%, #3b82f6 70%, #1d4ed8 100%\)/)
-  assert.match(css, /\.lite-probe-row__return\[data-quality="internal"\] \{[\s\S]*?background:\s*rgba\(22, 101, 52, 0\.15\)/)
-  assert.match(css, /html\.dark \.lite-probe-row__main \.lite-probe-row__return\[data-quality="premium"\] \{[\s\S]*?background:\s*linear-gradient\(120deg, #c49c38 0%, #f3c923 30%, #fef6c0 50%, #f3c923 70%, #c49c38 100%\)/)
-  assert.match(css, /html\.dark \.lite-probe-row__main \.lite-probe-row__return\[data-quality="optimized"\] \{[\s\S]*?background:\s*linear-gradient\(120deg, #1e40af 0%, #3b82f6 30%, #bfdbfe 50%, #3b82f6 70%, #1e40af 100%\)/)
-  assert.match(css, /html\.dark \.lite-probe-row__main \.lite-probe-row__return\[data-quality="internal"\] \{[\s\S]*?background:\s*rgba\(21, 128, 61, 0\.22\)/)
+  assert.match(css, /\.lite-probe-row__name \{[\s\S]*?font-weight:\s*700/)
+  assert.match(css, /\.lite-probe-row__name \{[\s\S]*?text-align:\s*left/)
+  assert.match(css, /\.lite-probe-row__name \{[\s\S]*?color:\s*#0f172a/)
+  assert.match(css, /html\.dark \.lite-probe-row__name \{[\s\S]*?color:\s*var\(--card-text\)/)
+  // A row with no return route has no return line, so the name spans both grid
+  // rows and sits vertically centered with the logo.
+  assert.match(css, /\.lite-probe-row\[data-return="false"\] \.lite-probe-row__name \{[\s\S]*?grid-row:\s*1 \/ 3/)
+  assert.match(css, /\.lite-probe-row__return \{[\s\S]*?grid-column:\s*2/)
+  assert.match(css, /\.lite-probe-row__return \{[\s\S]*?grid-row:\s*2/)
+  assert.match(css, /\.lite-probe-row__return \{[\s\S]*?width:\s*52px/)
+  assert.match(css, /\.lite-probe-row__return \{[\s\S]*?display:\s*flex/)
+  assert.match(css, /\.lite-probe-row__return \{[\s\S]*?justify-content:\s*flex-start/)
+  assert.match(css, /\.lite-probe-row__return \{[\s\S]*?text-align:\s*left/)
+  assert.match(css, /\.lite-probe-row__return \{[\s\S]*?font-size:\s*9px/)
+  assert.match(css, /\.lite-probe-row__return \{[\s\S]*?line-height:\s*11px/)
+  assert.match(css, /\.lite-probe-row__return \{[\s\S]*?color:\s*#64748b/)
+  assert.match(css, /html\.dark \.lite-probe-row__main \.lite-probe-row__return \{[\s\S]*?color:\s*#94a3b8/)
+  // No rule may tint the return text from the row accent: in dark mode
+  // a leftover capsule-era rule colored it teal/blue/purple/pink per
+  // row. The return text is a plain solid color per tier instead —
+  // dark gold for premium, blue for optimized, gray for regular (the
+  // foil gradients were reverted); internal stays plain green. Dark
+  // mode uses the brighter solid set.
+  assert.doesNotMatch(css, /color:\s*var\(--probe-accent\)/)
+  assert.match(css, /\.lite-probe-row__main \.lite-probe-row__return\[data-quality="premium"\] \.lite-probe-row__return-text \{[\s\S]*?color:\s*#5c4306/)
+  assert.match(css, /\.lite-probe-row__main \.lite-probe-row__return\[data-quality="optimized"\] \.lite-probe-row__return-text \{[\s\S]*?color:\s*#1e40af/)
+  assert.match(css, /\.lite-probe-row__main \.lite-probe-row__return\[data-quality="regular"\] \.lite-probe-row__return-text \{[\s\S]*?color:\s*#64748b/)
+  assert.doesNotMatch(css, /\.lite-probe-row__return-text \{[^}]*background-clip:\s*text/)
+  assert.match(css, /\.lite-probe-row__main \.lite-probe-row__return\[data-quality="internal"\] \{[\s\S]*?color:\s*#166534/)
+  assert.match(css, /html\.dark \.lite-probe-row__main \.lite-probe-row__return\[data-quality="premium"\] \.lite-probe-row__return-text \{[\s\S]*?color:\s*#f3c923/)
+  assert.match(css, /html\.dark \.lite-probe-row__main \.lite-probe-row__return\[data-quality="optimized"\] \.lite-probe-row__return-text \{[\s\S]*?color:\s*#60a5fa/)
+  assert.match(css, /html\.dark \.lite-probe-row__main \.lite-probe-row__return\[data-quality="regular"\] \.lite-probe-row__return-text \{[\s\S]*?color:\s*#94a3b8/)
+  assert.match(css, /html\.dark \.lite-probe-row__main \.lite-probe-row__return\[data-quality="internal"\] \{[\s\S]*?color:\s*#22c55e/)
+  assert.match(css, /html\.dark \.lite-probe-row__main \.lite-probe-row__return\[data-quality="premium"\] \.lite-probe-row__return-dot \{[\s\S]*?background:\s*#f3c923/)
+  assert.match(css, /html\.dark \.lite-probe-row__main \.lite-probe-row__return\[data-quality="optimized"\] \.lite-probe-row__return-dot \{[\s\S]*?background:\s*#60a5fa/)
+  assert.match(css, /html\.dark \.lite-probe-row__main \.lite-probe-row__return\[data-quality="regular"\] \.lite-probe-row__return-dot \{[\s\S]*?background:\s*#94a3b8/)
+  assert.doesNotMatch(css, /\.lite-probe-row__return \{[^}]*clip-path:/)
+  assert.doesNotMatch(css, /\.lite-probe-row__return \{[^}]*linear-gradient/)
+  // The return line is a 6px dot in the tier color plus 9px text, not a
+  // capsule: gold for premium, blue for optimized, gray for regular,
+  // green for the internal network.
+  assert.match(css, /\.lite-probe-row__return-dot \{[\s\S]*?width:\s*6px/)
+  assert.match(css, /\.lite-probe-row__return-dot \{[\s\S]*?height:\s*6px/)
+  assert.match(css, /\.lite-probe-row__main \.lite-probe-row__return\[data-quality="premium"\] \.lite-probe-row__return-dot \{[\s\S]*?background:\s*#d2ab4f/)
+  assert.match(css, /\.lite-probe-row__main \.lite-probe-row__return\[data-quality="optimized"\] \.lite-probe-row__return-dot \{[\s\S]*?background:\s*#3b82f6/)
+  assert.match(css, /\.lite-probe-row__main \.lite-probe-row__return\[data-quality="regular"\] \.lite-probe-row__return-dot \{[\s\S]*?background:\s*#64748b/)
+  assert.match(css, /\.lite-probe-row__main \.lite-probe-row__return\[data-quality="internal"\] \.lite-probe-row__return-dot \{[\s\S]*?background:\s*#22c55e/)
   assert.doesNotMatch(css, /\.lite-probe-row__return \{[^}]*box-shadow:/)
   assert.doesNotMatch(css, /\.lite-probe-row__return \{[^}]*linear-gradient\(90deg, #a855f7/)
   assert.match(css, /\.lite-probe-row__return \{[\s\S]*?text-align:\s*center/)
@@ -338,9 +393,14 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   assert.doesNotMatch(css, /\.lite-probe-strip__bar \{[^}]*width:\s*1px/)
   assert.doesNotMatch(css, /\.lite-probe-strip__bar \{[^}]*aspect-ratio:/)
   assert.doesNotMatch(css, /\.lite-probe-strip__bar \{[^}]*max-width:/)
-  // Return-route tag is bold in Chinese only (en/ja keep regular weight).
-  assert.match(css, /html\[lang="zh-CN"\] \.lite-probe-row__return,[\s\S]*?font-weight:\s*700/)
-  assert.match(css, /html\[lang="zh-TW"\] \.lite-probe-row__return \{[\s\S]*?font-weight:\s*700/)
+  // Return line renders as a dot plus the line name only ("CN2 GIA"),
+  // no tier word after it — the tier shows through the dot/text color
+  // (data-quality), not a capsule and not a "· tier" suffix.
+  assert.match(latency, /lite-probe-row__return-dot/)
+  assert.match(latency, /lite-probe-row__return-text/)
+  assert.match(latency, /data-quality=\{returnQuality\}/)
+  assert.doesNotMatch(latency, /returnQualityLabel/)
+  assert.doesNotMatch(latency, /\{returnLine\} · /)
   // No fixed width tiers remain.
   assert.doesNotMatch(css, /flex-basis:\s*(290|264|244|222|197|177|139|127|115|107|95|82)px/)
   // Card bottom: traffic and billing are two separate rounded sub-cards

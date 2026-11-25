@@ -123,6 +123,12 @@
     "offlineNow": "离线中",
     "packetLoss": "丢包率",
     "recentHour": "最近 1 小时",
+    "returnQuality": {
+      "internal": "内网",
+      "optimized": "优化",
+      "premium": "精品",
+      "regular": "普通"
+    },
     "returnRoute": "回程",
     "returnRouteTag": "{{line}}",
     "route": "线路",

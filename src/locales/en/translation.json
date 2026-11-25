@@ -123,6 +123,12 @@
     "offlineNow": "Offline",
     "packetLoss": "Packet loss",
     "recentHour": "Last hour",
+    "returnQuality": {
+      "internal": "Internal",
+      "optimized": "Optimized",
+      "premium": "Premium",
+      "regular": "Regular"
+    },
     "returnRoute": "Return",
     "returnRouteTag": "{{line}}",
     "route": "Route",

@@ -57,6 +57,25 @@ test("return line quality tiers: only CN2 GIA is premium", () => {
   assert.equal(returnLineQuality("内网"), "internal")
 })
 
+test("return line tier labels exist in every locale", () => {
+  const expected: Record<string, Record<string, string>> = {
+    "zh-CN": { premium: "精品", optimized: "优化", regular: "普通", internal: "内网" },
+    "zh-TW": { premium: "精品", optimized: "優化", regular: "普通", internal: "內網" },
+    en: { premium: "Premium", optimized: "Optimized", regular: "Regular", internal: "Internal" },
+    ja: { premium: "プレミアム", optimized: "最適化", regular: "通常", internal: "内部ネットワーク" },
+  }
+  for (const [locale, labels] of Object.entries(expected)) {
+    const translations = JSON.parse(readFileSync(new URL(`../src/locales/${locale}/translation.json`, import.meta.url), "utf8"))
+    assert.deepEqual(translations.serverCard.returnQuality, labels)
+  }
+  // The tier labels stay in the locales (kept, not deleted), but the
+  // return text shows the line name only — the tier is carried by the
+  // data-quality attribute (dot/text color), not rendered as a word.
+  assert.doesNotMatch(latency, /serverCard\.returnQuality\./)
+  assert.match(latency, /data-quality=\{returnQuality\}/)
+  assert.match(latency, /lite-probe-row__return-dot/)
+})
+
 test("homepage cards load public return routes onto matching ping-task rows", () => {
   assert.match(api, /public:getPublicReturnRoutes/)
   assert.match(page, /fetchPublicReturnRoutes/)
