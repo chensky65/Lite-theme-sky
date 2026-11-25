@@ -34,6 +34,8 @@ test("duration badge is one capsule, green text on translucent green online and 
   assert.match(css, /\.lite-duration-pill__num \{[\s\S]*?color:\s*#15803d/)
   assert.match(css, /html\.dark \.lite-duration-pill__num,[\s\S]*?html\.dark \.lite-duration-pill__unit \{[\s\S]*?color:\s*#22c55e/)
   assert.match(css, /\.lite-server-card__duration--offline \.lite-duration-pill \{[\s\S]*?background:\s*rgba\(255,\s*86,\s*48,\s*0\.14\)/)
+  assert.match(css, /\.lite-server-card__duration--offline \.lite-duration-pill__num,[\s\S]*?\.lite-server-card__duration--offline \.lite-duration-pill__unit \{[\s\S]*?color:\s*#ff5630/)
+  assert.match(css, /html\.dark \.lite-server-card__duration--offline \.lite-duration-pill__num,[\s\S]*?html\.dark \.lite-server-card__duration--offline \.lite-duration-pill__unit \{[\s\S]*?color:\s*#ff5630/)
   assert.doesNotMatch(css, /\.lite-server-card__signal \{/)
   assert.doesNotMatch(css, /\.lite-duration-card \{/)
   assert.doesNotMatch(css, /\.lite-duration-block \{/)

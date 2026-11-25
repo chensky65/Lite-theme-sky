@@ -404,7 +404,7 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   assert.match(css, /\.lite-server-card__quota-meta \{[^}]*font-size:\s*11\.5px/)
   assert.match(css, /\.lite-server-card__quality-title \{[^}]*font-size:\s*13\.5px/)
   assert.doesNotMatch(css, /html\.dark \.lite-server-card__(rate-label|resource-label|quota-meta|quality-title)/)
-  assert.match(css, /@container server-card \(max-width: 399px\) \{[\s\S]*?\.lite-server-card__resource \{\s*padding:\s*0 2px/)
+  assert.match(css, /@container server-card \(max-width: 399px\) \{[\s\S]*?\.lite-server-card__resource \{[\s\S]*?padding:\s*8px 4px/)
   assert.match(css, /\.lite-duration-pill \{[\s\S]*?box-shadow:\s*0 4px 10px rgba\(0, 0, 0, 0\.38\), 0 1px 3px rgba\(0, 0, 0, 0\.30\), inset 0 1px 0 rgba\(255, 255, 255, 0\.45\), inset 0 -1px 0 rgba\(0, 0, 0, 0\.12\)/)
   assert.match(css, /\.lite-duration-pill__num \{[\s\S]*?text-shadow:\s*var\(--card-name-shadow\)/)
   assert.doesNotMatch(css, /\.lite-server-card__bottom \{[^}]*border-top:\s*1px solid var\(--card-line\)/)

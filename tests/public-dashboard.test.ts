@@ -196,12 +196,15 @@ test("homepage latency probes keep latency and packet loss in one compact metric
   assert.doesNotMatch(css, /\.lite-server-card__quota-remain/)
   assert.doesNotMatch(css, /\.lite-server-card__quota-info/)
   assert.doesNotMatch(css, /\.lite-server-card__quota \{[^}]*border-top:\s*1px solid var\(--card-line\)/)
-  // Redesigned card: gradient glow border on the frame, online status as
-  // Card keeps the original frame: a left-edge 2px status strip, full
-  // brightness (same solid green/red as before, only narrower). No status
-  // dot next to the name.
+  // Status is a 运行中/离线中 pill in the header (green/red), not a
+  // colored strip on the card's left edge and not a dot next to the name.
   assert.doesNotMatch(css, /\.lite-server-card__frame \{[\s\S]*?background:\s*linear-gradient\(135deg, #22e6c8/)
-  assert.match(css, /\.lite-server-card__frame \{[\s\S]*?border-left:\s*2px solid #22c55e/)
+  assert.doesNotMatch(css, /\.lite-server-card\[data-online="true"\] \.lite-server-card__frame \{[\s\S]*?border-left/)
+  assert.doesNotMatch(css, /\.lite-server-card\[data-online="false"\] \.lite-server-card__frame \{[\s\S]*?border-left/)
+  assert.match(css, /\.lite-status-pill \{[\s\S]*?background:\s*rgba\(34, 197, 94, 0\.14\)/)
+  assert.match(css, /\.lite-server-card__status--offline \.lite-status-pill \{[\s\S]*?background:\s*rgba\(255, 86, 48, 0\.14\)/)
+  assert.match(card, /lite-server-card__status/)
+  assert.match(card, /lite-status-pill/)
   assert.doesNotMatch(css, /\.lite-server-card__status-dot/)
   assert.doesNotMatch(card, /lite-server-card__status-dot/)
   // Upload/download are two separate rounded sub-cards, one content per
@@ -209,9 +212,10 @@ test("homepage latency probes keep latency and packet loss in one compact metric
   assert.match(css, /\.lite-server-card__net \{[\s\S]*?display:\s*flex/)
   assert.match(css, /\.lite-server-card__net-cell \{[\s\S]*?border:\s*1px solid var\(--card-inset-border\)/)
   assert.match(css, /\.lite-server-card__net-cell \{[\s\S]*?border-radius:\s*12px/)
-  // Light mode: the card itself is a soft grey-blue so the white sub-cards
-  // (net cells, resources, quality, traffic, footer) read as raised panels.
-  assert.match(css, /\.lite-server-card \{[\s\S]*?--card-bg:\s*#dde5eb/)
+  // Light mode: the card itself is a soft lavender-blue so the white
+  // sub-cards (net cells, resources, quality, traffic, footer) read as
+  // raised panels.
+  assert.match(css, /\.lite-server-card \{[\s\S]*?--card-bg:\s*#e8edf5/)
   assert.match(css, /\.lite-server-card \{[\s\S]*?--card-inset:\s*#ffffff/)
   assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-bg:\s*#232f3f/)
   assert.match(css, /html\.dark \.lite-server-card \{[\s\S]*?--card-inset:\s*#131e2b/)
@@ -233,12 +237,15 @@ test("homepage latency probes keep latency and packet loss in one compact metric
   assert.match(card, /strokeWidth="3"/)
   assert.doesNotMatch(css, /\.lite-server-card__rates \{/)
   assert.doesNotMatch(css, /\.lite-server-card__spark/)
-  // Redesigned card: CPU / memory / storage / load in one rounded sub-card
-  // of four columns.
+  // Layered card: CPU / memory / storage / load as four separate floating
+  // mini-cards, each its own white rounded panel with a soft shadow.
   assert.match(css, /\.lite-server-card__resources \{[\s\S]*?grid-template-columns:\s*repeat\(4, 1fr\)/)
-  assert.match(css, /\.lite-server-card__resources \{[\s\S]*?border:\s*1px solid var\(--card-inset-border\)/)
-  assert.match(css, /\.lite-server-card__resources \{[\s\S]*?border-radius:\s*12px/)
-  assert.doesNotMatch(css, /\.lite-server-card__resources \{[^}]*border-bottom:\s*1px solid var\(--card-line\)/)
+  assert.match(css, /\.lite-server-card__resources \{[\s\S]*?gap:\s*10px/)
+  assert.match(css, /\.lite-server-card__resources \{[\s\S]*?background:\s*transparent/)
+  assert.match(css, /\.lite-server-card__resource \{[\s\S]*?border:\s*1px solid var\(--card-inset-border\)/)
+  assert.match(css, /\.lite-server-card__resource \{[\s\S]*?border-radius:\s*12px/)
+  assert.match(css, /\.lite-server-card__resource \{[\s\S]*?background:\s*var\(--card-inset\)/)
+  assert.doesNotMatch(css, /\.lite-server-card__resource \+ \.lite-server-card__resource \{[\s\S]*?border-left/)
   // Probes: stacked rows with latency and loss history strips, inside
   // one rounded sub-card (the old dashed frame around the rows is gone).
   assert.match(css, /\.lite-server-card__quality \{[\s\S]*?border:\s*1px solid var\(--card-inset-border\)/)
@@ -275,14 +282,15 @@ test("homepage latency probes keep latency and packet loss in one compact metric
   assert.match(card, /lite-server-card__bottom/)
   // Resource numbers are 18px: the widest max value ("100.0 %") fits a
   // 360px phone card column because the cells use 2px side padding
-  // (below); the blocks share one fixed 12px gap (the body flex gap),
+  // (below); the blocks share one fixed 8px gap (the body flex gap),
   // with no per-block margin on top.
   assert.match(css, /\.lite-server-card__resource-value \{[\s\S]*?font-size:\s*18px/)
-  assert.match(css, /\.lite-server-card__body \{[\s\S]*?gap:\s*12px/)
-  // Narrow cards (<=399px): the four resource cells use 2px side padding
-  // (not 5px), so the widest max value ("100.0 %", ~64px at 18px) gets
-  // ~5px of slack in a 360px phone column instead of overflowing.
-  assert.match(css, /@container server-card \(max-width: 399px\) \{[\s\S]*?\.lite-server-card__resource \{[\s\S]*?padding:\s*0 2px/)
+  assert.match(css, /\.lite-server-card__body \{[\s\S]*?gap:\s*8px/)
+  // Narrow cards (<=399px): the four resource mini-cards use 8px 4px
+  // padding and a 6px gap, so the widest max value ("100.0 %", ~64px at
+  // 18px) gets ~5px of slack in a 360px phone column instead of
+  // overflowing.
+  assert.match(css, /@container server-card \(max-width: 399px\) \{[\s\S]*?\.lite-server-card__resource \{[\s\S]*?padding:\s*8px 4px/)
   assert.doesNotMatch(css, /\.lite-server-card__quality \{[^}]*margin-top:/)
   assert.doesNotMatch(css, /\.lite-server-card__bottom \{[^}]*margin-top:/)
   // Traffic and billing sit inside the body, so they share the body's

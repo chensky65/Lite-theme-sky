@@ -154,12 +154,18 @@ export default function ServerCard({
     >
       <div className="lite-server-card__frame">
         <header className="lite-server-card__hero">
-          <div className="flex min-w-0 items-center gap-2.5">
+          <div className="flex min-w-0 items-center gap-1">
             <ServerFlag country_code={info.country_code} className="lite-server-card__flag h-[18px] w-[26px] rounded-[3px]" />
-            <span className="min-w-0 flex-1">
+            <span className="min-w-0">
               <strong className="lite-server-card__name block truncate" title={info.name}>{info.name}</strong>
             </span>
-            <span className={cn("lite-server-card__duration", !info.online && "lite-server-card__duration--offline")} title={info.online ? t("online") : t("offline")}>
+            <span className={cn("lite-server-card__status", !info.online && "lite-server-card__status--offline")} title={info.online ? t("online") : t("offline")}>
+              <span className="lite-status-pill">
+                <span className="lite-status-pill__dot" />
+                {info.online ? t("serverCard.running") : t("serverCard.offlineNow")}
+              </span>
+            </span>
+            <span className={cn("lite-server-card__duration ml-auto", !info.online && "lite-server-card__duration--offline")} title={info.online ? t("online") : t("offline")}>
               <span className="lite-duration-pill">
                 <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
                   <circle cx="8" cy="8" r="6.5" />

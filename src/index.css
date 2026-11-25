@@ -166,7 +166,7 @@ html {
 }
 
 .lite-server-card {
-  --card-bg: #dde5eb;
+  --card-bg: #e8edf5;
   --card-text: #1c252e;
   --card-secondary: #637381;
   --card-muted: #58707f;
@@ -256,17 +256,8 @@ html.dark .lite-server-card {
   border-radius: inherit;
 }
 
-/* Status bar: a 2px colored strip on the card's left edge, full brightness
-   (same solid green/red as before, only narrower). Green = online,
-   red = offline. It lives on the frame so the card hover glow (which
-   recolors the article border) never touches it. */
-.lite-server-card[data-online="true"] .lite-server-card__frame {
-  border-left: 2px solid #22c55e;
-}
-
-.lite-server-card[data-online="false"] .lite-server-card__frame {
-  border-left: 2px solid #ff5630;
-}
+/* Status is shown by the 运行中/离线中 pill in the header, not by a
+   colored strip on the card's left edge. */
 
 .lite-duration-pill svg {
   width: 13px;
@@ -350,9 +341,9 @@ html.dark .lite-server-card__name {
   display: flex;
   align-items: baseline;
   gap: 6px;
-  padding: 4px 10px;
+  padding: 3px 8px;
   border-radius: 999px;
-  background: rgba(34, 197, 94, 0.14);
+  background: var(--card-inset);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.38), 0 1px 3px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 0 rgba(0, 0, 0, 0.12);
   line-height: 1;
   font-variant-numeric: tabular-nums;
@@ -384,7 +375,7 @@ html.dark .lite-duration-pill__unit {
 }
 
 .lite-server-card__duration--offline .lite-duration-pill {
-  background: rgba(255, 86, 48, 0.14);
+  background: var(--card-inset);
 }
 
 .lite-server-card__duration--offline .lite-duration-pill__num,
@@ -399,6 +390,53 @@ html.dark .lite-server-card__duration--offline .lite-duration-pill__unit {
   color: #ff5630;
 }
 
+/* Status pill: 运行中 (green) / 离线中 (red), a rounded capsule with a
+   solid dot, sitting between the server name and the duration pill. */
+.lite-server-card__status {
+  flex-shrink: 0;
+  align-self: center;
+  display: flex;
+}
+
+.lite-status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.14);
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 16px;
+  color: #15803d;
+  white-space: nowrap;
+}
+
+.lite-status-pill__dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: #22c55e;
+}
+
+.lite-server-card__status--offline .lite-status-pill {
+  background: rgba(255, 86, 48, 0.14);
+  color: #ff5630;
+}
+
+.lite-server-card__status--offline .lite-status-pill__dot {
+  background: #ff5630;
+}
+
+html.dark .lite-status-pill {
+  color: #22c55e;
+}
+
+html.dark .lite-server-card__status--offline .lite-status-pill {
+  color: #ff5630;
+}
+
 /* Network: upload and download as two separate rounded sub-cards,
    one content per block, inset from the card edges like the traffic card. */
 .lite-server-card__net {
@@ -408,6 +446,7 @@ html.dark .lite-server-card__duration--offline .lite-duration-pill__unit {
 }
 
 .lite-server-card__net-cell {
+  position: relative;
   flex: 1;
   min-width: 0;
   padding: 10px 14px;
@@ -415,6 +454,12 @@ html.dark .lite-server-card__duration--offline .lite-duration-pill__unit {
   border-radius: 12px;
   background: var(--card-inset);
   box-shadow: var(--card-inset-shadow);
+  overflow: hidden;
+}
+
+.lite-server-card__net-cell > * {
+  position: relative;
+  z-index: 1;
 }
 
 .lite-server-card__net-cell .lite-server-card__speed {
@@ -481,27 +526,27 @@ html.dark .lite-server-card__duration--offline .lite-duration-pill__unit {
   padding: 8px 18px 12px;
 }
 
-/* System strip: CPU / memory / storage / load in one rounded sub-card,
-   four columns, each with an icon, a large number and a thin bar in a
+/* System strip: CPU / memory / storage / load as four separate floating
+   mini-cards, each with an icon, a large number and a thin bar in a
    fixed per-resource color. */
 .lite-server-card__resources {
   display: grid;
   flex: none;
   grid-template-columns: repeat(4, 1fr);
-  padding: 10px 6px;
-  border: 1px solid var(--card-inset-border);
-  border-radius: 12px;
-  background: var(--card-inset);
-  box-shadow: var(--card-inset-shadow);
+  gap: 10px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  box-shadow: none;
 }
 
 .lite-server-card__resource {
   min-width: 0;
-  padding: 0 12px;
-}
-
-.lite-server-card__resource + .lite-server-card__resource {
-  border-left: 1px solid var(--card-line);
+  padding: 10px 12px;
+  border: 1px solid var(--card-inset-border);
+  border-radius: 12px;
+  background: var(--card-inset);
+  box-shadow: var(--card-inset-shadow);
 }
 
 .lite-server-card__resource-label {
@@ -1108,27 +1153,40 @@ html.dark .lite-server-card__footer-extra {
 .lite-server-card__bandwidth {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  justify-content: center;
+  gap: 3px;
   margin-left: auto;
   max-width: 100%;
-  padding: 7px 13px;
+  min-width: 72px;
+  padding: 3px 7px;
   border: none;
   border-radius: 999px;
-  background: linear-gradient(135deg, #be185d, #9d174d);
-  font-size: 14px;
+  background: linear-gradient(135deg, #ec4899, #db2777);
+  font-size: 10px;
   font-weight: 800;
   color: #fbcfe8;
+  white-space: nowrap;
 }
 
 .lite-server-card__bandwidth svg {
-  width: 13px;
-  height: 13px;
+  width: 9px;
+  height: 9px;
   color: #fbcfe8;
+}
+
+/* Dark mode keeps the deep burgundy so the badge stays subdued on the
+   dark card; light mode uses the medium pink above. */
+html.dark .lite-server-card__bandwidth {
+  background: linear-gradient(135deg, #831843, #4c0519);
 }
 
 @container server-card (max-width: 399px) {
   .lite-server-card__hero {
     padding: 16px 16px 0;
+  }
+
+  .lite-server-card__name {
+    font-size: 16px;
   }
 
   .lite-server-card__body {
@@ -1144,11 +1202,11 @@ html.dark .lite-server-card__footer-extra {
   }
 
   .lite-server-card__resources {
-    padding: 10px 4px;
+    gap: 6px;
   }
 
   .lite-server-card__resource {
-    padding: 0 2px;
+    padding: 8px 4px;
   }
 }
 
