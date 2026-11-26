@@ -131,6 +131,33 @@ export const PROBE_STRIP_MAX_HEIGHT_PX = 16
 export const PROBE_STRIP_HEIGHT_SCALE_MS = 200
 export const PROBE_STRIP_LOSS_COLOR = "#a855f7"
 
+// Bar geometry (must match .lite-probe-strip__bar in index.css):
+// each bar is 6px wide, 1px gap between bars.
+export const PROBE_STRIP_BAR_WIDTH_PX = 6
+export const PROBE_STRIP_BAR_GAP_PX = 1
+
+/**
+ * How many fixed-width probe bars fit in the available strip width.
+ * A bar plus its following gap is 7px; the last bar needs no trailing gap.
+ * Returns at least 1 so the strip never renders empty, and never more
+ * than the total buckets available.
+ */
+export function countFittingProbeBars(availableWidth: number, total: number): number {
+  if (total <= 0 || availableWidth <= 0) return 0
+  const count = Math.floor((availableWidth + PROBE_STRIP_BAR_GAP_PX) / (PROBE_STRIP_BAR_WIDTH_PX + PROBE_STRIP_BAR_GAP_PX))
+  return Math.min(total, Math.max(1, count))
+}
+
+/**
+ * The rendered width of `count` probe bars: each bar plus a gap, except
+ * the last bar has no trailing gap. Used to size the numbers row above
+ * the strip so its right edge lines up with the last bar's right edge.
+ */
+export function probeStripBarsWidth(count: number): number {
+  if (count <= 0) return 0
+  return count * PROBE_STRIP_BAR_WIDTH_PX + (count - 1) * PROBE_STRIP_BAR_GAP_PX
+}
+
 export type ProbeStripBarTone = LatencyBarTone | "loss"
 
 export function probeStripBarHeight(latency: number | null): number {
@@ -143,7 +170,11 @@ export function probeStripBarHeight(latency: number | null): number {
 
 export function probeStripBarTone(latency: number | null, loss: number | null): ProbeStripBarTone {
   if (loss !== null && Number.isFinite(loss) && loss > 0) return "loss"
-  return latencyBarTone(latency)
+  // High latency is already signalled by the red delay number, so the
+  // waveform itself never turns all red: non-loss bars cap at amber.
+  if (latency === null || !Number.isFinite(latency) || latency < 0) return "empty"
+  if (latency > HOME_LATENCY_GREEN_MAX_MS) return "amber"
+  return "green"
 }
 
 export const PROBE_MISSING_VALUE = "—"

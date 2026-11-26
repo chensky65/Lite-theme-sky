@@ -196,15 +196,26 @@ test("homepage latency probes keep latency and packet loss in one compact metric
   assert.doesNotMatch(css, /\.lite-server-card__quota-remain/)
   assert.doesNotMatch(css, /\.lite-server-card__quota-info/)
   assert.doesNotMatch(css, /\.lite-server-card__quota \{[^}]*border-top:\s*1px solid var\(--card-line\)/)
-  // Status is a 运行中/离线中 pill in the header (green/red), not a
-  // colored strip on the card's left edge and not a dot next to the name.
+  // Status is a 6px dot inside the duration pill (green online / red
+  // offline), not a colored strip on the card's left edge, not a
+  // 运行中/离线中 pill with text and a capsule background, and not a
+  // standalone dot after the server name — the duration pill alone
+  // carries the state, with no clock icon in it.
   assert.doesNotMatch(css, /\.lite-server-card__frame \{[\s\S]*?background:\s*linear-gradient\(135deg, #22e6c8/)
   assert.doesNotMatch(css, /\.lite-server-card\[data-online="true"\] \.lite-server-card__frame \{[\s\S]*?border-left/)
   assert.doesNotMatch(css, /\.lite-server-card\[data-online="false"\] \.lite-server-card__frame \{[\s\S]*?border-left/)
-  assert.match(css, /\.lite-status-pill \{[\s\S]*?background:\s*rgba\(34, 197, 94, 0\.14\)/)
-  assert.match(css, /\.lite-server-card__status--offline \.lite-status-pill \{[\s\S]*?background:\s*rgba\(255, 86, 48, 0\.14\)/)
-  assert.match(card, /lite-server-card__status/)
-  assert.match(card, /lite-status-pill/)
+  assert.match(css, /\.lite-duration-pill__dot \{[\s\S]*?width:\s*6px/)
+  assert.match(css, /\.lite-duration-pill__dot \{[\s\S]*?background:\s*#22c55e/)
+  assert.match(css, /\.lite-server-card__duration--offline \.lite-duration-pill__dot \{[\s\S]*?background:\s*#ff5630/)
+  assert.doesNotMatch(css, /\.lite-status-pill \{/)
+  assert.doesNotMatch(css, /\.lite-status-pill__dot/)
+  assert.doesNotMatch(css, /\.lite-server-card__status \{/)
+  assert.doesNotMatch(css, /\.lite-duration-pill svg/)
+  assert.match(card, /lite-duration-pill__dot/)
+  assert.doesNotMatch(card, /lite-server-card__status/)
+  assert.doesNotMatch(card, /lite-status-pill__dot/)
+  assert.doesNotMatch(card, /运行中|离线中/)
+  assert.doesNotMatch(card, /M8 4\.5V8l2\.5 1\.5/)
   assert.doesNotMatch(css, /\.lite-server-card__status-dot/)
   assert.doesNotMatch(card, /lite-server-card__status-dot/)
   // Upload/download are two separate rounded sub-cards, one content per

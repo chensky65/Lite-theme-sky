@@ -159,18 +159,9 @@ export default function ServerCard({
             <span className="min-w-0">
               <strong className="lite-server-card__name block truncate" title={info.name}>{info.name}</strong>
             </span>
-            <span className={cn("lite-server-card__status", !info.online && "lite-server-card__status--offline")} title={info.online ? t("online") : t("offline")}>
-              <span className="lite-status-pill">
-                <span className="lite-status-pill__dot" />
-                {info.online ? t("serverCard.running") : t("serverCard.offlineNow")}
-              </span>
-            </span>
             <span className={cn("lite-server-card__duration ml-auto", !info.online && "lite-server-card__duration--offline")} title={info.online ? t("online") : t("offline")}>
               <span className="lite-duration-pill">
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" aria-hidden="true">
-                  <circle cx="8" cy="8" r="6.5" />
-                  <path d="M8 4.5V8l2.5 1.5" />
-                </svg>
+                <span className="lite-duration-pill__dot" aria-hidden="true" />
                 {getStatusDurationCards(displayDurationSeconds, info.online).map((card, index) => (
                   <span key={index} className="lite-duration-pill__part">
                     <span className="lite-duration-pill__num">{card.value}</span>

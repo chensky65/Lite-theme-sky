@@ -195,6 +195,7 @@ html {
   --card-chip-text: #c23354;
   --card-shadow: 0 16px 38px rgba(31, 52, 71, 0.16);
   --card-inset-shadow: 0 12px 28px rgba(31, 52, 71, 0.22), 0 4px 10px rgba(31, 52, 71, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.85), inset 0 -1px 0 rgba(31, 52, 71, 0.08);
+  --card-inset-shadow-sm: 0 12px 28px rgba(31, 52, 71, 0.22), 0 4px 10px rgba(31, 52, 71, 0.16), inset 0 1px 0 rgba(255, 255, 255, 0.85), inset 0 -1px 0 rgba(31, 52, 71, 0.08);
   --card-num-shadow: 0 2px 4px rgba(31, 52, 71, 0.35);
   --card-icon-shadow: drop-shadow(0 4px 7px rgba(31, 52, 71, 0.50));
   --card-name-shadow: 0 2px 3px rgba(31, 52, 71, 0.50), 0 6px 12px rgba(31, 52, 71, 0.35);
@@ -241,6 +242,7 @@ html.dark .lite-server-card {
   --card-chip-text: #f2708a;
   --card-shadow: 0 18px 44px rgba(0, 0, 0, 0.42);
   --card-inset-shadow: 0 20px 44px rgba(0, 0, 0, 0.80), 0 6px 16px rgba(0, 0, 0, 0.70), inset 0 1px 0 rgba(255, 255, 255, 0.30), inset 0 -1px 0 rgba(0, 0, 0, 0.40);
+  --card-inset-shadow-sm: 0 24px 52px rgba(0, 0, 0, 0.85), 0 8px 20px rgba(0, 0, 0, 0.75), inset 0 1px 0 rgba(255, 255, 255, 0.45), inset 0 -1px 0 rgba(0, 0, 0, 0.55);
   --card-num-shadow: 0 4px 10px rgba(0, 0, 0, 0.85);
   --card-icon-shadow: drop-shadow(0 5px 9px rgba(0, 0, 0, 0.80));
   --card-name-shadow: 0 3px 6px rgba(0, 0, 0, 0.90), 0 8px 18px rgba(0, 0, 0, 0.70);
@@ -256,16 +258,8 @@ html.dark .lite-server-card {
   border-radius: inherit;
 }
 
-/* Status is shown by the 运行中/离线中 pill in the header, not by a
-   colored strip on the card's left edge. */
-
-.lite-duration-pill svg {
-  width: 13px;
-  height: 13px;
-  flex-shrink: 0;
-  align-self: center;
-  margin-right: 2px;
-}
+/* Status is shown by the dot inside the duration pill in the header,
+   not by a colored strip on the card's left edge. */
 
 .lite-server-card__hero {
   padding: 10px 18px 0;
@@ -390,51 +384,22 @@ html.dark .lite-server-card__duration--offline .lite-duration-pill__unit {
   color: #ff5630;
 }
 
-/* Status pill: 运行中 (green) / 离线中 (red), a rounded capsule with a
-   solid dot, sitting between the server name and the duration pill. */
-.lite-server-card__status {
+/* Status dot inside the duration pill (green online / red offline):
+   6px, vertically centered against the duration text. No clock icon,
+   no standalone dot after the server name — the pill alone carries
+   the state (the title attribute on the parent still names it for
+   hover / screen readers). */
+.lite-duration-pill__dot {
+  width: 6px;
+  height: 6px;
   flex-shrink: 0;
   align-self: center;
-  display: flex;
-}
-
-.lite-status-pill {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 3px 8px;
-  border-radius: 999px;
-  background: rgba(34, 197, 94, 0.14);
-  font-size: 11.5px;
-  font-weight: 700;
-  line-height: 16px;
-  color: #15803d;
-  white-space: nowrap;
-}
-
-.lite-status-pill__dot {
-  width: 7px;
-  height: 7px;
-  flex-shrink: 0;
   border-radius: 999px;
   background: #22c55e;
 }
 
-.lite-server-card__status--offline .lite-status-pill {
-  background: rgba(255, 86, 48, 0.14);
-  color: #ff5630;
-}
-
-.lite-server-card__status--offline .lite-status-pill__dot {
+.lite-server-card__duration--offline .lite-duration-pill__dot {
   background: #ff5630;
-}
-
-html.dark .lite-status-pill {
-  color: #22c55e;
-}
-
-html.dark .lite-server-card__status--offline .lite-status-pill {
-  color: #ff5630;
 }
 
 /* Network: upload and download as two separate rounded sub-cards,
@@ -498,9 +463,9 @@ html.dark .lite-server-card__status--offline .lite-status-pill {
 
 .lite-server-card__speed small {
   margin-left: 4px;
-  font-size: 12px;
+  font-size: 11px;
   white-space: nowrap;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 16px;
   letter-spacing: 0;
   color: var(--card-muted);
@@ -541,12 +506,15 @@ html.dark .lite-server-card__status--offline .lite-status-pill {
 }
 
 .lite-server-card__resource {
+  display: flex;
   min-width: 0;
+  height: 74px;
+  flex-direction: column;
   padding: 10px 12px;
   border: 1px solid var(--card-inset-border);
   border-radius: 12px;
   background: var(--card-inset);
-  box-shadow: var(--card-inset-shadow);
+  box-shadow: var(--card-inset-shadow-sm);
 }
 
 .lite-server-card__resource-label {
@@ -591,7 +559,7 @@ html.dark .lite-server-card__status--offline .lite-status-pill {
 }
 
 .lite-server-card__resource .lite-server-card__meter {
-  margin-top: 8px;
+  margin-top: auto;
 }
 
 .lite-server-card__meter {
@@ -708,7 +676,7 @@ html.dark .lite-server-card__quota-meter {
   height: 39px;
   box-sizing: border-box;
   align-items: center;
-  gap: 5px;
+  gap: 4px;
   padding: 0 1px;
   border: 0;
   border-bottom: 1px dashed rgba(148, 163, 184, 0.55);
@@ -961,12 +929,14 @@ html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="regular"] 
 }
 
 /* Probe viz: one line of numbers on top, one combined history strip below.
-   The strip is a single row of bars, full width: bar height shows the
+   The strip is a single row of bars, full width: each bar is a fixed 6px
+   wide with a 2px gap, left-aligned one bar-width (6px) after the name
+   column. The strip measures its own width and only renders the most
+   recent bars that fit (see countFittingProbeBars); extras are dropped,
+   never shrunk and never spilling past the row. Bar height shows the
    latency in that bucket (taller = higher latency, 200ms = full height),
    bar color is coral whenever the bucket had any packet loss, otherwise
-   the latency tone. The viz takes whatever width the row leaves
-   (flex: 1, min-width: 0); the bars flex to fill the strip evenly, so the
-   strip always fills its width and nothing can ever spill past the box. */
+   the latency tone. */
 .lite-probe-row__viz {
   display: flex;
   flex: 1 1 0;
@@ -989,11 +959,11 @@ html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="regular"] 
   width: 100%;
   height: 16px;
   align-items: flex-end;
-  gap: 2px;
+  gap: 1px;
 }
 
 .lite-probe-strip__bar {
-  flex: 1 1 0;
+  flex: 0 0 6px;
   min-width: 0;
   border-radius: 1px;
   background: var(--card-line);
@@ -1012,7 +982,7 @@ html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="regular"] 
 }
 
 .lite-probe-strip__bar[data-tone="loss"] {
-  background: #a855f7;
+  background: var(--card-danger);
 }
 
 .lite-probe-strip__bar[data-tone="empty"] {
@@ -1030,8 +1000,8 @@ html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="regular"] 
 }
 
 .lite-probe-row__viz-delay b {
-  font-size: 11px;
-  font-weight: 650;
+  font-size: 13px;
+  font-weight: 700;
   line-height: 1;
   letter-spacing: -0.2px;
   color: var(--card-amber);
@@ -1068,6 +1038,14 @@ html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="regular"] 
   color: var(--card-secondary);
   white-space: nowrap;
   text-shadow: var(--card-num-shadow);
+}
+
+/* Abnormal packet loss stands out: red and bold, so a 5.1% line is
+   impossible to miss next to the 0.0% lines. */
+.lite-probe-row__viz-loss[data-bad="true"] {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--card-danger);
 }
 
 /* Deleted: a capsule-era leftover set the return text to the row accent
@@ -1113,7 +1091,7 @@ html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="regular"] 
 }
 
 .lite-server-card__quota-line b {
-  font-size: 15px;
+  font-size: 18px;
   font-weight: 800;
 }
 
@@ -1133,12 +1111,13 @@ html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="regular"] 
 .lite-server-card__quota-percent.lite-server-card__tone--amber { color: var(--card-amber); }
 .lite-server-card__quota-percent.lite-server-card__tone--danger { color: var(--card-danger); }
 
-/* Traffic bar: 5px tall. The usage line above has a 16px line-height but
-   its glyphs are only ~12px, leaving ~3px of blank space below the text,
-   so the bar uses a 5px top margin to make the visible gap above the bar
-   match the 8px below it (the meta line's margin-top). */
+/* Traffic bar: 8px tall so the usage reads at a glance. The usage line
+   above has a 16px line-height but its glyphs are only ~12px, leaving
+   ~3px of blank space below the text, so the bar uses a 5px top margin
+   to make the visible gap above the bar match the 8px below it (the
+   meta line's margin-top). */
 .lite-server-card__quota-meter {
-  height: 5px;
+  height: 8px;
   margin: 5px 0 0;
   overflow: hidden;
   border-radius: 999px;
@@ -1207,7 +1186,7 @@ html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="regular"] 
   height: 14px;
   flex: none;
   align-self: center;
-  background: #e3ebf1;
+  background: var(--card-border);
 }
 
 .lite-server-card__bill--stacked .lite-server-card__footer-rule {

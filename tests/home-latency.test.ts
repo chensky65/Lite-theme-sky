@@ -19,8 +19,10 @@ import {
   latencyBarTone,
   lossBarTone,
   mapPingStatsToHomeLatency,
+  countFittingProbeBars,
   probeStripBarHeight,
   probeStripBarTone,
+  probeStripBarsWidth,
   readHomeLatencyCache,
   summarizeHomeLatencySamples,
   writeHomeLatencyCache,
@@ -172,15 +174,60 @@ test("homepage probe rows render latency and packet-loss history strips", () => 
   assert.match(strip, /probeStripBarHeight/)
 })
 
-test("combined probe strip: loss turns the bar purple, height follows latency", () => {
-  // Any packet loss gets its own purple tone so it never reads as high
-  // latency: a 160ms bucket with loss is "loss", not coral.
+test("probe numbers row is sized to the rendered bars so it right-aligns with the last bar", () => {
+  const summary = readFileSync(new URL("../src/components/ServerLatencySummary.tsx", import.meta.url), "utf8")
+  // The row measures the viz, fits the bar count, hands it to the strip,
+  // and sizes the numbers row to the bars' width.
+  assert.match(summary, /countFittingProbeBars/)
+  assert.match(summary, /probeStripBarsWidth/)
+  assert.match(summary, /visibleCount=\{visibleCount\}/)
+  assert.match(summary, /lite-probe-row__viz-top" style=\{barsWidth/)
+  const strip = readFileSync(new URL("../src/components/ProbeHistoryStrip.tsx", import.meta.url), "utf8")
+  assert.match(strip, /visibleCount\?: number/)
+  assert.match(strip, /visibleCountProp/)
+})
+
+test("design review (2026-11-25): hierarchy, red loss, unified cards, thick traffic bar, footer regions", () => {
+  const css = readFileSync(new URL("../src/index.css", import.meta.url), "utf8")
+  const summary = readFileSync(new URL("../src/components/ServerLatencySummary.tsx", import.meta.url), "utf8")
+  const card = readFileSync(new URL("../src/components/ServerCard.tsx", import.meta.url), "utf8")
+  // Abnormal loss is red and bold; the row marks it so CSS can pick it up.
+  assert.match(summary, /data-bad=\{summary\.packetLoss/)
+  assert.match(css, /\.lite-probe-row__viz-loss\[data-bad="true"\] \{[\s\S]*?color:\s*var\(--card-danger\)/)
+  assert.match(css, /\.lite-probe-row__viz-loss\[data-bad="true"\] \{[\s\S]*?font-weight:\s*700/)
+  // Resource cards share one height and pin the meter to the bottom.
+  assert.match(css, /\.lite-server-card__resource \{[\s\S]*?height:\s*74px/)
+  assert.match(css, /\.lite-server-card__resource \.lite-server-card__meter \{[\s\S]*?margin-top:\s*auto/)
+  // Traffic bar is 8px and the usage number is 18px.
+  assert.match(css, /\.lite-server-card__quota-meter \{[\s\S]*?height:\s*8px/)
+  assert.match(css, /\.lite-server-card__quota-line b \{[\s\S]*?font-size:\s*18px/)
+  // Footer divider uses the theme border color in both modes.
+  assert.match(css, /\.lite-server-card__footer-rule \{[\s\S]*?background:\s*var\(--card-border\)/)
+  // Speed unit is small and quiet next to the big number.
+  assert.match(css, /\.lite-server-card__speed small \{[\s\S]*?font-size:\s*11px/)
+  // No manual refresh icon on the card: data auto-refreshes, and a
+  // per-card button that reloads the whole page has no meaning.
+  assert.doesNotMatch(card, /lite-server-card__refresh/)
+  assert.doesNotMatch(css, /\.lite-server-card__refresh/)
+  // The four resource cards sit in one row as separate floating
+  // mini-cards, each its own rounded panel.
+  assert.match(css, /\.lite-server-card__resource \{[\s\S]*?box-shadow:\s*var\(--card-inset-shadow-sm\)/)
+  assert.match(css, /html\.dark \{[\s\S]*?--card-inset-shadow-sm:[\s\S]*?inset 0 1px 0 rgba\(255, 255, 255, 0\.45\)/)
+  assert.match(css, /\.lite-server-card__resources \{[\s\S]*?gap:\s*10px/)
+  assert.match(css, /@container server-card \(max-width: 399px\) \{[\s\S]*?\.lite-server-card__resources \{[\s\S]*?gap:\s*6px/)
+})
+
+test("combined probe strip: loss turns the bar red, high latency never turns the whole strip red", () => {
+  // Any packet loss gets its own red tone so it never reads as high
+  // latency: a 160ms bucket with loss is "loss", not amber.
   assert.equal(probeStripBarTone(160, 2.1), "loss")
   assert.equal(probeStripBarTone(13, 0.1), "loss")
-  // No loss: the latency tone decides.
+  // No loss: the latency tone decides, but caps at amber — the red delay
+  // number already signals high latency, so the waveform never turns
+  // all red on a slow line.
   assert.equal(probeStripBarTone(160, 0), "amber")
   assert.equal(probeStripBarTone(13, 0), "green")
-  assert.equal(probeStripBarTone(200, 0), "coral")
+  assert.equal(probeStripBarTone(200, 0), "amber")
   assert.equal(probeStripBarTone(null, 0), "empty")
   assert.equal(probeStripBarTone(null, null), "empty")
   // Height scales with latency (200ms = full 16px), 2px minimum.
@@ -191,6 +238,33 @@ test("combined probe strip: loss turns the bar purple, height follows latency", 
   assert.equal(probeStripBarHeight(160), 13)
   assert.equal(probeStripBarHeight(200), 16)
   assert.equal(probeStripBarHeight(400), 16)
+})
+
+test("probe strip: bar count is measured from the strip width, extras dropped", () => {
+  // 30 bars at 6px + 1px gap = 209px; a 246px strip fits all 30.
+  assert.equal(countFittingProbeBars(246, 30), 30)
+  assert.equal(countFittingProbeBars(238, 30), 30)
+  // A 222px strip now fits all 30 bars (30*6 + 29*1 = 209); the 1px gap
+  // is what lets one more bar in versus the old 2px gap (28 bars).
+  assert.equal(countFittingProbeBars(222, 30), 30)
+  // A 206px strip fits 29 bars (29*6 + 28*1 = 202); the 30th needs 209px.
+  assert.equal(countFittingProbeBars(206, 30), 29)
+  // Boundary: 209px fits exactly 30, 208px fits 29.
+  assert.equal(countFittingProbeBars(209, 30), 30)
+  assert.equal(countFittingProbeBars(208, 30), 29)
+  // Never more than the buckets available, never empty.
+  assert.equal(countFittingProbeBars(500, 12), 12)
+  assert.equal(countFittingProbeBars(4, 30), 1)
+  assert.equal(countFittingProbeBars(0, 30), 0)
+  assert.equal(countFittingProbeBars(200, 0), 0)
+})
+
+test("probe strip: rendered bars width is 7px per bar minus the last gap", () => {
+  // 6px bar + 1px gap, last bar has no trailing gap.
+  assert.equal(probeStripBarsWidth(0), 0)
+  assert.equal(probeStripBarsWidth(1), 6)
+  assert.equal(probeStripBarsWidth(29), 202)
+  assert.equal(probeStripBarsWidth(30), 209)
 })
 
 test("maps ping metric stats onto per-task home summaries", () => {
@@ -266,7 +340,7 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   assert.match(css, /\.lite-probe-strip__bar\[data-tone="green"\] \{[\s\S]*?background:\s*var\(--card-green\)/)
   assert.match(css, /\.lite-probe-strip__bar\[data-tone="amber"\] \{[\s\S]*?background:\s*var\(--card-amber\)/)
   assert.match(css, /\.lite-probe-strip__bar\[data-tone="coral"\] \{[\s\S]*?background:\s*var\(--card-danger\)/)
-  assert.match(css, /\.lite-probe-strip__bar\[data-tone="loss"\] \{[\s\S]*?background:\s*#a855f7/)
+  assert.match(css, /\.lite-probe-strip__bar\[data-tone="loss"\] \{[\s\S]*?background:\s*var\(--card-danger\)/)
   assert.match(css, /\.lite-probe-row__viz-delay b\[data-tone="green"\] \{[\s\S]*?color:\s*var\(--card-green\)/)
   assert.match(css, /\.lite-probe-row__viz-delay b\[data-tone="coral"\] \{[\s\S]*?color:\s*var\(--card-danger\)/)
   // Probe rows keep the original 39px height and a fixed 84px main
@@ -278,7 +352,8 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   // content (name "电信 V4" at 14px bold is about 49px; "CN2 GIA" at
   // 9px is about 43px with its dot), so the full text shows with no
   // ellipsis and almost no dead space before the history strip. The gap
-  // to the viz is a tight 5px and the row padding 1px on every row.
+  // to the viz is a tight 4px (moved forward from 6px so one more bar
+  // fits) and the row padding 1px on every row.
   // The viz fills the rest.
   assert.match(css, /\.lite-probe-row \{[\s\S]*?height:\s*39px/)
   assert.match(css, /\.lite-probe-row \{[\s\S]*?gap:\s*5px/)
@@ -372,7 +447,7 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   // row over one bars row), not a row of two columns.
   assert.match(css, /\.lite-probe-row__viz-top \{[\s\S]*?display:\s*flex/)
   assert.match(css, /\.lite-probe-row__viz-top \{[\s\S]*?justify-content:\s*flex-end/)
-  assert.match(css, /\.lite-probe-row__viz-top \{[\s\S]*?gap:\s*10px/)
+  assert.match(css, /\.lite-probe-row__viz-top \{[\s\S]*?gap:\s*6px/)
   assert.doesNotMatch(css, /\.lite-probe-row__viz-col \{/)
   assert.doesNotMatch(css, /\.lite-latency-bars \{/)
   assert.doesNotMatch(css, /\.lite-probe-row__viz-delay \{[^}]*flex:\s*1 1 0/)
@@ -383,12 +458,16 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   assert.match(css, /\.lite-probe-strip \{[\s\S]*?height:\s*16px/)
   assert.match(css, /\.lite-probe-strip \{[\s\S]*?align-items:\s*flex-end/)
   assert.match(css, /\.lite-probe-strip \{[\s\S]*?gap:\s*2px/)
-  // One combined strip: bars flex to fill the width (no fixed 1px width),
-  // heights vary with the latency value (inline style), so the strip reads
-  // as one even row whose skyline shows the latency trend.
+  // One combined strip: each bar is a fixed 6px wide, left-aligned one
+  // bar-width after the name column. The strip measures its own width
+  // and only renders the most recent bars that fit (countFittingProbeBars);
+  // extras are dropped, never shrunk and never spilling past the row.
+  // Heights vary with the latency value (inline style), so the strip
+  // reads as one even row whose skyline shows the latency trend.
   assert.doesNotMatch(css, /\.lite-probe-strip \{[^}]*justify-content:\s*space-between/)
   assert.doesNotMatch(css, /\.lite-probe-strip \{[^}]*display:\s*grid/)
-  assert.match(css, /\.lite-probe-strip__bar \{[\s\S]*?flex:\s*1 1 0/)
+  assert.doesNotMatch(css, /\.lite-probe-strip \{[^}]*margin-left:\s*auto/)
+  assert.match(css, /\.lite-probe-strip__bar \{[\s\S]*?flex:\s*0 0 6px/)
   assert.match(css, /\.lite-probe-strip__bar \{[\s\S]*?min-width:\s*0/)
   assert.doesNotMatch(css, /\.lite-probe-strip__bar \{[^}]*width:\s*1px/)
   assert.doesNotMatch(css, /\.lite-probe-strip__bar \{[^}]*aspect-ratio:/)
@@ -447,13 +526,14 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   assert.match(css, /html\.dark \.lite-server-card__name \{[^}]*-webkit-text-fill-color:\s*#ffffff/)
   // Scheme C (2026-11-23): big key numbers, quiet labels. Sizes were
   // fit-checked at 360px/390px against the widest values (999.99 M/s,
-  // 100.0%, 100.00%, $999/月, 1000 Mbps). The probe latency number
-  // went back to the original 11px the same day at the user's request.
+  // 100.0%, 100.00%, $999/月, 1000 Mbps). The probe latency number was
+  // 11px until the 2026-11-25 design review, which raised it to 13px so
+  // the delay reads at the top of the network-quality hierarchy.
   assert.match(css, /\.lite-server-card__name \{[^}]*font-size:\s*18px/)
   assert.match(css, /\.lite-server-card__speed \{[\s\S]*?font-size:\s*clamp\(22px, 7\.2cqi, 28px\)/)
   assert.match(css, /\.lite-server-card__speed small \{[^}]*white-space:\s*nowrap/)
   assert.match(css, /\.lite-server-card__resource-value \{[^}]*font-size:\s*18px/)
-  assert.match(css, /\.lite-probe-row__viz-delay b \{[^}]*font-size:\s*11px/)
+  assert.match(css, /\.lite-probe-row__viz-delay b \{[^}]*font-size:\s*13px/)
   assert.match(css, /\.lite-server-card__quota-percent \{[^}]*font-size:\s*18px/)
   assert.match(css, /\.lite-server-card__footer-price \{[^}]*font-size:\s*28px/)
   // Day and night label sizes are the same (2026-11-23): the C scheme's
@@ -468,7 +548,7 @@ test("homepage probes render as Komari-style rows with a latency history strip",
   assert.match(css, /\.lite-duration-pill \{[\s\S]*?box-shadow:\s*0 4px 10px rgba\(0, 0, 0, 0\.38\), 0 1px 3px rgba\(0, 0, 0, 0\.30\), inset 0 1px 0 rgba\(255, 255, 255, 0\.45\), inset 0 -1px 0 rgba\(0, 0, 0, 0\.12\)/)
   assert.match(css, /\.lite-duration-pill__num \{[\s\S]*?text-shadow:\s*var\(--card-name-shadow\)/)
   assert.doesNotMatch(css, /\.lite-server-card__bottom \{[^}]*border-top:\s*1px solid var\(--card-line\)/)
-  assert.match(css, /\.lite-server-card__quota-meter \{[\s\S]*?height:\s*5px/)
+  assert.match(css, /\.lite-server-card__quota-meter \{[\s\S]*?height:\s*8px/)
   assert.match(css, /\.lite-server-card__fill--traffic \{[\s\S]*?background:\s*var\(--card-traffic\)/)
   assert.match(css, /\.lite-server-card__fill--danger \{[\s\S]*?background:\s*var\(--card-danger\)/)
   // The fill glows in its own color (a lit strip) so the bar reads

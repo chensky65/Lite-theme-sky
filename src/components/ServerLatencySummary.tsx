@@ -2,15 +2,17 @@ import ProbeHistoryStrip from "@/components/ProbeHistoryStrip"
 import {
   HOME_LATENCY_CARD_LIMIT,
   type HomeLatencyTaskSummary,
+  countFittingProbeBars,
   formatProbeLatency,
   formatProbePacketLoss,
   hourPacketFillPercent,
   latencyBarTone,
+  probeStripBarsWidth,
 } from "@/lib/home-latency"
 import { probeAccentIndex } from "@/lib/home-probe-accent"
 import { returnLineForPingTask, returnLineQuality, type PublicReturnRoute } from "@/lib/home-return-route"
 import { readShowHomePacketLoss, readShowHomeReturnRoute } from "@/lib/theme-config"
-import { useEffect, useRef } from "react"
+import { useEffect, useLayoutEffect, useRef, useState } from "react"
 import { useTranslation } from "react-i18next"
 
 /* Operator brand marks for the probe rows: the carriers' official graphic
@@ -85,6 +87,28 @@ function TaskProbeRow({
     .filter(Boolean)
     .join(" · ")
 
+  // The numbers row above the strip is sized to the rendered bars' width,
+  // so its right edge (delay + loss) lines up with the last bar's right
+  // edge instead of the row's right edge. Measure the viz width here and
+  // hand the fitted count to the strip so both agree on the bar count.
+  const vizRef = useRef<HTMLSpanElement>(null)
+  const [visibleCount, setVisibleCount] = useState(summary.latencyHistory.length)
+  useLayoutEffect(() => {
+    const viz = vizRef.current
+    if (!viz) return
+    const fit = () => {
+      const width = viz.clientWidth
+      if (width > 0) {
+        setVisibleCount(countFittingProbeBars(width, summary.latencyHistory.length))
+      }
+    }
+    fit()
+    const observer = new ResizeObserver(fit)
+    observer.observe(viz)
+    return () => observer.disconnect()
+  }, [summary.latencyHistory.length])
+  const barsWidth = probeStripBarsWidth(Math.min(visibleCount, summary.latencyHistory.length))
+
   return (
     <button
       type="button"
@@ -119,14 +143,18 @@ function TaskProbeRow({
           ) : null}
         </span>
       </span>
-      <span className="lite-probe-row__viz">
-        <span className="lite-probe-row__viz-top">
+      <span ref={vizRef} className="lite-probe-row__viz">
+        <span className="lite-probe-row__viz-top" style={barsWidth > 0 ? { width: barsWidth } : undefined}>
           <span className="lite-probe-row__viz-delay">
             <b className="tabular-nums" data-tone={delayTone}>{latency.value}</b>
             {latency.unit ? <small>{latency.unit}</small> : null}
           </span>
           {showPacketLoss ? (
-            <span className="lite-probe-row__viz-loss" title={`${lossLabel} ${packetLoss}`}>
+            <span
+              className="lite-probe-row__viz-loss"
+              data-bad={summary.packetLoss !== null && summary.packetLoss > 0 ? "true" : "false"}
+              title={`${lossLabel} ${packetLoss}`}
+            >
               <b className="tabular-nums">{packetLoss}</b>
             </span>
           ) : null}
@@ -135,6 +163,7 @@ function TaskProbeRow({
           latency={summary.latencyHistory}
           loss={summary.packetLossHistory}
           label={`${summary.taskName} ${t("serverCard.latency")} ${latencyLabel}`}
+          visibleCount={visibleCount}
         />
       </span>
     </button>

@@ -25,15 +25,24 @@ test("splits an offline duration into hours, minutes and seconds", () => {
   assert.deepEqual(getStatusDurationCards(-100, false), [{ value: "00", unit: "小时" }, { value: "00", unit: "分" }, { value: "00", unit: "秒" }])
 })
 
-test("duration badge is one capsule, green text on translucent green online and red offline, number and unit one size", () => {
+test("duration badge is one capsule, background follows the sub-card, green text online and red offline, number and unit one size", () => {
   const css = readFileSync(new URL("../src/index.css", import.meta.url), "utf-8")
   assert.match(css, /\.lite-duration-pill \{[\s\S]*?border-radius:\s*999px/)
-  assert.match(css, /\.lite-duration-pill \{[\s\S]*?background:\s*rgba\(34,\s*197,\s*94,\s*0\.14\)/)
+  // Background follows the sub-card (var(--card-inset)), not the old
+  // translucent green/red — online and offline share the same base.
+  assert.match(css, /\.lite-duration-pill \{[^}]*background:\s*var\(--card-inset\)/)
+  assert.match(css, /\.lite-server-card__duration--offline \.lite-duration-pill \{[^}]*background:\s*var\(--card-inset\)/)
   assert.match(css, /\.lite-duration-pill__num \{[\s\S]*?font-size:\s*11px/)
   assert.match(css, /\.lite-duration-pill__unit \{[\s\S]*?font-size:\s*11px/)
+  // Status dot lives inside the pill (6px, green online / red offline),
+  // no clock icon, no standalone dot after the server name.
+  assert.match(css, /\.lite-duration-pill__dot \{[\s\S]*?width:\s*6px/)
+  assert.match(css, /\.lite-duration-pill__dot \{[\s\S]*?background:\s*#22c55e/)
+  assert.match(css, /\.lite-server-card__duration--offline \.lite-duration-pill__dot \{[\s\S]*?background:\s*#ff5630/)
+  assert.doesNotMatch(css, /\.lite-duration-pill svg/)
+  assert.doesNotMatch(css, /\.lite-status-pill__dot/)
   assert.match(css, /\.lite-duration-pill__num \{[\s\S]*?color:\s*#15803d/)
   assert.match(css, /html\.dark \.lite-duration-pill__num,[\s\S]*?html\.dark \.lite-duration-pill__unit \{[\s\S]*?color:\s*#22c55e/)
-  assert.match(css, /\.lite-server-card__duration--offline \.lite-duration-pill \{[\s\S]*?background:\s*rgba\(255,\s*86,\s*48,\s*0\.14\)/)
   assert.match(css, /\.lite-server-card__duration--offline \.lite-duration-pill__num,[\s\S]*?\.lite-server-card__duration--offline \.lite-duration-pill__unit \{[\s\S]*?color:\s*#ff5630/)
   assert.match(css, /html\.dark \.lite-server-card__duration--offline \.lite-duration-pill__num,[\s\S]*?html\.dark \.lite-server-card__duration--offline \.lite-duration-pill__unit \{[\s\S]*?color:\s*#ff5630/)
   assert.doesNotMatch(css, /\.lite-server-card__signal \{/)
@@ -45,7 +54,11 @@ test("server card renders the duration as one capsule instead of signal bars", (
   const card = readFileSync(new URL("../src/components/ServerCard.tsx", import.meta.url), "utf-8")
   assert.match(card, /lite-server-card__duration/)
   assert.match(card, /lite-duration-pill/)
+  assert.match(card, /lite-duration-pill__dot/)
   assert.match(card, /getStatusDurationCards\(displayDurationSeconds, info\.online\)/)
+  assert.doesNotMatch(card, /lite-server-card__status/)
+  assert.doesNotMatch(card, /lite-status-pill__dot/)
+  assert.doesNotMatch(card, /M8 4\.5V8l2\.5 1\.5/)
   assert.doesNotMatch(card, /lite-server-card__signal/)
   assert.doesNotMatch(card, /lite-duration-block"/)
 })
