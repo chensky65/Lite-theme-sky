@@ -676,7 +676,7 @@ html.dark .lite-server-card__quota-meter {
   height: 39px;
   box-sizing: border-box;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   padding: 0 1px;
   border: 0;
   border-bottom: 1px dashed rgba(148, 163, 184, 0.55);
@@ -718,8 +718,11 @@ html.dark .lite-server-card__quota-meter {
    and almost no dead space before the history strip: the old 72px
    column (sized for the removed "· 精品" suffix) left about 23px of
    empty column, and the 56px column still left about 7px. The gap to
-   the viz is a tight 5px and the row padding 1px, so the empty band
-   between the end of the text and the strip is about 9px. */
+   the viz is a tight 2px (moved forward from 4px so two more bars
+   fit) and the row padding is 6px on each side, so the logo and the
+   numbers sit a clear, equal distance from the sub-card edges on
+   every card width and in both themes. The empty band between the
+   end of the text and the strip is about 7px. */
 .lite-probe-row__main {
   display: flex;
   width: 84px;
@@ -928,30 +931,47 @@ html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="regular"] 
   background: #94a3b8;
 }
 
-/* Probe viz: one line of numbers on top, one combined history strip below.
-   The strip is a single row of bars, full width: each bar is a fixed 6px
-   wide with a 2px gap, left-aligned one bar-width (6px) after the name
-   column. The strip measures its own width and only renders the most
-   recent bars that fit (see countFittingProbeBars); extras are dropped,
-   never shrunk and never spilling past the row. Bar height shows the
-   latency in that bucket (taller = higher latency, 200ms = full height),
-   bar color is coral whenever the bucket had any packet loss, otherwise
-   the latency tone. */
+/* Probe viz: the history strip on the left, the numbers in a fixed
+   column at the far right — delay on top, packet loss below, both
+   right-aligned. The strip is 16px tall again (it was 26px briefly
+   after the numbers moved to the right); bar height still scales
+   with latency (200ms = full height, 2px minimum). The strip
+   measures its own width and only renders the most recent bars that
+   fit (see countFittingProbeBars); extras are dropped, never shrunk
+   and never spilling past the row. The numbers column is at least
+   60px wide (the delay "151.58 ms" at 12px bold and "丢包率 0.0%" at
+   10px both fit); it grows with longer labels, and the strip simply
+   takes whatever width is left, so narrow cards show fewer bars. Bar
+   color follows the latency tiers (green <= 80ms, amber <= 180ms,
+   coral above 180ms) — the same tiers as the delay number — except a
+   bucket with any packet loss, which is purple like the loss number.
+   The 14px for two extra bars came from the row gap (4px to 2px),
+   the viz gap (8px to 4px) and the numbers min-width (68px to 60px). */
 .lite-probe-row__viz {
   display: flex;
   flex: 1 1 0;
   min-width: 0;
-  flex-direction: column;
-  justify-content: center;
-  gap: 3px;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
 }
 
-.lite-probe-row__viz-top {
+.lite-probe-row__strip-wrap {
   display: flex;
-  align-items: baseline;
-  justify-content: flex-end;
-  gap: 10px;
-  height: 14px;
+  flex: 1 1 0;
+  min-width: 0;
+  align-items: flex-end;
+}
+
+.lite-probe-row__viz-numbers {
+  display: flex;
+  flex: 0 0 auto;
+  min-width: 60px;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 1px;
+  text-align: right;
 }
 
 .lite-probe-strip {
@@ -963,26 +983,29 @@ html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="regular"] 
 }
 
 .lite-probe-strip__bar {
-  flex: 0 0 6px;
+  flex: 0 0 4px;
   min-width: 0;
   border-radius: 1px;
   background: var(--card-line);
 }
 
+/* Probe tier colors (literal hex, not the global --card-amber /
+   --card-danger: the probe tiers are yellow #eab308 and red #ef4444,
+   and loss is purple #a855f7 like the loss number above 5%). */
 .lite-probe-strip__bar[data-tone="green"] {
-  background: var(--card-green);
+  background: #22c55e;
 }
 
 .lite-probe-strip__bar[data-tone="amber"] {
-  background: var(--card-amber);
+  background: #eab308;
 }
 
 .lite-probe-strip__bar[data-tone="coral"] {
-  background: var(--card-danger);
+  background: #ef4444;
 }
 
 .lite-probe-strip__bar[data-tone="loss"] {
-  background: var(--card-danger);
+  background: #a855f7;
 }
 
 .lite-probe-strip__bar[data-tone="empty"] {
@@ -991,61 +1014,57 @@ html.dark .lite-probe-row__main .lite-probe-row__return[data-quality="regular"] 
 }
 
 .lite-probe-row__viz-delay {
-  display: inline-flex;
+  display: flex;
   align-items: baseline;
   justify-content: flex-end;
-  gap: 2px;
-  height: 14px;
   white-space: nowrap;
 }
 
 .lite-probe-row__viz-delay b {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
-  line-height: 1;
+  line-height: 14px;
   letter-spacing: -0.2px;
-  color: var(--card-amber);
+  color: #eab308;
   text-shadow: var(--card-num-shadow);
 }
 
 .lite-probe-row__viz-delay b[data-tone="green"] {
-  color: var(--card-green);
+  color: #22c55e;
 }
 
 .lite-probe-row__viz-delay b[data-tone="coral"] {
-  color: var(--card-danger);
+  color: #ef4444;
 }
 
 .lite-probe-row__viz-delay b[data-tone="empty"] {
   color: var(--card-muted);
 }
 
-.lite-probe-row__viz-delay small {
-  font-size: 10px;
-  font-weight: 400;
-  line-height: 1;
-  color: var(--card-secondary);
-}
-
+/* Packet loss is a normal number (var(--card-secondary)) at 5.0% and
+   below (1.7%, 3.4%): only above 5% does it turn purple (#a855f7)
+   and bold, the same purple as a loss bar, so loss reads as one
+   color everywhere. */
 .lite-probe-row__viz-loss {
-  display: inline-flex;
+  display: flex;
   align-items: baseline;
   justify-content: flex-end;
-  height: 14px;
+  gap: 3px;
   font-size: 10px;
   font-weight: 550;
-  line-height: 14px;
+  line-height: 13px;
   color: var(--card-secondary);
   white-space: nowrap;
   text-shadow: var(--card-num-shadow);
 }
 
-/* Abnormal packet loss stands out: red and bold, so a 5.1% line is
-   impossible to miss next to the 0.0% lines. */
+.lite-probe-row__viz-loss b {
+  font-weight: inherit;
+}
+
 .lite-probe-row__viz-loss[data-bad="true"] {
-  font-size: 12px;
+  color: #a855f7;
   font-weight: 700;
-  color: var(--card-danger);
 }
 
 /* Deleted: a capsule-era leftover set the return text to the row accent

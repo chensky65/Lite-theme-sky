@@ -162,7 +162,7 @@ test("homepage latency probes keep latency and packet loss in one compact metric
   assert.doesNotMatch(latency, /lite-server-card__packet-meter/)
   assert.match(latency, /lite-probe-row/)
   assert.match(latency, /lite-probe-row__viz-delay/)
-  assert.match(latency, /lite-probe-row__viz-top/)
+  assert.match(latency, /lite-probe-row__viz-numbers/)
   assert.doesNotMatch(latency, /lite-probe-row__viz-col/)
   assert.match(latency, /ProbeHistoryStrip/)
   assert.match(bars, /lite-probe-strip/)

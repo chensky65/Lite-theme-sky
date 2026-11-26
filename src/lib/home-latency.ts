@@ -107,7 +107,7 @@ export type LatencyBarTone = "green" | "amber" | "coral" | "empty"
 
 export function latencyBarTone(latency: number | null): LatencyBarTone {
   if (latency === null || !Number.isFinite(latency) || latency < 0) return "empty"
-  if (latency >= HOME_LATENCY_AMBER_MAX_MS) return "coral"
+  if (latency > HOME_LATENCY_AMBER_MAX_MS) return "coral"
   if (latency > HOME_LATENCY_GREEN_MAX_MS) return "amber"
   return "green"
 }
@@ -121,24 +121,39 @@ export function lossBarTone(loss: number | null): LossBarTone {
   return "green"
 }
 
-/* Combined probe strip: one bar per bucket shows latency (height) and loss
-   (color). Height scales with the latency value (200ms = full height, 2px
-   minimum so a good bucket is still visible). Color is purple whenever the
-   bucket had any packet loss — loss gets its own color so it never reads as
-   high latency — otherwise it follows the latency tone (green <= 80ms,
-   amber <= 180ms, coral above). */
+/* Combined probe strip: one bar per bucket shows fluctuation (height) and
+   loss (color). Height does NOT compare absolute latency: every row's
+   median bucket latency maps to the same baseline height
+   (PROBE_STRIP_BASELINE_HEIGHT_PX), and a bucket only grows or shrinks
+   from there by how far it deviates from that row's median, clamped
+   to 2-16px. The deviation scale is separate per line type because the
+   intranet's latency is an order of magnitude lower: carrier lines use
+   PROBE_STRIP_FLUCTUATION_MS_PER_PX (3ms = 1px), intranet lines use
+   PROBE_STRIP_FLUCTUATION_MS_PER_PX_INTERNAL (0.5ms = 1px) — at the
+   carrier scale the intranet's sub-ms jitter would be invisible, and
+   at the intranet scale a carrier line would slam to the extremes.
+   A 0.77ms intranet row and a 148ms carrier row both read as one even
+   row and only their jitter shows. Color is purple whenever the bucket
+   had any packet loss — loss gets its own color so it never reads as
+   high latency, and it matches the loss number above 5% — otherwise it
+   follows the latency tone (green <= 80ms, amber <= 180ms, coral above
+   180ms), the same tiers as the delay number, so the absolute level
+   still shows through the color and the delay number. */
 export const PROBE_STRIP_MAX_HEIGHT_PX = 16
-export const PROBE_STRIP_HEIGHT_SCALE_MS = 200
+export const PROBE_STRIP_MIN_HEIGHT_PX = 2
+export const PROBE_STRIP_BASELINE_HEIGHT_PX = 10
+export const PROBE_STRIP_FLUCTUATION_MS_PER_PX = 3
+export const PROBE_STRIP_FLUCTUATION_MS_PER_PX_INTERNAL = 0.5
 export const PROBE_STRIP_LOSS_COLOR = "#a855f7"
 
 // Bar geometry (must match .lite-probe-strip__bar in index.css):
-// each bar is 6px wide, 1px gap between bars.
-export const PROBE_STRIP_BAR_WIDTH_PX = 6
+// each bar is 4px wide, 1px gap between bars.
+export const PROBE_STRIP_BAR_WIDTH_PX = 4
 export const PROBE_STRIP_BAR_GAP_PX = 1
 
 /**
  * How many fixed-width probe bars fit in the available strip width.
- * A bar plus its following gap is 7px; the last bar needs no trailing gap.
+ * A bar plus its following gap is 5px; the last bar needs no trailing gap.
  * Returns at least 1 so the strip never renders empty, and never more
  * than the total buckets available.
  */
@@ -148,31 +163,53 @@ export function countFittingProbeBars(availableWidth: number, total: number): nu
   return Math.min(total, Math.max(1, count))
 }
 
-/**
- * The rendered width of `count` probe bars: each bar plus a gap, except
- * the last bar has no trailing gap. Used to size the numbers row above
- * the strip so its right edge lines up with the last bar's right edge.
- */
-export function probeStripBarsWidth(count: number): number {
-  if (count <= 0) return 0
-  return count * PROBE_STRIP_BAR_WIDTH_PX + (count - 1) * PROBE_STRIP_BAR_GAP_PX
-}
-
 export type ProbeStripBarTone = LatencyBarTone | "loss"
 
-export function probeStripBarHeight(latency: number | null): number {
-  if (latency === null || !Number.isFinite(latency) || latency < 0) return 2
+/**
+ * Median of the row's history buckets (finite, non-negative values only).
+ * The strip baseline: a single spike must not drag the reference level.
+ * Returns null when the row has no usable bucket.
+ */
+export function probeHistoryMedian(latency: Array<number | null>): number | null {
+  const values = latency
+    .filter((value): value is number => value !== null && Number.isFinite(value) && value >= 0)
+    .sort((a, b) => a - b)
+  if (values.length === 0) return null
+  const middle = Math.floor(values.length / 2)
+  return values.length % 2 === 1 ? values[middle] : (values[middle - 1] + values[middle]) / 2
+}
+
+/**
+ * Bar height for one bucket: the row's median latency sits at the uniform
+ * baseline height, and the bar only grows or shrinks from there by the
+ * bucket's deviation (msPerPx ms = 1px; carrier lines 3ms, intranet
+ * lines 0.5ms), clamped to 2-16px. A bucket at the median renders at
+ * the baseline; a flat row renders as one even row. No baseline (no
+ * usable history) renders at the baseline too. Missing samples stay a
+ * short 2px bar.
+ */
+export function probeStripBarHeight(
+  latency: number | null,
+  baseline: number | null,
+  msPerPx: number = PROBE_STRIP_FLUCTUATION_MS_PER_PX,
+): number {
+  if (latency === null || !Number.isFinite(latency) || latency < 0) return PROBE_STRIP_MIN_HEIGHT_PX
+  if (baseline === null || !Number.isFinite(baseline) || baseline < 0) return PROBE_STRIP_BASELINE_HEIGHT_PX
   return Math.max(
-    2,
-    Math.min(PROBE_STRIP_MAX_HEIGHT_PX, Math.round((latency / PROBE_STRIP_HEIGHT_SCALE_MS) * PROBE_STRIP_MAX_HEIGHT_PX)),
+    PROBE_STRIP_MIN_HEIGHT_PX,
+    Math.min(
+      PROBE_STRIP_MAX_HEIGHT_PX,
+      Math.round(PROBE_STRIP_BASELINE_HEIGHT_PX + (latency - baseline) / msPerPx),
+    ),
   )
 }
 
 export function probeStripBarTone(latency: number | null, loss: number | null): ProbeStripBarTone {
   if (loss !== null && Number.isFinite(loss) && loss > 0) return "loss"
-  // High latency is already signalled by the red delay number, so the
-  // waveform itself never turns all red: non-loss bars cap at amber.
+  // Same tiers as the delay number (latencyBarTone): green <= 80ms,
+  // amber 80-180ms, coral above 180ms, so a bar and the number agree.
   if (latency === null || !Number.isFinite(latency) || latency < 0) return "empty"
+  if (latency > HOME_LATENCY_AMBER_MAX_MS) return "coral"
   if (latency > HOME_LATENCY_GREEN_MAX_MS) return "amber"
   return "green"
 }
